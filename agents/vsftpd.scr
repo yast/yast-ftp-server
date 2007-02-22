@@ -1,0 +1,33 @@
+/**
+ * File:
+ *   vsftpd.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/vsftpd.conf
+ *   using the ini-agent
+ * Access:
+ *   read/write
+ * Authors:
+ *   Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ *
+ * Fore more information about possible keys and values
+ * consult with the vsftpd.conf or man pages `man vsftpd.conf`.
+ */
+
+.vsftpd
+
+`ag_ini(
+    `IniAgent( "/etc/vsftpd.conf",
+        $[
+            "options"   : [ "global_values", "flat" ],
+            "comments"  : [ "^[ \t]*#.*$", "^[ \t]*$" ],
+            "params"    : [
+                // Options with one value ('yes' / 'no')
+                $[ "match" : [ "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" , "%s=%s"]],
+                // Options with more possible values
+                $[ "match" : [ "^[ \t]*([^ \t]+)[ \t]+(.+)[ \t]*$", "%s %s" ]],
+            ],
+            "subindent" : " ",
+        ]
+    )
+)

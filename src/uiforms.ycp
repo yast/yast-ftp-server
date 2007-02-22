@@ -1,0 +1,180 @@
+term PureUmask = `VBox (
+
+	`Left(`TextEntry(`id("Umask"), _("&Umask (umask files:umask dirs)")))	    
+
+);
+
+term PureAddSettings = `VBox (
+	`Frame (
+		_("Additional Settings"),
+	    	`VBox (				
+			`Left(`CheckBox(`id("AntiWarez"), _("Disable Downloading &Unvalidated Data")))
+	    	)
+	),
+	`VSpacing(1),
+	`Frame (
+		_("Security Settings"),
+		`RadioButtonGroup(`id("SSL"), 
+	   	   `VBox(
+			`Left(`RadioButton(`id(0), "&Disable SSL/TLS")),
+			`Left(`RadioButton(`id(1), "Accept &SSL and TLS", true)),
+			`Left(`RadioButton(`id(2), "&Refuse Conections Without SSL/TLS"))
+
+	   	   )
+		)
+	),
+	`VStretch()
+
+    );
+
+/**
+ * UI for TreeDialogs
+ */
+  term FTPGenSettings() {
+    term dialog = `VBox(
+	`Frame (
+		_("General Settings"),
+
+		`VBox (
+		
+			`Left(`CheckBox(`id("ChrootEnable"), _("&Chroot Everyone"))),
+		
+			`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),
+			
+			`Left(`HSquash(
+				`HBox(`TextEntry(`id("FtpDir"), _("&Ftp Directory")),
+			
+			      	`PushButton ( `id ( "SelectDir" ), `opt ( `hstretch ),  _("Select d&irectory...")))
+			     )
+			),
+			
+		`ReplacePoint(`id(`vsftpd_umask), `VBox (
+
+			`Left(`TextEntry(`id("UmaskAnon"), _("&Umask for Anonymous"))),
+			`Left(`TextEntry(`id("UmaskLocal"), _("Uma&sk for Authenticated Users")))	    
+
+	     	)))
+	),
+	`VSpacing(1),   
+	`Frame (
+	   	_("Passiv Mode Settings"),   		
+		
+		`VBox (
+			`Left(`TextEntry(`id("PasMinPort"), _("&Min Port for Pas. Mode"))),
+				
+			`Left(`TextEntry(`id("PasMaxPort"), _("Max Por&t for Pas. Mode")))
+		)
+  	   ),
+	`VSpacing(1),   
+	`Frame (
+	   	_("Xinetd Settings"),   		
+
+		`VBox (				
+			`Left(`CheckBox(`id("Xinetd"), _("Start via &Xinetd")))
+		)
+  	   ),
+           `VStretch()
+	);
+    return dialog;
+  }
+
+  term FTPPerforSettings() {
+    term dialog = `VBox (
+	`Frame (
+		_("Performance Settings"),
+	    	`VBox (
+		
+			`Left(`TextEntry(`id("MaxIdleTime"), _("&Max Idle Time"))),
+
+			`Left(`TextEntry(`id("MaxClientsPerIP"),_("Max Cli&ents for One IP"))),
+
+			`Left(`TextEntry(`id("MaxClientsNumber"),_("Ma&x Clients")))
+
+
+	    	)
+	),
+	`VSpacing(1),   
+	`Frame (
+	   	_("Rate Settings"),   		
+	    	`VBox (
+
+			`Left(`TextEntry(`id("LocalMaxRate"),_("&Local Max Rate"))),
+
+			`Left(`TextEntry(`id("AnonymMaxRate"),_("Anonymous Max &Rate")))
+		)
+  	   ),
+ 
+
+	   `VStretch()
+
+    );
+    return dialog;
+  }
+
+
+
+
+
+term FTPAnonSettings() {
+    term dialog = `VBox (		
+	`Frame (
+	   	_("Enable/Disable Anonymous and Local Users"),  	
+		`RadioButtonGroup(`id("AnonAuthen"), 
+		   `VBox(
+			`Left(`RadioButton(`id(0), "Anonymo&us Only")),
+			`Left(`RadioButton(`id(1), "Aut&henticated Users Only" )),
+			`Left(`RadioButton(`id(2), "&Both", true))
+			)
+		    )
+	),
+	`VSpacing(1),   
+	`Frame (
+	   	_("Anonymous Settings"),   		
+	    	
+		`VBox (
+		
+			`Left(`CheckBox (`id("AnonyReadOnly"), _("Anon&ymous Can't Upload"))),
+
+			`Left(`CheckBox (`id("AnonymCreatDirs"), _("Anonymou&s Can Create Directories")))
+			
+		)					
+  	 ),
+	`VStretch()
+    );
+    return dialog;
+}
+
+
+
+
+
+term VSFTPDAddSettings() {
+    term dialog1 = `ReplacePoint(`id(`vsftpd_dialog),`VBox (
+	`Frame (
+		_("Additional Settings"),
+	    	`VBox (				
+
+			`Left(`TextEntry(`id("Banner"),_("&Welcome message")))
+
+	    	)
+	),
+	`VSpacing(1),   
+	`CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true,	
+	    	`VBox (
+
+			`Left(`ComboBox(`id("SSLVersion"), "S&elect Version of SSL",
+				        ["Enabled SSL v2","Enabled SSL v3","Enabled SSL v2 & v3" ] )),
+			`Left(`CheckBox(`id("TLS"), _("Enable &TLS")))
+		)
+  	 ),
+
+ 
+
+	`VStretch()
+
+    ));
+    return dialog1;
+  }
+
+
+

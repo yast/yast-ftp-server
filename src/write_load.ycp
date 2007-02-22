@@ -1,0 +1,575 @@
+/**
+ * File:	include/ftpd/wizards.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Wizards definitions
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: wizards.ycp 27914 2006-02-13 14:32:08Z locilka $
+ */
+
+
+
+
+/**
+ * Function return init value for UI widgets
+ * and prepare internal data structure for writing
+ * to config file
+ * Example: ValueUI("ChrootEnabled") => "yes"/"no" 
+ */
+
+global string ValueUI (string key, boolean write) {
+  list <string> ports = [];
+  integer authentic = 0;
+  string yes_no = "";
+  switch(key) {
+    case("ChrootEnable"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+              Ftpd::VS_SETTINGS["chroot_local_user"] = Ftpd::VS_EDIT_SETTINGS["ChrootEnable"]:nil;	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "chroot_local_user") ? 
+		     toupper(Ftpd::VS_SETTINGS["chroot_local_user"]:nil) : Ftpd::DEFAULT_CONFIG["ChrootEnable"]:nil));
+ 	   }	
+	} else {
+	   if (write) {              
+	      Ftpd::PURE_SETTINGS["ChrootEveryone"] = Ftpd::PURE_EDIT_SETTINGS["ChrootEnable"]:nil;	
+           } else {
+	      return ((haskey(Ftpd::PURE_SETTINGS, "ChrootEveryone") ? 
+		     toupper(Ftpd::PURE_SETTINGS["ChrootEveryone"]:nil) : Ftpd::DEFAULT_CONFIG["ChrootEnable"]:nil));
+ 	   }	   
+	}
+	break;
+    case("VerboseLogging"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+              Ftpd::VS_SETTINGS["log_ftp_protocol"] = Ftpd::VS_EDIT_SETTINGS["VerboseLogging"]:nil;	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "log_ftp_protocol") ? 
+		     toupper(Ftpd::VS_SETTINGS["log_ftp_protocol"]:nil) : Ftpd::DEFAULT_CONFIG["VerboseLogging"]:nil));
+ 	   }	
+	} else {
+	   if (write)
+              Ftpd::PURE_SETTINGS["VerboseLog"] = Ftpd::PURE_EDIT_SETTINGS["VerboseLogging"]:nil;
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "VerboseLog") ?
+		     toupper(Ftpd::PURE_SETTINGS["VerboseLog"]:nil):Ftpd::DEFAULT_CONFIG["VerboseLogging"]:nil));
+	}
+	break;
+
+    //only vsftpd
+    case("FtpDir"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+	      if (Ftpd::VS_EDIT_SETTINGS["FtpDir"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["local_root"] = Ftpd::VS_EDIT_SETTINGS["FtpDir"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["local_root"] = nil;	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "local_root") ? 
+		     toupper(Ftpd::VS_SETTINGS["local_root"]:nil) : Ftpd::DEFAULT_CONFIG["FtpDir"]:nil));
+ 	   }	
+	} else {
+	   return "";
+	}
+	break;
+
+    //only vsftpd
+    case("UmaskAnon"):
+        if (Ftpd::vsftpd_edit) {
+	   if (write) {
+	      if (Ftpd::VS_EDIT_SETTINGS["UmaskAnon"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["anon_umask"] = Ftpd::VS_EDIT_SETTINGS["UmaskAnon"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["anon_umask"] = nil;
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "anon_umask") ? 
+		     toupper(Ftpd::VS_SETTINGS["anon_umask"]:nil) : Ftpd::DEFAULT_CONFIG["UmaskAnon"]:nil));
+ 	   }	
+        }  else {
+	   return "";
+	}
+	break;
+
+    //only vsftpd
+    case("UmaskLocal"):
+        if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["UmaskLocal"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["local_umask"] = Ftpd::VS_EDIT_SETTINGS["UmaskLocal"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["local_umask"] = nil;             	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "local_umask") ? 
+		     toupper(Ftpd::VS_SETTINGS["local_umask"]:nil) : Ftpd::DEFAULT_CONFIG["UmaskLocal"]:nil));
+ 	   }	  
+        } else {
+	   return "";
+	}
+	break;
+
+    //only pure-ftpd
+    case("Umask"):
+        if (Ftpd::vsftpd_edit) {
+	   return "";
+        } else {
+	   if (write) {
+              if (Ftpd::PURE_EDIT_SETTINGS["Umask"]:nil != "")
+		 Ftpd::PURE_SETTINGS["Umask"] = Ftpd::PURE_EDIT_SETTINGS["Umask"]:nil;
+	      else
+		 Ftpd::PURE_SETTINGS["Umask"] = nil;	
+	   }
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "Umask") ?
+	             Ftpd::PURE_SETTINGS["Umask"]:nil:Ftpd::DEFAULT_CONFIG["Umask"]:nil));
+	}
+	break;
+
+    case("PasMinPort"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["PasMinPort"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["pasv_min_port"] = Ftpd::VS_EDIT_SETTINGS["PasMinPort"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["pasv_min_port"] = nil; 	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "pasv_min_port") ? 
+		     toupper(Ftpd::VS_SETTINGS["pasv_min_port"]:nil) : Ftpd::DEFAULT_CONFIG["PasMinPort"]:nil));
+	   }
+	} else {
+	   if (write) {
+	      if ((Ftpd::PURE_EDIT_SETTINGS["PasMinPort"]:nil != "") && 
+		 (Ftpd::PURE_EDIT_SETTINGS["PasMaxPort"]:nil != "")) {		 
+	         ports = add(ports, Ftpd::PURE_EDIT_SETTINGS["PasMinPort"]:nil);
+	         ports = add(ports, Ftpd::PURE_EDIT_SETTINGS["PasMaxPort"]:nil);
+	         if (size(ports) == 2) {
+		    string val = ports[0]:nil;
+		    val = val+" ";
+		    val = val+ports[1]:nil;
+		    Ftpd::PURE_SETTINGS["PassivePortRange"] = val;
+	         }
+	      } else {
+		    Ftpd::PURE_SETTINGS["PassivePortRange"] = nil;
+	      }
+ 	   }	
+           else {
+	      if (haskey(Ftpd::PURE_SETTINGS, "PassivePortRange")) {
+	         ports = splitstring(Ftpd::PURE_SETTINGS["PassivePortRange"]:nil," ");
+	         if (size(ports)==2)
+		    return ports[0]:"";
+	      } else {
+	         return "";
+	      }
+	  }
+	}	
+	break;
+
+       
+    case("PasMaxPort"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["PasMaxPort"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["pasv_max_port"] = Ftpd::VS_EDIT_SETTINGS["PasMaxPort"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["pasv_max_port"] = nil; 	
+  	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "pasv_max_port") ? 
+		     toupper(Ftpd::VS_SETTINGS["pasv_max_port"]:nil) : Ftpd::DEFAULT_CONFIG["PasMaxPort"]:nil)); 
+	   }
+	} else {
+	   if (write)
+              return "";
+           else {
+	      if (haskey(Ftpd::PURE_SETTINGS, "PassivePortRange")) {
+	         ports = splitstring(Ftpd::PURE_SETTINGS["PassivePortRange"]:nil," ");
+	         if (size(ports)==2)
+		    return ports[1]:"";
+	      } else {
+	         return "";
+	      }
+	  }
+	}	
+	break;
+
+    case("MaxIdleTime"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["MaxIdleTime"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["idle_session_timeout"] = Ftpd::VS_EDIT_SETTINGS["MaxIdleTime"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["idle_session_timeout"] = nil; 		
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "idle_session_timeout") ? 
+		     toupper(Ftpd::VS_SETTINGS["idle_session_timeout"]:nil) : Ftpd::DEFAULT_CONFIG["MaxIdleTime"]:nil));
+	   } 
+	} else {
+	   if (write) {
+	      if (Ftpd::PURE_EDIT_SETTINGS["MaxIdleTime"]:nil!="") {
+                 Ftpd::PURE_SETTINGS["MaxIdleTime"] = Ftpd::PURE_EDIT_SETTINGS["MaxIdleTime"]:nil;
+	      } else {
+		 Ftpd::PURE_SETTINGS["MaxIdleTime"] = nil;
+	      }
+	   }
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "MaxIdleTime") ?
+		     Ftpd::PURE_SETTINGS["MaxIdleTime"]:nil:Ftpd::DEFAULT_CONFIG["MaxIdleTime"]:nil));
+	}
+	break;
+
+   case("MaxClientsPerIP"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["MaxClientsPerIP"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["max_per_ip"] = Ftpd::VS_EDIT_SETTINGS["MaxClientsPerIP"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["max_per_ip"] = nil; 			
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "max_per_ip") ? 
+		     toupper(Ftpd::VS_SETTINGS["max_per_ip"]:nil) : Ftpd::DEFAULT_CONFIG["MaxClientsPerIP"]:nil));
+	   } 
+
+	} else {
+	   if (write) {
+	      if (Ftpd::PURE_EDIT_SETTINGS["MaxClientsPerIP"]:nil!="")
+                 Ftpd::PURE_SETTINGS["MaxClientsPerIP"] = Ftpd::PURE_EDIT_SETTINGS["MaxClientsPerIP"]:nil;
+	      else
+		Ftpd::PURE_SETTINGS["MaxClientsPerIP"] = nil; 
+	   }
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "MaxClientsPerIP") ?
+		     Ftpd::PURE_SETTINGS["MaxClientsPerIP"]:nil:Ftpd::DEFAULT_CONFIG["MaxClientsPerIP"]:nil));
+	}
+	break;
+
+
+   case("MaxClientsNumber"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["MaxClientsNumber"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["max_clients"] = Ftpd::VS_EDIT_SETTINGS["MaxClientsNumber"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["max_clients"] = nil; 		
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "max_clients") ? 
+		     toupper(Ftpd::VS_SETTINGS["max_clients"]:nil) : Ftpd::DEFAULT_CONFIG["MaxClientsNumber"]:nil));
+	   } 
+	} else {
+	   if (write) {
+	      if (Ftpd::PURE_EDIT_SETTINGS["MaxClientsNumber"]:nil!="")
+                 Ftpd::PURE_SETTINGS["MaxClientsNumber"] = Ftpd::PURE_EDIT_SETTINGS["MaxClientsNumber"]:nil;
+	      else
+		Ftpd::PURE_SETTINGS["MaxClientsNumber"] = nil;
+	   }
+           else
+	     return ((haskey(Ftpd::PURE_SETTINGS, "MaxClientsNumber") ?
+		    Ftpd::PURE_SETTINGS["MaxClientsNumber"]:nil:Ftpd::DEFAULT_CONFIG["MaxClientsNumber"]:nil));
+	}
+	break;
+
+   case("LocalMaxRate"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["LocalMaxRate"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["local_max_rate"] = Ftpd::VS_EDIT_SETTINGS["LocalMaxRate"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["local_max_rate"] = nil; 		
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "local_max_rate") ? 
+		     toupper(Ftpd::VS_SETTINGS["local_max_rate"]:nil) : Ftpd::DEFAULT_CONFIG["LocalMaxRate"]:nil));
+	   } 
+	} else {
+	   if (write) {
+	      if (Ftpd::PURE_EDIT_SETTINGS["LocalMaxRate"]:nil!="")
+                 Ftpd::PURE_SETTINGS["UserBandwidth"] = Ftpd::PURE_EDIT_SETTINGS["LocalMaxRate"]:nil;
+	      else
+		Ftpd::PURE_SETTINGS["UserBandwidth"] = nil;
+	   }
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "UserBandwidth") ?
+		     Ftpd::PURE_SETTINGS["UserBandwidth"]:nil:Ftpd::DEFAULT_CONFIG["LocalMaxRate"]:nil));
+	}
+	break;
+
+   case("AnonymMaxRate"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["AnonymMaxRate"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["anon_max_rate"] = Ftpd::VS_EDIT_SETTINGS["AnonymMaxRate"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["anon_max_rate"] = nil; 		
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "anon_max_rate") ? 
+		     toupper(Ftpd::VS_SETTINGS["anon_max_rate"]:nil) : Ftpd::DEFAULT_CONFIG["AnonymMaxRate"]:nil));
+	   } 
+
+	} else {
+	   if (write) {
+ 	      if (Ftpd::PURE_EDIT_SETTINGS["AnonymMaxRate"]:nil!="")
+                 Ftpd::PURE_SETTINGS["AnonymousBandwidth"] = Ftpd::PURE_EDIT_SETTINGS["AnonymMaxRate"]:nil;
+	      else
+		Ftpd::PURE_SETTINGS["AnonymousBandwidth"] = nil;
+	   }          
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousBandwidth") ?
+		     Ftpd::PURE_SETTINGS["AnonymousBandwidth"]:nil:Ftpd::DEFAULT_CONFIG["AnonymMaxRate"]:nil));
+	}
+	break;
+
+   case("AnonAuthen"):
+        integer authen = 0;
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+              string val = Ftpd::VS_EDIT_SETTINGS["AnonymMaxRate"]:nil;
+	      if (val == "0") {
+		 Ftpd::VS_SETTINGS["anonymous_enable"] = "YES";
+		 Ftpd::VS_SETTINGS["local_enable"] = "NO";
+	      } else if (val == "1") {
+		 Ftpd::VS_SETTINGS["anonymous_enable"] = "NO";
+		 Ftpd::VS_SETTINGS["local_enable"] = "YES";
+	      } else {
+		 Ftpd::VS_SETTINGS["anonymous_enable"] = "YES";
+		 Ftpd::VS_SETTINGS["local_enable"] = "YES";
+	      }
+	      
+           } else {
+	      yes_no ="";
+	      if (haskey(Ftpd::VS_SETTINGS, "anonymous_enable")) {
+		 yes_no = toupper(Ftpd::VS_SETTINGS["anonymous_enable"]:nil);
+	      } else {
+		 yes_no = "YES";
+	      }
+	      if (yes_no == "YES") {
+	         authen = 0;
+	      } else {
+                 authen = 1;
+	      }	      
+	      if (haskey(Ftpd::VS_SETTINGS, "local_enable")) {
+		 yes_no = toupper(Ftpd::VS_SETTINGS["local_enable"]:nil);
+	      } else {
+		 yes_no = "NO";
+	      }
+	      if (yes_no == "YES") {
+	         authen = authen +2;
+	      } else {
+                 authen = authen +0;
+	      }
+	      if (authen == 0) {
+		 Popup::Message("0");
+		 return "0";
+	      } else {Popup::Message((authen == 3 ? "1":"2")); return (authen == 3 ? "1":"2"); }	      
+	
+	   } 
+
+	} else {
+	   if (write) {
+              string val = Ftpd::PURE_EDIT_SETTINGS["AnonymMaxRate"]:nil;
+	      if (val == "0") {
+		 Ftpd::PURE_SETTINGS["AnonymousOnly"] = "YES";
+		 Ftpd::PURE_SETTINGS["NoAnonymous"] = "NO";
+	      } else if (val == "1") {
+		 Ftpd::PURE_SETTINGS["AnonymousOnly"] = "NO";
+		 Ftpd::PURE_SETTINGS["NoAnonymous"] = "YES";
+	      } else {
+		 Ftpd::PURE_SETTINGS["AnonymousOnly"] = "NO";
+		 Ftpd::PURE_SETTINGS["NoAnonymous"] = "NO";
+	      }
+	   }
+           else {
+              yes_no = "";
+	      if (haskey(Ftpd::PURE_SETTINGS, "AnonymousOnly")) {
+	         yes_no = toupper(Ftpd::PURE_SETTINGS["AnonymousOnly"]:nil);
+              }
+	      if (yes_no == "YES")
+	         authen = 0;
+	      else
+                 authen = 1;
+	      yes_no = "";
+              if (haskey(Ftpd::PURE_SETTINGS, "NoAnonymous")) {
+	         string yes_no = toupper(Ftpd::PURE_SETTINGS["NoAnonymous"]:nil);
+	      
+              }           
+	      if (yes_no == "YES")
+	         authen = authen + 2;
+              if (authen == 0)
+                 return "0";
+              else return(authen == 3 ? "2":"1");	   
+	   }
+        }
+	break;
+
+    case("AnonyReadOnly"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+              Ftpd::VS_SETTINGS["anon_upload_enable"] = VS_EDIT_SETTINGS["AnonyReadOnly"]:nil;	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "anon_upload_enable") ? 
+		     toupper(Ftpd::VS_SETTINGS["anon_upload_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonyReadOnly"]:nil));
+	   } 
+	} else {
+	   if (write) {
+              yes_no = Ftpd::PURE_EDIT_SETTINGS["AnonyReadOnly"]:nil;
+	      if (yes_no == "YES")
+		 Ftpd::PURE_SETTINGS["AnonymousCantUpload"] = "NO";
+	      else
+		 Ftpd::PURE_SETTINGS["AnonymousCantUpload"] = "YES";
+	   }
+           else {
+	      if (haskey(Ftpd::PURE_SETTINGS, "AnonymousCantUpload")) {
+	         yes_no = toupper(Ftpd::PURE_SETTINGS["AnonymousCantUpload"]:nil);
+	         return ((yes_no == "YES") ? "NO":"YES");		
+	      } else
+                 return Ftpd::DEFAULT_CONFIG["AnonyReadOnly"]:nil;
+   	   }        	
+	}
+	break;
+    
+     case("AnonymCreatDirs"):
+	if (vsftpd_edit) {
+	   if (write) { 
+              Ftpd::VS_SETTINGS["anon_mkdir_write_enable"] = VS_EDIT_SETTINGS["AnonymCreatDirs"]:nil;	      	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "anon_mkdir_write_enable") ? 
+		     toupper(Ftpd::VS_SETTINGS["anon_mkdir_write_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonymCreatDirs"]:nil));
+	   } 
+
+
+	} else {
+	   if (write)
+              Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"] = Ftpd::PURE_EDIT_SETTINGS["AnonymCreatDirs"]:nil;
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousCanCreateDirs") ?
+		     toupper(Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"]:nil):Ftpd::DEFAULT_CONFIG["AnonymCreatDirs"]:nil));
+	}
+	break;
+
+    //only vsftpd
+    case("Banner"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["Banner"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["ftpd_banner"] = Ftpd::VS_EDIT_SETTINGS["Banner"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["ftpd_banner"] = nil;	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "ftpd_banner") ? 
+		     Ftpd::VS_SETTINGS["ftpd_banner"]:nil : Ftpd::DEFAULT_CONFIG["Banner"]:nil));
+	   } 
+	} 
+	break;
+
+
+    //only vsftpd
+    case("SSLEnable"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+ 	      if (Ftpd::VS_EDIT_SETTINGS["SSLEnable"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["ssl_enable"] = Ftpd::VS_EDIT_SETTINGS["SSLEnable"]:nil;
+	      else
+		 Ftpd::VS_SETTINGS["ssl_enable"] = "NO";	
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "ssl_enable") ? 
+		     toupper(Ftpd::VS_SETTINGS["ssl_enable"]:nil) : Ftpd::DEFAULT_CONFIG["ssl_enable"]:nil));
+	   } 
+	} 
+	break;
+
+
+
+
+   //only vsftpd
+   case("SSLVersion"):
+	integer ssl_vsftpd = 0;
+	if (Ftpd::vsftpd_edit) {
+	   if (haskey(Ftpd::VS_EDIT_SETTINGS, "SSLEnable"))
+	      yes_no = toupper(Ftpd::VS_EDIT_SETTINGS["SSLEnable"]:nil);
+	   else 
+	      yes_no = "NO";
+	   if (write) {
+	      Ftpd::VS_SETTINGS["ssl_enable"] = Ftpd::VS_EDIT_SETTINGS["SSLEnable"]:nil;
+	      if (yes_no == "YES") {
+		 if (haskey(Ftpd::VS_EDIT_SETTINGS, "SSLVersion")) {
+		    ssl_vsftpd = tointeger(Ftpd::VS_EDIT_SETTINGS["SSLVersion"]:nil);
+		    if (ssl_vsftpd == 0)
+		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "YES";
+		    else
+		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "NO";
+		    if (ssl_vsftpd == 1)
+		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "YES";
+		    else
+		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "NO";
+		    if (ssl_vsftpd == 2) {
+		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "YES";
+		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "YES";
+		    }
+		 }
+	      }
+           } else {	      
+	      if (yes_no == "YES") {
+		 if (haskey(Ftpd::VS_SETTINGS, "ssl_sslv2"))
+		    yes_no =  toupper(Ftpd::VS_SETTINGS["ssl_sslv2"]:nil);
+		 if (yes_no == "YES")
+		    ssl_vsftpd = ssl_vsftpd +1;
+		 if (haskey(Ftpd::VS_SETTINGS, "ssl_sslv3"))
+		    yes_no =  toupper(Ftpd::VS_SETTINGS["ssl_sslv3"]:nil);
+		 if (yes_no == "YES")
+		    ssl_vsftpd = ssl_vsftpd +2;
+		 return tostring(ssl_vsftpd);
+	      
+	      } else return "4"; //it means that ssl is not permited
+
+	   } 
+	} 
+	break;
+
+   //only vsftpd
+   case("TLS"):
+	if (Ftpd::vsftpd_edit) {
+	   if (write) { 
+              Ftpd::VS_SETTINGS["ssl_tlsv1"] = VS_EDIT_SETTINGS["TLS"]:nil;
+           } else {
+	      return ((haskey(Ftpd::VS_SETTINGS, "ssl_tlsv1") ? 
+		     toupper(Ftpd::VS_SETTINGS["ssl_tlsv1"]:nil) : Ftpd::DEFAULT_CONFIG["TLS"]:nil));
+	   } 
+	} 
+	break;
+
+   //only pure-ftpd
+   case("AntiWarez"):
+	if (Ftpd::vsftpd_edit) {
+	   y2milestone ("-----------------ValueUI-----------------------");
+           y2milestone ("vsftpd obtaining value is not implemented %1", key);
+	   return "";
+	} else {
+	   if (write)
+              Ftpd::PURE_SETTINGS["AntiWarez"] = Ftpd::PURE_EDIT_SETTINGS["AntiWarez"]:nil;
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "AntiWarez") ?
+		     toupper(Ftpd::PURE_SETTINGS["AntiWarez"]:nil):Ftpd::DEFAULT_CONFIG["AntiWarez"]:nil));	   	   
+	}
+	break;
+
+   //only pure-ftpd
+   case("SSL"):
+	if (Ftpd::vsftpd_edit) {
+	   y2milestone ("-----------------ValueUI-----------------------");
+           y2milestone ("vsftpd obtaining value is not implemented %1", key);
+	   return "";
+	} else {
+	   if (write)
+              Ftpd::PURE_SETTINGS["TLS"] = Ftpd::PURE_EDIT_SETTINGS["SSL"]:nil;
+           else
+	      return ((haskey(Ftpd::PURE_SETTINGS, "TLS") ?
+		     Ftpd::PURE_SETTINGS["TLS"]:nil:Ftpd::DEFAULT_CONFIG["SSL"]:nil));	   	   
+	}
+	break;
+
+    default:
+	y2milestone ("ValueUI(string key): unknown parameter %1", key);
+	return "";
+	break;
+    
+
+  }
+
+
+}

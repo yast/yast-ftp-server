@@ -1,0 +1,293 @@
+/**
+ * File:	include/ftpd/complex.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Dialogs definitions
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: complex.ycp 29363 2006-03-24 08:20:43Z mzugec $
+ */
+
+{
+
+textdomain "ftpd";
+
+import "Label";
+import "Popup";
+import "Wizard";
+import "Wizard_hw";
+import "Confirm";
+import "Ftpd";
+import "Package";
+import "Service";
+
+include "ftpd/helps.ycp";
+
+/**
+ * Return a modification status
+ * @return true if data was modified
+ */
+boolean Modified() {
+    return Ftpd::Modified();
+}
+
+boolean ReallyAbort() {
+    return !Ftpd::Modified() || Popup::ReallyAbort(true);
+}
+
+boolean PollAbort() {
+    return UI::PollInput() == `abort;
+}
+
+
+/**
+ * Init settings dialog
+ * 
+ */
+
+boolean ReadFTPService () {
+
+/**
+*  Checking if ftp daemons are installed
+*
+*/
+
+   if (Package::Installed("vsftpd"))
+	Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+
+   if (Package::Installed("pure-ftpd"))
+	Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+   else
+   {
+	if (Ftpd::vsftpd_init_count == 0) 
+	   Popup::Error("There aren't installed ftp daemon (vsftpd/pure-ftpd)!" );
+   }
+
+
+/**
+*  Checking Enabled services for ftp daemons
+*
+*/
+
+   if (Service::Enabled("pure-ftpd")) 
+	Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+
+
+   if (Service::Enabled("vsftpd")) 
+	Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+
+
+/**
+*  Checking status of ftp daemons
+*
+*/
+
+
+   if (Service::Status("vsftpd") == 0) {
+	Ftpd::vsftpd_edit = true;
+	Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+    } else {
+	Ftpd::vsftpd_edit = false;
+    }
+
+   if (Service::Status("pure-ftpd") == 0) {
+	Ftpd::vsftpd_edit = false;
+	Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+    } else {
+	Ftpd::vsftpd_edit = true;
+    }
+
+
+ 
+
+   if (Ftpd::pureftpd_init_count == Ftpd::vsftpd_init_count)
+   {
+    UI::OpenDialog(
+	`RadioButtonGroup(`id(`rb), 
+	   `VBox(
+		`Label("Choose daemon?"),
+		`Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", ((Ftpd::vsftpd_edit)? true:false))),
+		`Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd", ((Ftpd::vsftpd_edit)? false:true))),
+
+		`HBox(
+			//`PushButton(`id(`next),  "&Next"),
+			`PushButton(`id(`close), "&Accept")
+		)
+	   )
+	)
+    );
+    
+    while (true)
+    {
+	any ret = UI::UserInput();
+
+	if ( ret == `close ) {
+
+	    Ftpd::rad_but = (integer) UI::QueryWidget(`id(`rb), `CurrentButton);
+	    break;
+	}
+
+    }
+    
+    if (Ftpd::rad_but == 0)
+	Ftpd::vsftpd_edit = true;
+    else
+	Ftpd::vsftpd_edit = false;
+    
+    y2milestone("Terminating by the radiobutom ID '%1'", Ftpd::rad_but);
+    
+    UI::CloseDialog();
+    }
+    
+
+  
+    return true;
+}
+
+
+
+/**
+ * Read settings dialog
+ * @return `abort if aborted and `next otherwise
+ */
+symbol ReadDialog() {
+    Wizard::RestoreHelp(HELPS["read"]:"");
+    // Ftpd::AbortFunction = PollAbort;
+    if (!Confirm::MustBeRoot()) return `abort;
+    boolean ret = Ftpd::Read();
+    return ret ? `next : `abort;
+}
+
+/**
+ * Write settings dialog
+ * @return `abort if aborted and `next otherwise
+ */
+symbol WriteDialog() {
+    Wizard::RestoreHelp(HELPS["write"]:"");
+    // Ftpd::AbortFunction = PollAbort;
+    boolean ret = Ftpd::Write();
+    return ret ? `next : `abort;
+}
+
+/**
+ * Summary dialog
+ * @return dialog result
+ */
+any SummaryDialog() {
+
+    /* Ftpd summary dialog caption */
+    string caption = _("Ftpd Configuration");
+
+    /* FIXME */
+    list summary = Ftpd::Summary();
+    list unconfigured = summary[1]:[];
+    string configured = summary[0]:"";
+
+    /* Frame label */
+    term contents = Wizard_hw::DetectedContent(_("Ftpd to Configure"),
+	    unconfigured, false, configured);
+
+    Wizard::SetContentsButtons(caption, contents, HELPS["summary"]:"",
+	    Label::BackButton(), Label::FinishButton());
+
+    any ret = nil;
+    while(true) {
+
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel || ret == `back) {
+	    if(ReallyAbort()) break;
+	    else continue;
+	}
+        /* overview dialog */
+        else if(ret == `edit_button) {
+            ret = `overview;
+            break;
+        }
+        /* configure the selected device */
+        else if(ret == `configure_button) {
+	    // TODO FIXME: check for change of the configuration
+            any selected = UI::QueryWidget(`id(`detected_selbox), `CurrentItem);
+            if(selected == `other) {
+                ret = `other;
+            }
+            else {
+                ret = `configure;
+            }
+            break;
+        }
+        else if(ret == `next) {
+            break;
+        }
+        else {
+            y2error("unexpected retcode: %1", ret);
+            continue;
+        }
+    }
+
+    return ret;
+}
+
+/**
+ * Overview dialog
+ * @return dialog result
+ */
+any OverviewDialog() {
+
+    /* Ftpd overview dialog caption */
+    string caption = _("Ftpd Overview");
+
+    list overview = Ftpd::Overview();
+
+    /* FIXME table header */
+    term contents = Wizard_hw::ConfiguredContent(
+	/* Table header */
+	`header(_("Number"), _("Ftpd")),
+	overview, nil, nil, nil, nil );
+
+    contents = Wizard_hw::SpacingAround(contents, 1.5, 1.5, 1.0, 1.0);
+
+    Wizard::SetContentsButtons(caption, contents, HELPS["overview"]:"",
+	    Label::BackButton(), Label::FinishButton());
+
+    any ret = nil;
+    while(true) {
+
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel) {
+	    if(ReallyAbort()) break;
+	    else continue;
+	}
+        /* add */
+        else if(ret == `add_button) {
+	    /* FIXME */
+            ret = `add;
+            break;
+        }
+        /* edit */
+        else if(ret == `edit_button) {
+	    /* FIXME */
+            ret = `edit;
+            break;
+        }
+        /* delete */
+        else if(ret == `delete_button) {
+	    /* FIXME */
+            continue;
+        }
+        else if(ret == `next || ret == `back) {
+            break;
+        }
+        else {
+            y2error("unexpected retcode: %1", ret);
+            continue;
+        }
+    }
+
+    return ret;
+}
+
+/* EOF */
+}

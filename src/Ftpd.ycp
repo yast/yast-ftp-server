@@ -1,0 +1,518 @@
+/**
+ * File:	modules/Ftpd.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Ftpd settings, input and output functions
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: Ftpd.ycp 27914 2006-02-13 14:32:08Z locilka $
+ *
+ * Representation of the configuration of ftpd.
+ * Input and output routines.
+ */
+
+{
+
+module "Ftpd";
+textdomain "ftpd";
+
+
+import "Progress";
+import "Report";
+import "Summary";
+import "Message";
+import "Popup";
+import "String";
+
+
+
+
+/**
+ * Prototypes
+ */
+global boolean Modified();
+
+global boolean WriteToEditMap (string key, string value);
+
+/**
+ * Data was modified?
+ */
+global boolean modified = false;
+
+/**
+ */
+global boolean proposal_valid = false;
+
+global boolean vsftpd_edit = false;
+
+global integer rad_but = 0;
+
+global integer vsftpd_init_count = 0;
+
+global integer pureftpd_init_count = 0;
+
+
+
+/**
+ * map of "common" FTP settings
+ *    
+ */
+     
+global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDir", "Umask", 
+"UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
+"MaxClientsNumber", "LocalMaxRate", "AnonymMaxRate", "AnonAuthen", "AnonyReadOnly",
+"AnonymCreatDirs", "Banner", "SSLEnable", "SSLVersion", "TLS", "AntiWarez", "SSL"];
+
+global map <string, string > DEFAULT_CONFIG = $[
+     "ChrootEnable"              : "NO",
+     "VerboseLogging"        	 : "NO",
+     "FtpDir"             	 : "", //if empty doesn't write this options via SCR
+     "Umask"               	 : "",
+     "UmaskAnon"                 : "",
+     "UmaskLocal"           	 : "",
+     "PasMinPort"      		 : "",
+     "PasMaxPort"                : "",
+     "MaxIdleTime"    		 : "",
+     "MaxClientsPerIP"           : "",
+     "MaxClientsNumber"      	 : "",
+     "LocalMaxRate"		 : "",
+     "AnonymMaxRate"		 : "",
+     "AnonAuthen"		 : "1",
+     "AnonyReadOnly"		 : "NO",
+     "AnonymCreatDirs"		 : "NO",
+     "Banner"			 : "Welcome message",
+     "SSLEnable"		 : "NO",
+     "SSLVersion"		 : "2",
+     "TLS"			 : "YES",
+     "AntiWarez"		 : "YES",
+     "SSL"			 : "1",
+];
+
+/**
+ * map of pure-ftpd settings
+ *    
+ */
+global map <string, string > PURE_SETTINGS = $[];
+
+/**
+ * map of temporary pure-ftpd settings
+ *    
+ */
+global map <string, string > PURE_EDIT_SETTINGS = $[];
+
+/**
+ * map of vsftpd settings
+ *    
+ */
+map <string, string > VS_SETTINGS = $[];
+
+
+/**
+ * map of temporary vsftpd settings
+ *    
+ */
+global map <string, string > VS_EDIT_SETTINGS = $[];
+
+
+include "ftpd/write_load.ycp";
+
+/**
+ * Read current pure-ftpd configuration
+ */
+boolean ReadPUREFTPDSettings () {
+    foreach (string key,  SCR::Dir(.pure-ftpd), {
+	string val = (string) SCR::Read(add(.pure-ftpd, key));
+	//string val = (string) select((list <string>) SCR::Read(add(.pure-ftpd, key)), 0, "");
+        if (val != nil) PURE_SETTINGS[key] = val;
+    });
+    y2milestone("-------------PURE_SETTINGS-------------------");  
+    y2milestone("Pure-ftpd configuration has been read: %1", PURE_SETTINGS);
+    y2milestone("---------------------------------------------");
+
+
+    return true;
+}
+
+/**
+ * Read current vsftpd configuration
+ */
+
+boolean ReadVSFTPDSettings () {
+    foreach (string key,  SCR::Dir(.vsftpd), {
+	string val = (string) SCR::Read(add(.vsftpd, key));
+	//string val = (string) select((list <string>) SCR::Read(add(.pure-ftpd, key)), 0, "");
+        if (val != nil) VS_SETTINGS[key] = val;
+    });
+    y2milestone("-------------VS_SETTINGS-------------------");  
+    y2milestone("VSFTPD configuration has been read: %1", VS_SETTINGS);
+    y2milestone("---------------------------------------------");
+
+
+    return true;
+}
+
+/**
+ * Remap current pure -ftpd configuration
+ * to temporary structure
+ */
+boolean InitEDIT_SETTINGS () {
+   foreach (string key, UI_keys, {
+       string val = ValueUI(key, false);
+       if (vsftpd_edit) {
+	  if (val != nil) VS_EDIT_SETTINGS[key] = val;
+       } else {
+	  if (val != nil) PURE_EDIT_SETTINGS[key] = val;
+       }
+   });
+
+   y2milestone("-------------PURE_EDIT_SETTINGS-------------------");  
+   y2milestone("Pure-ftpd configuration has been read: %1", PURE_EDIT_SETTINGS);
+   y2milestone("---------------------------------------------");
+
+   y2milestone("-------------VS_EDIT_SETTINGS-------------------");  
+   y2milestone("Vsftpd configuration has been read: %1", VS_EDIT_SETTINGS);
+   y2milestone("---------------------------------------------");
+   return true;
+}
+
+
+
+
+/**
+ * Read current configuration
+ */
+boolean ReadSettings () {
+  boolean result = false;
+  if (vsftpd_edit) {
+     result = ReadVSFTPDSettings();
+  } else {
+     result = ReadPUREFTPDSettings();  
+  }
+  if (result) {
+        result = InitEDIT_SETTINGS ();
+  }
+  return result;
+}
+
+
+/**
+ * Write pure-ftpd configuration to config file
+ */
+boolean WritePUREFTPDSettings () {
+
+  foreach (string option_key, string option_val, PURE_SETTINGS, {
+	SCR::Write(add(.pure-ftpd, option_key), option_val);
+    });
+    // This is very important
+    // it flushes the cache, and stores the configuration on the disk
+    SCR::Write(.pure-ftpd, nil);
+
+    return true;
+}
+
+
+/**
+ * Write vsftpd configuration to config file
+ */
+boolean WriteVSFTPDSettings () {
+
+  foreach (string option_key, string option_val, VS_SETTINGS, {
+	SCR::Write(add(.vsftpd, option_key), option_val);
+    });
+    // This is very important
+    // it flushes the cache, and stores the configuration on the disk
+    SCR::Write(.vsftpd, nil);
+
+    return true;
+}
+
+
+
+/**
+ * Remap UI pure-ftpd or vsftpd configuration
+ * to write structure for SCR
+ */
+
+boolean WriteToSETTINGS () {
+   foreach (string key, UI_keys, {
+       ValueUI(key, true);
+   });
+
+   y2milestone("-------------PURE_SETTINGS-------------------");  
+   y2milestone("Pure-ftpd configuration : %1", PURE_SETTINGS);
+   y2milestone("---------------------------------------------");
+
+   y2milestone("-------------VS_SETTINGS-------------------");  
+   y2milestone("Vsftpd configuration : %1", VS_SETTINGS);
+   y2milestone("---------------------------------------------");
+   return true;
+}
+
+
+
+/**
+ * Write value from UI 
+ * to temporary structure
+ */
+
+global boolean WriteToEditMap (string key, string value) {
+
+  if (vsftpd_edit) {
+     VS_EDIT_SETTINGS[key]= value;
+  } else {
+     PURE_EDIT_SETTINGS[key]= value; 
+  }
+  return true;  
+}
+
+
+
+
+/**
+ * Write current configuration
+ */
+boolean WriteSettings () {
+  boolean result = false;
+  result = WriteToSETTINGS();
+  if (vsftpd_edit) {
+     if (result) {
+	result = WriteVSFTPDSettings();
+     }
+  } else {    
+     if (result) {
+	result = WritePUREFTPDSettings();
+     }
+  }
+  return result; 
+}
+
+
+
+/**
+ * read value from  PURE_EDIT_SETTINGS
+ * 
+ */
+
+global string ValueUIEdit (string key) {
+  if (vsftpd_edit) 
+     return VS_EDIT_SETTINGS[key]:nil;
+  else
+     return PURE_EDIT_SETTINGS[key]:nil;
+
+}
+
+
+
+/**
+ */
+global boolean ftps = true;
+
+/**
+ * Write only, used during autoinstallation.
+ * Don't run services and SuSEconfig, it's all done at one place.
+ */
+global boolean write_only = false;
+
+/**
+ * Abort function
+ * return boolean return true if abort
+ */
+global boolean() AbortFunction = Modified;
+
+/**
+ * Abort function
+ * @return boolean return true if abort
+ */
+global define boolean Abort() ``{
+    if(AbortFunction != nil)
+    {
+	return AbortFunction () == true;
+    }
+    return false;
+}
+
+/**
+ * Data was modified?
+ * @return true if modified
+ */
+global boolean Modified() {
+    y2debug("modified=%1",modified);
+    return modified;
+}
+
+
+
+/**
+ * Read all ftpd settings
+ * @return true on success
+ */
+global boolean Read() {
+
+    /* Ftpd read dialog caption */
+    string caption = _("Initializing ftpd Configuration");
+
+    // TODO FIXME Set the right number of stages
+    integer steps = 4;
+
+    integer sl = 500;
+    sleep(sl);
+
+    // TODO FIXME Names of real stages
+    // We do not set help text here, because it was set outside
+    Progress::New( caption, " ", steps, [
+	    /* Progress stage 1/2 */
+	    _("Read the database"),
+	    /* Progress stage 2/2 */
+	    _("Read the previous settings"),
+
+	], [
+	    /* Progress step 1/2 */
+	    _("Reading the database..."),
+	    /* Progress step 2/2 */
+	    _("Reading the previous settings..."),
+	    /* Progress finished */
+	    _("Finished")
+	],
+	""
+    );
+
+    // read database
+    if(Abort()) return false;
+    Progress::NextStage();
+    /* Error message */
+    if(!ReadSettings()) Report::Error(_("Cannot Read Current Settings."));
+    sleep(sl);
+ 
+    // read another database
+    if(Abort()) return false;
+    Progress::NextStep();
+    /* Error message */
+    if(false) Report::Error(_("Cannot read database2."));
+    sleep(sl);
+
+   // read current settings
+    if(Abort()) return false;
+    Progress::NextStage();
+    /* Error message */
+    if(false) Report::Error(_("Cannot Read Current Settings."));
+    sleep(sl);
+
+
+    if(Abort()) return false;
+    /* Progress finished */
+    Progress::NextStage();
+    sleep(sl);
+
+    if(Abort()) return false;
+    modified = false;
+    return true;
+}
+
+/**
+ * Write all ftpd settings
+ * @return true on success
+ */
+global boolean Write() {
+
+    /* Ftpd read dialog caption */
+    string caption = _("Saving ftpd Configuration");
+
+    // TODO FIXME And set the right number of stages
+    integer steps = 2;
+
+    integer sl = 500;
+    sleep(sl);
+
+    // TODO FIXME Names of real stages
+    // We do not set help text here, because it was set outside
+    Progress::New(caption, " ", steps, [
+	    /* Progress stage 1/2 */
+	    _("Write the settings"),
+	    /* Progress stage 2/2 */
+	    _("Run SuSEconfig")
+	], [
+	    /* Progress step 1/2 */
+	    _("Writing the settings..."),
+	    /* Progress step 2/2 */
+	    _("Running SuSEconfig..."),
+	    /* Progress finished */
+	    _("Finished")
+	],
+	""
+    );
+
+    // write settings
+    if(Abort()) return false;
+    Progress::NextStage();
+    /* Error message */
+    if(!WriteSettings ()) Report::Error (_("Cannot write settings!"));
+    sleep(sl);
+
+    // run SuSEconfig
+    if(Abort()) return false;
+    Progress::NextStage ();
+    /* Error message */
+    if(false) Report::Error (_("Cannot write values to config file!"));
+    sleep(sl);
+
+    if(Abort()) return false;
+    /* Progress finished */
+    Progress::NextStage();
+    sleep(sl);
+
+    if(Abort()) return false;
+    return true;
+}
+
+/**
+ * Get all ftpd settings from the first parameter
+ * (For use by autoinstallation.)
+ * @param settings The YCP structure to be imported.
+ * @return boolean True on success
+ */
+global boolean Import (map settings) {
+    // TODO FIXME: your code here (fill the above mentioned variables)...
+    return true;
+}
+
+/**
+ * Dump the ftpd settings to a single map
+ * (For use by autoinstallation.)
+ * @return map Dumped settings (later acceptable by Import ())
+ */
+global map Export () {
+    // TODO FIXME: your code here (return the above mentioned variables)...
+    return $[];
+}
+
+/**
+ * Create a textual summary and a list of unconfigured cards
+ * @return summary of the current configuration
+ */
+global list Summary() {
+    // TODO FIXME: your code here...
+    /* Configuration summary text for autoyast */
+    return [ _("Configuration summary..."), [] ];
+}
+
+/**
+ * Create an overview table with all configured cards
+ * @return table items
+ */
+global list Overview() {
+    // TODO FIXME: your code here...
+    return [];
+}
+
+/**
+ * Return packages needed to be installed and removed during
+ * Autoinstallation to insure module has all needed software
+ * installed.
+ * @return map with 2 lists.
+ */
+global map AutoPackages() {
+    // TODO FIXME: your code here...
+    return $[ "install":[], "remove":[] ];
+}
+
+/* EOF */
+}

@@ -1,0 +1,250 @@
+/**
+ * File:	include/ftpd/helps.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Help texts of all the dialogs
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: helps.ycp 27914 2006-02-13 14:32:08Z locilka $
+ */
+
+{
+
+textdomain "ftpd";
+
+/**
+ * All helps are here
+ */
+map HELPS = $[
+
+    /* Read dialog help 1/2 */
+    "read" : _("<p><b><big>Initializing ftpd Configuration</big></b><br>
+Please wait...<br></p>
+") +
+
+    /* Read dialog help 2/2 */
+    _("<p><b><big>Aborting Initialization:</big></b><br>
+Safely abort the configuration utility by pressing <b>Abort</b> now.</p>
+"),
+
+    /* Write dialog help 1/2 */
+    "write" : _("<p><b><big>Saving ftpd Configuration</big></b><br>
+Please wait...<br></p>
+") +
+
+   
+    /* Write dialog help 2/2 */
+_("<p><b><big>Aborting Saving:</big></b><br>
+Abort the save procedure by pressing <b>Abort</b>.
+An additional dialog informs whether it is safe to do so.
+</p>
+"),
+
+
+     /* general settings dialog help 1/6 */
+    "gen_settings" : _("<p><b><big>General settings</b><br>
+     General settings of FTP where you can specify: <b>Chroot, Logging,   
+     Umask, FTP Directory</b> and <b>Ports for Passive Mode</b>.
+</p>
+")+
+
+ /* general settings chroot dialog help 2/6 */
+_("<p><b>Chroot:</b><br>
+When enabled, local users will be (by default) placed in a 
+chroot() jail in their home directory after login.
+<b>Warning:</b> This option has security implications, 
+especially if the users have upload permission, 
+or shell access. Only enable if you know what you are doing.</p>
+")+
+
+
+ /* general settings logging dialog help 3/6 */
+_("<p><b>Verbose logging:</b><br>
+When enabled, all FTP requests and responses are logged.</p>
+")+
+
+ /* general settings umask dialog help 4/6 */
+_("<p><b>Umask:</b><br>
+File creation mask. e.g. 177:077</p>
+")+
+
+ /* general settings FTP dir dialog help 5/6 */
+_("<p><b>FTP Direcotry:</b><br>
+FTP Directory is directory which is used for FTP users.</p>
+")+
+
+/* general settings ports dialog help 6/6 */
+_("<p><b>Ports for Passive Mode:</b><br>
+Port range for passive connection replies. - for firewalling </p>
+"),
+
+     /* performance settings dialog help 1/6 */
+    "per_settings" : _("<p><b><big>Perfomance settings</b><br>
+     Performance settings of FTP. </p>
+")+
+
+/* performance settings Max Idle Time dialog help 2/6 */
+_("<p><b>Max Idle Time:</b><br>
+The timeout which is the maximum time a remote client 
+may spend between FTP commands. </p>
+")+
+
+/* performance settings max clients per IP dialog help 3/6 */
+_("<p><b>Max Clients for One IP:</b><br>
+This is the maximum number of clients which may be connected 
+from the same source internet address. </p>
+")+
+
+/* performance settings max clients dialog help 4/6 */
+_("<p><b>Max Clients:</b><br>
+This is the maximum number of clients which may be connected. 
+Any additional clients connecting will get an error message.</p>
+")+
+
+/* performance settings local max rate dialog help 5/6 */
+_("<p><b>Local Max Rate:</b><br>
+The maximum data transfer rate permitted for local authenticated users.</p>
+")+
+
+/* performance settings anonymous max rate dialog help 6/6 */
+_("<p><b>Anonymous Max Rate:</b><br>
+The maximum data transfer rate permitted for anonymous clients.</p>
+"),
+ 
+
+
+     /* anonymous settings dialog help 1/6 */
+    "anon_settings" : _("<p><b><big>Anonymous settings</b><br>
+     Anonymous settings - there you can specify 
+settings for anonymous/autheticated users. </p>
+")+
+
+/* anonymous settings anonymous only dialog help 2/6 */
+_("<p><b>Anonymous Only</b><br>
+If enabled only anonymous logins are permitted.</p>
+")+
+
+/* anonymous settings autheticated users only dialog help 3/6 */
+_("<p><b>Authenticated Users Only</b><br>
+If enabled only autheticated users are permitted.</p>
+")+
+
+/* anonymous settings both dialog help 4/6 */
+_("<p><b>Both</b><br>
+If enabled autheticated users and anonymous are permitted.</p>
+")+
+
+
+/* anonymous settings anonymous can't upload dialog help 5/6 */
+_("<p><b>Anonymous Can't Upload</b><br>
+If enabled anonymous users will NOT be permitted to upload.</p>
+")+
+
+/* anonymous settings anonymous can create dirs dialog help 6/6 */
+_("<p><b>Anonymous Can Create Dirs</b><br>
+If enabled anonymous users can create directories.</p>
+"),
+
+     /* additional settings dialog help 1/5 */
+    "vsftpd_settings" : _("<p><b><big>Aditional settings</b><br>
+     Aditional settings - security and other settings.</p>
+")+
+
+/* additional settings welcome message dialog help 2/5 */
+_("<p><b>Welcome message</b><br>
+This option is the name of a file containing 
+text to display when someone connects to the server.</p>
+")+
+
+
+/* additional settings security settings dialog help 3/5 */
+_("<p><b>Security settings</b><br>
+If enabled, and vsftpd was compiled against OpenSSL, 
+vsftpd will support secure connections via SSL.</p>
+")+
+
+/* additional settings security settings dialog help 4/5 */
+_("<p><b>Select version of SSL</b><br>
+<b>Enable SSL v2:</b> If enabled, this option will permit SSL v2 
+protocol connections.
+<b>Enable SSL v3:</b> If enabled, this option will permit SSL v3 
+protocol connections.
+<b>Enable SSL v2 & v3:</b> If enabled, this option will permit 
+SSL v2 and v3 protocol connections.
+</p>
+")+
+/* additional settings security settings dialog help 5/5 */
+_("<p><b>Enable TLS</b><br>
+If enabled, this option will permit TLS v1 protocol connections.
+</p>
+"),
+
+     /* additional settings dialog help 1/5 */
+    "pureftpd_settings" : _("<p><b><big>Aditional settings</b><br>
+     Aditional settings - security and other settings.</p>
+")+
+
+/* additional settings Disable Downloading 
+Unvalidated Datae dialog help 2/5 */
+_("<p><b>Disable Downloading Unvalidated Data</b><br>
+Disallow downloading of files that were uploaded 
+but not validated by a local admin.</p>
+")+
+
+
+/* additional settings Disable SLL/TLS dialog help 3/5 */
+_("<p><b>Disable SLL/TLS</b><br>
+Disable SSL/TLS encryption layer (default)</p>
+")+
+
+/* additional settings Accept SLL and TLS dialog help 4/5 */
+_("<p><b>Accept SLL and TLS</b><br>
+Accept both traditional and encrypted sessions.</p>
+")+
+
+/* additional settings refuse without SLL and TLS dialog help 4/5 */
+_("<p><b>Refuse Connection without SSL/TLS</b><br>
+Refuse connections that don't use SSL/TLS security 
+mechanisms, including anonymous sessions.</p>
+"),
+
+   /* Summary dialog help 1/3 */
+    "summary" : _("<p><b><big>Ftpd Configuration</big></b><br>
+Configure ftpd here.<br></p>
+")+
+
+    /* Summary dialog help 2/3 */
+    _("<p><b><big>Adding a ftpd:</big></b><br>
+Choose an ftpd from the list of detected ftpds.
+If your ftpd was not detected, use <b>Other (not detected)</b>.
+Then press <b>Configure</b>.</p>
+") +
+
+    /* Summary dialog help 3/3 */
+    _("<p><b><big>Editing or Deleting:</big></b><br>
+If you press <b>Edit</b>, an additional dialog in which to change
+the configuration opens.</p>
+"),
+
+    /* Ovreview dialog help 1/3 */
+    "overview" : _("<p><b><big>Ftpd Configuration Overview</big></b><br>
+Obtain an overview of installed ftpds. Additionally
+edit their configurations.<br></p>
+") +
+
+    /* Ovreview dialog help 2/3 */
+_("<p><b><big>Adding a ftpd:</big></b><br>
+Press <b>Add</b> to configure a ftpd.</p>") +
+
+    /* Ovreview dialog help 3/3 */
+_("<p><b><big>Editing or Deleting:</big></b><br>
+Choose a ftpd to change or remove.
+Then press <b>Edit</b> or <b>Delete</b> as desired.</p>
+"),
+
+
+];
+    string DialogHelpText (string identification) {
+	return HELPS[identification]:sformat("Help for '%1' is missing!", identification);
+    }
+/* EOF */
+}

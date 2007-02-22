@@ -1,0 +1,222 @@
+/**
+ * File:	include/ftpd/dialogs.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Dialogs definitions
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: dialogs.ycp 27914 2006-02-13 14:32:08Z locilka $
+ */
+
+{
+
+textdomain "ftpd";
+
+import "CWM";
+import "CWMServiceStart";
+import "DialogTree";
+import "Label";
+import "Wizard";
+import "Ftpd";
+import "Popup";
+
+include "ftpd/helps.ycp";
+include "ftpd/wid_functions.ycp";
+include "ftpd/uiforms.ycp";
+
+
+
+  void DisBackButton (string key) {
+     UI::ChangeWidget(`id(`back), `Enabled, false);
+  }
+
+
+
+ 
+ string HelpVsftp(string key) {
+    if (Ftpd::vsftpd_edit)
+ 	return DialogHelpText("vsftpd_settings");
+    else return "";
+}
+
+string HelpPureftp(string key) {
+    if (!Ftpd::vsftpd_edit)
+ 	return DialogHelpText("pureftpd_settings");
+    else return "";
+}
+
+
+/**
+ * Nodes for TreeDialogs
+ */
+
+  map<string,map<string,any> > wid_handling = $[
+    
+    "StartMode" : CWMServiceStart::CreateAutoStartWidget ($[
+	"get_service_auto_start"	: " ",
+	"set_service_auto_start"	: " ",
+        //TRANSLATORS: Radio selection
+	"start_auto_button"	: _("&When booting"),
+	//TRANSLATORS: Radio selection    
+	"start_manual_button"	: _("&Manually"),
+
+        "help" : sformat (CWMServiceStart::AutoStartHelpTemplate (),
+	    // part of help text - radio button label, NO SHORTCUT!!!
+	    _("When Booting"),
+	    // part of help text - radio button label, NO SHORTCUT!!!
+	    _("Manually")),
+    ]),
+    "StartStop" : CWMServiceStart::CreateStartStopWidget ($[
+	"service_id"			: ((Ftpd::vsftpd_edit) ? "vsftpd":"pure-ftpd"),
+					  // TRANSLATORS: status information
+	"service_running_label"		: _("FTP is running"),
+					  // TRANSLATORS: status information
+	"service_not_running_label"	: _("FTP is not running"),
+					  // TRANSLATORS: Push button
+	"start_now_button"		: _("&Start FTP Now"),
+					  // TRANSLATORS: Push button
+	"stop_now_button"		: _("S&top FTP Now"),
+	    				  // TRANSLATORS: Push button
+	"save_now_action"		: " ",
+	"save_now_button"		: _("Sa&ve Settings and Restart FTP Now"),
+
+	"help" : sformat (CWMServiceStart::StartStopHelpTemplate (true),
+	    // part of help text - push button label, NO SHORTCUT!!!
+	    _("Start FTP daemon Now"),
+	    // part of help text - push button label, NO SHORTCUT!!!
+	    _("Stop FTP daemon Now"),
+	    // part of help text - push button label, NO SHORTCUT!!!
+	    _("Save Settings and Restart FTP daemon Now")),
+     ]),
+
+    "DisBackButton" : $[
+	"widget"	: `custom,
+	"custom_widget"	: `Empty(),
+	"init"		: DisBackButton,
+	"help"		: " ",
+    ],
+    "GenSettings" : $[
+	"widget"		: `custom,
+	"custom_widget"		: `VBox(),
+	"init"			: InitGenSettings,
+	"handle"		: HandleGenSettings,
+	"store"			: StoreGenSettings,
+	"validate_type" 	: `function,
+	"validate_function" 	: GenValid,
+	"help"			: DialogHelpText("gen_settings"),
+    ],
+    "PerforSettings" : $[
+	"widget"	: `custom,
+	"custom_widget"	: `VBox(),
+	"init"		: InitPerSettings,
+	//"handle"	: HandleFTPLogSettings,
+	"store"		: StorePerforSettings,
+	"help"		: DialogHelpText("per_settings"),	
+    ],
+
+
+    "AnonSettings" : $[
+	"widget"	: `custom,
+	"custom_widget"	: `VBox(),
+	"init"		: InitAnonSettings,
+	//"handle"	: HandleFTPLogSettings,
+	"store"		: StoreAnonSettings,
+	"help"		: DialogHelpText("anon_settings"),	
+    ],
+
+
+    "VSFTPDAddSettings": $[
+	"widget"	: `custom,
+	"custom_widget"	: `VBox(),
+	"init"		: InitVSFTPAddSettings,
+	//"handle"	: HandleFTPLogSettings,
+	"store"		: StoreVSFTPDSettings,
+	"help"		: DialogHelpText("vsftpd_settings"),	
+    ],
+
+    "PUREFTPDAddSettings": $[
+	"widget"	: `custom,
+	"custom_widget"	: `VBox(),
+	"init"		: InitPUREFTPTAddSettings,
+	//"handle"	: HandleFTPLogSettings,
+	"store"		: StorePUREFTPDSettings,
+	"help"		: DialogHelpText("pureftpd_settings"),	
+    ],
+
+
+  ];
+
+  map<string, map<string,any> > tabs = $[
+  
+    "start_up"  : $[
+	"contents"	: `VBox (		
+		"StartMode",
+		`VSpacing(1),
+		// disabling start/stop buttons when it doesn't make sense
+		"StartStop",
+		`VStretch ()
+	    ),
+	    // TRANSLATORS: part of dialog caption
+	 "caption"		: _("FTP Start-Up"),
+	    // TRANSLATORS: tree menu item
+	 "tree_item_label"	: _("Start-Up"),
+	 "widget_names"		: [ "DisBackButton", "StartMode", "StartStop" ]
+    ],
+
+    "gen_settings" : $[
+	"contents"		: `VBox(
+	  FTPGenSettings()
+	),
+	"caption"		: _("FTP General Settings"),
+	"tree_item_label"	: _("General Settings"),
+	"widget_names"		: ["DisBackButton", "GenSettings"]    
+    ],
+
+    "perfor_settings" : $[
+	"contents"		: `VBox(
+	  FTPPerforSettings()
+	),
+	"caption"		: _("FTP Performance Settings"),
+	"tree_item_label"	: _("Performance Settings"),
+	"widget_names"		: ["DisBackButton", "PerforSettings"]    
+    ],
+
+    "anon_settings" : $[
+	"contents"		: `VBox(
+	  FTPAnonSettings()
+	),
+	"caption"		: _("FTP Anonymous Settings"),
+	"tree_item_label"	: _("Anonymous Settings"),
+	"widget_names"		: ["DisBackButton", "AnonSettings"]    
+    ],
+
+
+
+    "addit_settings" : $[
+	"contents"		: `VBox(
+		VSFTPDAddSettings()		
+		),
+	"caption"		: _("FTP Additional Settings"),
+	"tree_item_label"	: _("Additional Settings"),
+	"widget_names"		: ["DisBackButton", ((Ftpd::vsftpd_edit) ? "VSFTPDAddSettings":"PUREFTPDAddSettings")]    
+    ],
+
+
+  ];
+
+  symbol RunFTPDialogs() {
+    list<string> sim_dialogs = ["start_up", "gen_settings", "perfor_settings", "anon_settings", "addit_settings"];
+
+    return DialogTree::ShowAndRun ($[
+	"ids_order"	: sim_dialogs,
+	"initial_screen": "start_up",
+	"screens"	: tabs,
+	"widget_descr"	: wid_handling,
+	"back_button"	: Label::BackButton(),
+	"abort_button"	: Label::AbortButton(),
+	"next_button"	: Label::AcceptButton(),
+	//"functions"	: " ",
+    ]);
+  }
+
+/* EOF */
+}

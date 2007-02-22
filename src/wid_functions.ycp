@@ -1,0 +1,299 @@
+/**
+ * File:	include/ftpd/wizards.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Wizards definitions
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: wizards.ycp 27914 2006-02-13 14:32:08Z locilka $
+ */
+
+{
+
+import "Popup";
+import "Wizard";
+import "Report";
+import "Label";
+import "Inetd";
+import "Service";
+
+include "ftpd/uiforms.ycp";
+
+
+
+
+/**
+ * Init function for general settings
+ * change ValidChars for textentry
+ */
+void InitGenSettings(string key) {
+
+  UI::ChangeWidget(`id( "PasMinPort" ),`ValidChars, "0123456789");
+  UI::ChangeWidget(`id( "PasMaxPort" ),`ValidChars, "0123456789");  
+  UI::ChangeWidget(`id( "UmaskAnon" ), `ValidChars, "01234567");
+  UI::ChangeWidget(`id( "UmaskLocal" ),`ValidChars, "01234567");
+  if (!Ftpd::vsftpd_edit)  {
+     UI::ReplaceWidget(`vsftpd_umask, PureUmask);
+     UI::ChangeWidget(`id( "Umask" ), `ValidChars, "01234567:");   
+     UI::ChangeWidget(`id( "Umask" ), `Value,  Ftpd::ValueUIEdit("Umask"));	
+  } else {
+     UI::ChangeWidget(`id( "UmaskAnon" ), `Value,  Ftpd::ValueUIEdit("UmaskAnon"));
+     UI::ChangeWidget(`id( "UmaskLocal" ), `Value,  Ftpd::ValueUIEdit("UmaskLocal"));
+
+  }
+  UI::ChangeWidget(`id( "FtpDir" ), `Value, Ftpd::ValueUIEdit("FtpDir"));
+  UI::ChangeWidget(`id( "PasMinPort" ), `Value, Ftpd::ValueUIEdit("PasMinPort"));
+  UI::ChangeWidget(`id( "PasMaxPort" ), `Value, Ftpd::ValueUIEdit("PasMaxPort"));
+  UI::ChangeWidget(`id( "ChrootEnable" ), `Value, (Ftpd::ValueUIEdit("ChrootEnable") == "YES"));	
+  UI::ChangeWidget(`id( "VerboseLogging" ), `Value, (Ftpd::ValueUIEdit("VerboseLogging") == "YES"));
+  
+}
+
+
+/**
+ * Handle function for general settings
+ * handling started via Xinetd
+ */
+
+symbol HandleGenSettings(string key, map event) {
+   any button = event["ID"]:nil;
+   if (button == "SelectDir") {
+      string val = UI::AskForExistingDirectory  ("/","Please select directory...");
+      UI::ChangeWidget(`id( "FtpDir" ), `Value, val);
+   }
+   boolean xinetd = (boolean) UI::QueryWidget (`id("Xinetd"), `Value);   
+   if (Service::Status("xinetd") == 0) {
+      boolean ret = Inetd::Read();     
+      if (ret) {
+         string value = "";
+	 integer i = 0;
+	 string ids = "";
+	 integer vsftpd_id = 0;
+	 integer pure_ftpd_id = 0;
+	 while (size(Inetd::netd_conf) > i) {        				     
+	       
+	       ids = tostring( Inetd::netd_conf[i,"iid"]:nil);
+	       if (regexpmatch(ids, "vsftpd"))
+		  vsftpd_id = i;
+	       else if (regexpmatch(ids, "pure-ftpd"))
+		  pure_ftpd_id = i;		
+                  i=i+1;	  			
+	 } // while (size(Inetd::netd_conf) > i) {
+	 if (xinetd) {
+	    if (Ftpd::vsftpd_edit) {			 
+	       Inetd::netd_conf[vsftpd_id,"enabled"] = true;
+	       Inetd::netd_conf[pure_ftpd_id,"enabled"] = false;
+	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;			
+	       Inetd::netd_conf[vsftpd_id,"changed"] = true; 	
+            }
+	    else {
+	       Inetd::netd_conf[pure_ftpd_id,"enabled"] = true;
+ 	       Inetd::netd_conf[vsftpd_id,"enabled"] = false;
+	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;
+	       Inetd::netd_conf[vsftpd_id,"changed"] = true;
+	       Inetd::netd_conf[pure_ftpd_id,"server"] = "/usr/sbin/pure-config.pl";
+ 	       Inetd::netd_conf[pure_ftpd_id,"server_args"] = "/etc/pure-ftpd/pure-ftpd.conf";
+	    };
+	 } //if (xinetd) {
+	 else {
+	       Inetd::netd_conf[vsftpd_id,"enabled"] = false;
+	       Inetd::netd_conf[pure_ftpd_id,"enabled"] = false;
+	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;
+	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;			
+         }     
+	 y2milestone ("-----------------VSFTPD-----------------------");
+	 y2milestone ("%1",Inetd::netd_conf[vsftpd_id]:$[]);
+	 y2milestone ("----------------------------------------------");
+
+	 y2milestone ("-----------------PURE-FTPD--------------------");
+	 y2milestone ("%1",Inetd::netd_conf[pure_ftpd_id]:$[]);
+	 y2milestone ("----------------------------------------------");
+
+
+	 boolean status_progress = Progress::set(false);
+   	 Inetd::Write();
+	 Progress::set(status_progress);
+      } //if (ret) {
+   } //if (Service::Status("xinetd") == 0) {
+} //symbol HandleGenSettings(string key, map event) {
+
+/**
+ * Validate function for general settings
+ * checks values from textentry
+ */
+boolean GenValid (string key, map event) {
+
+  if (!Ftpd::vsftpd_edit) {
+     string new_umask = (string)UI::QueryWidget (`id("Umask"), `Value);
+  
+     if (size(new_umask) > 0) {
+         list <string> l = splitstring (new_umask, ":");
+         l = filter (string s, l, ``(s != ""));
+         if (size(l) < 2) {
+      	     Popup::Message ("It is not valid umask!");
+         }
+      
+     }
+  }
+  string smin_port = (string) UI::QueryWidget (`id("PasMinPort"), `Value);
+  string smax_port = (string) UI::QueryWidget (`id("PasMaxPort"), `Value);
+
+  integer min_port = -1;
+  integer max_port = -1;
+  
+  if ((size(smin_port) > 0) && (size(smax_port) > 0)) {
+      min_port = tointeger(smin_port);
+      max_port = tointeger(smax_port); 
+  
+      if (min_port > max_port) {
+          Popup::Message ("Ports have wrong values!");
+      }
+  }
+  return true;
+}
+
+/**
+ * Store function for general settings
+ * save values to temporary structure
+ */
+
+void StoreGenSettings (string key, map event) {
+  foreach(string key, ["PasMinPort", "PasMaxPort"],{
+     Ftpd::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
+  });
+  foreach(string key, ["ChrootEnable", "VerboseLogging"],{
+     Ftpd::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
+  });
+  if (!Ftpd::vsftpd_edit) {
+     Ftpd::WriteToEditMap("Umask", (string) UI::QueryWidget(`id("Umask"), `Value));
+  } else {
+     foreach(string key, ["UmaskAnon", "UmaskLocal"],{
+        Ftpd::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
+     });
+
+  }
+  
+
+
+}
+/**
+ * Init function for performance settings
+ * change ValidChars from textentry
+ */
+void InitPerSettings (string key) {
+
+  foreach(string key, ["MaxIdleTime", "MaxClientsPerIP", "MaxClientsNumber", 
+		       "LocalMaxRate", "AnonymMaxRate"],{
+      UI::ChangeWidget(`id(key), `ValidChars, "0123456789");
+      UI::ChangeWidget(`id(key), `Value, Ftpd::ValueUIEdit(key));
+  });
+}
+
+/**
+ * Store function for performance settings
+ * save values to temporary structure
+ */
+void StorePerforSettings (string key, map event) {
+  foreach(string key, ["MaxIdleTime", "MaxClientsPerIP", "MaxClientsNumber", 
+		       "LocalMaxRate", "AnonymMaxRate"],{
+      Ftpd::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
+  });
+}
+
+/**
+ * Init function for performance settings
+ * change ValidChars from textentry
+ */
+void InitAnonSettings(string key) {
+  integer current = (integer) UI::QueryWidget(`id("AnonAuthen"), `CurrentButton);
+  integer val = tointeger(Ftpd::ValueUIEdit("AnonAuthen"));
+  UI::ChangeWidget(`id("AnonAuthen"), `CurrentButton, val);
+  UI::ChangeWidget(`id( "AnonyReadOnly" ), `Value, 
+      (Ftpd::ValueUIEdit("AnonyReadOnly") == "YES"));
+  UI::ChangeWidget(`id( "AnonymCreatDirs" ), `Value, 
+      (Ftpd::ValueUIEdit("AnonymCreatDirs") == "YES"));
+
+
+}
+
+
+/**
+ * Store function for performance settings
+ * save values to temporary structure
+ */
+void StoreAnonSettings (string key, map event) {
+  Ftpd::WriteToEditMap("AnonAuthen", tostring(UI::QueryWidget(`id("AnonAuthen"), `CurrentButton)));
+  foreach(string key, ["AnonyReadOnly", "AnonymCreatDirs"],{
+     Ftpd::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
+  });
+}
+
+
+
+/**
+ * Init function for pure-ftpd add settings
+ * change values a display correct widget
+ */
+void InitPUREFTPTAddSettings (string key) {
+  if (!Ftpd::vsftpd_edit)  
+     UI::ReplaceWidget(`vsftpd_dialog, PureAddSettings);
+  UI::ChangeWidget(`id( "AntiWarez" ), `Value, 
+     (Ftpd::ValueUIEdit("AntiWarez") == "YES"));
+  integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
+  UI::ChangeWidget(`id("SSL"), `CurrentButton, tointeger(Ftpd::ValueUIEdit("SSL")));
+
+}
+
+/**
+ * Store function for pure-ftpd add settings
+ * save values to temporary structure
+ */
+void StorePUREFTPDSettings (string key, map event) {
+  Ftpd::WriteToEditMap("AntiWarez", (((boolean) UI::QueryWidget(`id("AntiWarez"), `Value) == true) ? "YES":"NO"));
+  Ftpd::WriteToEditMap("SSL", tostring(UI::QueryWidget(`id("SSL"), `CurrentButton)));
+
+  //y2milestone("-------------PURE_EDIT_SETTINGS-------------------");  
+  //y2milestone("Pure-ftpd configuration has been read: %1", Ftpd::PURE_EDIT_SETTINGS);
+  //y2milestone("---------------------------------------------");
+}
+
+
+/**
+ * Init function for vsftpd add settings
+ * change values a display correct widget
+ */
+void InitVSFTPAddSettings (string key) {
+  UI::ChangeWidget(`id("Banner"), `Value, Ftpd::ValueUIEdit("Banner"));
+  UI::ChangeWidget(`id( "SSLEnable" ), `Value, (Ftpd::ValueUIEdit("SSLEnable") == "YES"));
+  UI::ChangeWidget(`id("SSLVersion"), `CurrentButton, tointeger(Ftpd::ValueUIEdit("SSLVersion")));
+  UI::ChangeWidget(`id( "TLS" ), `Value, (Ftpd::ValueUIEdit("TLS") == "YES"));
+}
+
+/**
+ * Store function for vsftpd add settings
+ * save values to temporary structure
+ */
+
+void StoreVSFTPDSettings (string key, map event) {
+  integer val = 4;
+  string UIval = tostring(UI::QueryWidget(`id("SSLVersion"), `Value));
+  if (UIval == "Enabled SSL v2")
+     val = 0;
+  else if (UIval == "Enabled SSL v3")
+     val = 1;
+  else if (UIval == "Enabled SSL v2 & v3")
+     val = 2;
+  else
+     val = 4;
+  Ftpd::WriteToEditMap("SSLVersion", tostring(val));
+  Ftpd::WriteToEditMap("TLS", (((boolean) UI::QueryWidget(`id("TLS"), `Value) == true) ? "YES":"NO"));
+  Ftpd::WriteToEditMap("SSLEnable", (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));
+  Ftpd::WriteToEditMap("Banner", (string) UI::QueryWidget(`id("Banner"), `Value));
+
+  y2milestone("-------------VS_EDIT_SETTINGS-------------------");  
+  y2milestone("vsftpd configuration has been read: %1", Ftpd::VS_EDIT_SETTINGS);
+  y2milestone("---------------------------------------------");
+  
+}
+
+
+}

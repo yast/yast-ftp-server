@@ -1,0 +1,31 @@
+@HEADER-COMMENT@
+
+@HEADER@
+Requires:	yast2
+BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-testsuite
+
+BuildArchitectures:	noarch
+
+Summary:	Configuration of ftpd
+
+%description
+-
+
+@PREP@
+
+@BUILD@
+
+@INSTALL@
+
+@CLEAN@
+
+%files
+%defattr(-,root,root)
+%dir @yncludedir@/ftpd
+@yncludedir@/ftpd/*
+@clientdir@/ftpd.ycp
+@clientdir@/ftpd_*.ycp
+@moduledir@/Ftpd.*
+@moduledir@/Ftpd2.*
+@desktopdir@/ftpd.desktop
+%doc @docdir@

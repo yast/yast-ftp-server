@@ -1,0 +1,78 @@
+/**
+ * File:	clients/ftpd.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Main file
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: ftpd.ycp 27914 2006-02-13 14:32:08Z locilka $
+ *
+ * Main file for ftpd configuration. Uses all other files.
+ */
+
+{
+
+/***
+ * <h3>Configuration of ftpd</h3>
+ */
+
+textdomain "ftpd";
+
+/* The main () */
+y2milestone ("----------------------------------------");
+y2milestone ("Ftpd module started");
+
+import "Progress";
+import "Report";
+import "Summary";
+
+include "ftpd/complex.ycp";
+
+ReadFTPService ();
+
+import "CommandLine";
+include "ftpd/wizards.ycp";
+
+map cmdline_description = $[
+    "id" 	: "ftpd",
+    /* Command line help text for the Xftpd module */
+    "help"	: _("Configuration of ftpd"),
+    "guihandler"        : FtpdSequence,
+    "initialize"        : Ftpd::Read,
+    "finish"            : Ftpd::Write,
+    "actions"           : $[
+	// FIXME TODO: fill the functionality description here
+    ],
+    "options"		: $[
+	// FIXME TODO: fill the option descriptions here
+    ],
+    "mappings"		: $[
+	// FIXME TODO: fill the mappings of actions and options here
+    ]
+];
+
+/* is this proposal or not? */
+boolean propose = false;
+list args = WFM::Args();
+if(size(args) > 0) {
+    if(is(WFM::Args(0), path) && WFM::Args(0) == .propose) {
+        y2milestone("Using PROPOSE mode");
+        propose = true;
+    }
+}
+
+/* main ui function */
+any ret = nil;
+
+if(propose) ret = FtpdAutoSequence();
+else ret = CommandLine::Run(cmdline_description);
+y2debug("ret=%1", ret);
+
+/* Finish */
+y2milestone("Ftpd module finished");
+y2milestone("----------------------------------------");
+
+return ret;
+
+/* EOF */
+}
+
