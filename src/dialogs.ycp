@@ -45,6 +45,23 @@ string HelpPureftp(string key) {
 }
 
 
+
+map<string,any> PerformSettings () {
+  map<string,any> result = $[];
+
+  result = add(result, "widget", `custom);
+  result = add(result, "custom_widget",`VBox());
+  result = add(result, "init", InitPerSettings);
+  result = add(result, "store", StorePerforSettings);
+  result = add(result, "help", DialogHelpText("per_settings"));
+  
+  return result;
+   
+}
+
+
+
+
 /**
  * Nodes for TreeDialogs
  */
@@ -104,7 +121,7 @@ string HelpPureftp(string key) {
 	"validate_function" 	: GenValid,
 	"help"			: DialogHelpText("gen_settings"),
     ],
-    "PerforSettings" : $[
+    "PerforSettings" :  $[
 	"widget"	: `custom,
 	"custom_widget"	: `VBox(),
 	"init"		: InitPerSettings,

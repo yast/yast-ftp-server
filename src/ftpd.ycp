@@ -131,7 +131,7 @@ any ret = nil;
 
 if (propose) {
    ret = FtpdAutoSequence();
-} else if (size(args) > 0) { 
+} else { 
    ret = CommandLine::Run(cmdline_description);
 }
 
