@@ -1,3 +1,14 @@
+/**
+ * File:	include/ftpd/uiforms.ycp
+ * Package:	Configuration of ftpd
+ * Summary:	Wizards definitions
+ * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+ *
+ * $Id: uiforms.ycp 27914 2006-02-13 14:32:08Z juhliarik $
+ */
+
+
+
 term PureUmask = `VBox (
 
 	`Left(`TextEntry(`id("Umask"), _("&Umask (umask files:umask dirs)")))	    
@@ -40,7 +51,7 @@ term PureAddSettings = `VBox (
 			`Left(`CheckBox(`id("ChrootEnable"), _("&Chroot Everyone"))),
 		
 			`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),
-			
+		`ReplacePoint(`id(`vsftpd_umask),`VBox (	
 			`Left(`HSquash(
 				`HBox(`TextEntry(`id("FtpDir"), _("&Ftp Directory")),
 			
@@ -48,8 +59,6 @@ term PureAddSettings = `VBox (
 			     )
 			),
 			
-		`ReplacePoint(`id(`vsftpd_umask), `VBox (
-
 			`Left(`TextEntry(`id("UmaskAnon"), _("&Umask for Anonymous"))),
 			`Left(`TextEntry(`id("UmaskLocal"), _("Uma&sk for Authenticated Users")))	    
 

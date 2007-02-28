@@ -4,7 +4,7 @@
  * Summary:	Main file
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: ftpd.ycp 27914 2006-02-13 14:32:08Z locilka $
+ * $Id: ftpd.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  *
  * Main file for ftpd configuration. Uses all other files.
  */
@@ -24,29 +24,95 @@ y2milestone ("Ftpd module started");
 import "Progress";
 import "Report";
 import "Summary";
+import "String";
 
 include "ftpd/complex.ycp";
 
-ReadFTPService ();
+if (!ReadFTPService ())
+   return nil;
 
 import "CommandLine";
 include "ftpd/wizards.ycp";
+include "ftpd/wid_functions.ycp";
+
+boolean FTPdCMDStartup (map options) {
+  if (options["atboot"]:nil!=nil && options["manual"]:nil!=nil) {
+	    // TRANSLATORS: CommandLine error message
+	    CommandLine::Error(_("Only one parameter is allowed."));
+	} else if (options["atboot"]:nil!= nil) {
+	    CommandLine::Print("");
+	    // TRANSLATORS: CommandLine header
+	    CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
+	    CommandLine::Print("");
+	    // TRANSLATORS: CommandLine progress information
+	    CommandLine::Print(_("Enabling FTP daemon in the boot process..."));
+	    CommandLine::Print("");
+	    SetEnableService(true);
+	} else if (options["manual"]:nil!=nil) {
+	    CommandLine::Print("");
+	    // TRANSLATORS: CommandLine header
+	    CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
+	    CommandLine::Print("");
+	    // TRANSLATORS: CommandLine progress information
+	    CommandLine::Print(_("Removing FTP daemon from the boot process..."));
+	    CommandLine::Print("");
+	    SetEnableService(false);
+	} else if (options["show"]:nil!=nil) {
+	    CommandLine::Print("");
+	    // TRANSLATORS: CommandLine header
+	    CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
+	    CommandLine::Print("");
+	    if (GetEnableService()) {
+		// TRANSLATORS: CommandLine informative text
+		CommandLine::Print(_("FTP daemon is enabled in the boot process"));
+	    } else {
+		// TRANSLATORS: CommandLine informative text
+		CommandLine::Print(_("FTP daemon needs manual starting"));
+	    }
+	    CommandLine::Print("");
+	}
+
+	return true;
+    }
+
 
 map cmdline_description = $[
-    "id" 	: "ftpd",
+  "id" 	: "ftpd",
     /* Command line help text for the Xftpd module */
-    "help"	: _("Configuration of ftpd"),
-    "guihandler"        : FtpdSequence,
-    "initialize"        : Ftpd::Read,
-    "finish"            : Ftpd::Write,
-    "actions"           : $[
-	// FIXME TODO: fill the functionality description here
-    ],
-    "options"		: $[
-	// FIXME TODO: fill the option descriptions here
+  "help"	: _("Configuration of ftpd"),
+  "guihandler"	: FtpdSequence,
+  "initialize"	: Ftpd::Read,
+  "finish"	: Ftpd::Write,
+  "actions"	: $[
+	"startup" : $[
+	"handler" : FTPdCMDStartup,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Start-up settings"),
+	"example" : [
+		   "startup show",
+		   "startup atboot",
+		   "startup manual",
+	            ],
+        ],
+  ],
+  "options"	: $[
+	"show"    : $[
+		// TRANSLATORS: CommandLine help
+		"help"    : _("Show current settings"),
+	],
+	"atboot"  : $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Start FTP daemon in the boot process"),
+	],
+	"manual" : $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Start FTP daemon manually"),
+	],
     ],
     "mappings"		: $[
-	// FIXME TODO: fill the mappings of actions and options here
+	"startup" : [
+		"show", "atboot", "manual",
+	],
     ]
 ];
 
@@ -63,8 +129,12 @@ if(size(args) > 0) {
 /* main ui function */
 any ret = nil;
 
-if(propose) ret = FtpdAutoSequence();
-else ret = CommandLine::Run(cmdline_description);
+if (propose) {
+   ret = FtpdAutoSequence();
+} else if (size(args) > 0) { 
+   ret = CommandLine::Run(cmdline_description);
+}
+
 y2debug("ret=%1", ret);
 
 /* Finish */

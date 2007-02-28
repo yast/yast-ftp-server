@@ -1,10 +1,10 @@
 /**
- * File:	include/ftpd/wizards.ycp
+ * File:	include/ftpd/wid_functions.ycp
  * Package:	Configuration of ftpd
  * Summary:	Wizards definitions
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: wizards.ycp 27914 2006-02-13 14:32:08Z locilka $
+ * $Id: wid_functions.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  */
 
 {
@@ -18,7 +18,34 @@ import "Service";
 
 include "ftpd/uiforms.ycp";
 
+/**
+ * CWMServiceStart function with no parameter returning boolean value 
+ * that says if the service is started.
+ */
+global boolean GetEnableService () {
+  if (Ftpd::vsftpd_edit)
+      return Service::Enabled("vsftpd");
+  else return Service::Enabled("pure-ftpd");
+}
 
+
+/**
+ * CWMServiceStart function with one boolean parameter  
+ * returning boolean value that says if the service will be started at boot.
+ */
+global void SetEnableService (boolean enable_service) {
+  if (Ftpd::vsftpd_edit) {
+     if (enable_service)
+        Service::Enable("vsftpd");
+     else
+	Service::Disable("vsftpd");
+   } else {
+     if (enable_service)
+	Service::Enable("pure-ftpd");
+     else
+	Service::Disable("pure-ftpd");
+   }
+}
 
 
 /**
@@ -38,9 +65,9 @@ void InitGenSettings(string key) {
   } else {
      UI::ChangeWidget(`id( "UmaskAnon" ), `Value,  Ftpd::ValueUIEdit("UmaskAnon"));
      UI::ChangeWidget(`id( "UmaskLocal" ), `Value,  Ftpd::ValueUIEdit("UmaskLocal"));
-
+     UI::ChangeWidget(`id( "FtpDir" ), `Value, Ftpd::ValueUIEdit("FtpDir"));
   }
-  UI::ChangeWidget(`id( "FtpDir" ), `Value, Ftpd::ValueUIEdit("FtpDir"));
+  
   UI::ChangeWidget(`id( "PasMinPort" ), `Value, Ftpd::ValueUIEdit("PasMinPort"));
   UI::ChangeWidget(`id( "PasMaxPort" ), `Value, Ftpd::ValueUIEdit("PasMaxPort"));
   UI::ChangeWidget(`id( "ChrootEnable" ), `Value, (Ftpd::ValueUIEdit("ChrootEnable") == "YES"));	
@@ -55,10 +82,12 @@ void InitGenSettings(string key) {
  */
 
 symbol HandleGenSettings(string key, map event) {
-   any button = event["ID"]:nil;
-   if (button == "SelectDir") {
-      string val = UI::AskForExistingDirectory  ("/","Please select directory...");
-      UI::ChangeWidget(`id( "FtpDir" ), `Value, val);
+   if (Ftpd::vsftpd_edit)  {
+      any button = event["ID"]:nil;
+      if (button == "SelectDir") {
+          string val = UI::AskForExistingDirectory  ("/","Please select directory...");
+          UI::ChangeWidget(`id( "FtpDir" ), `Value, val);
+      }
    }
    boolean xinetd = (boolean) UI::QueryWidget (`id("Xinetd"), `Value);   
    if (Service::Status("xinetd") == 0) {
@@ -166,7 +195,7 @@ void StoreGenSettings (string key, map event) {
   if (!Ftpd::vsftpd_edit) {
      Ftpd::WriteToEditMap("Umask", (string) UI::QueryWidget(`id("Umask"), `Value));
   } else {
-     foreach(string key, ["UmaskAnon", "UmaskLocal"],{
+     foreach(string key, ["UmaskAnon", "UmaskLocal", "FtpDir"],{
         Ftpd::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
      });
 

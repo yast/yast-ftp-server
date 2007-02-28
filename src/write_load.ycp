@@ -1,10 +1,10 @@
 /**
- * File:	include/ftpd/wizards.ycp
+ * File:	include/ftpd/write_load.ycp
  * Package:	Configuration of ftpd
  * Summary:	Wizards definitions
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: wizards.ycp 27914 2006-02-13 14:32:08Z locilka $
+ * $Id: write_load.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  */
 
 
@@ -354,9 +354,8 @@ global string ValueUI (string key, boolean write) {
                  authen = authen +0;
 	      }
 	      if (authen == 0) {
-		 Popup::Message("0");
 		 return "0";
-	      } else {Popup::Message((authen == 3 ? "1":"2")); return (authen == 3 ? "1":"2"); }	      
+	      } else {return (authen == 3 ? "1":"2"); }	      
 	
 	   } 
 

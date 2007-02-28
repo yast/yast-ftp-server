@@ -4,7 +4,7 @@
  * Summary:	Dialogs definitions
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: dialogs.ycp 27914 2006-02-13 14:32:08Z locilka $
+ * $Id: dialogs.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  */
 
 {
@@ -52,8 +52,8 @@ string HelpPureftp(string key) {
   map<string,map<string,any> > wid_handling = $[
     
     "StartMode" : CWMServiceStart::CreateAutoStartWidget ($[
-	"get_service_auto_start"	: " ",
-	"set_service_auto_start"	: " ",
+	"get_service_auto_start"	: GetEnableService,
+	"set_service_auto_start"	: SetEnableService,
         //TRANSLATORS: Radio selection
 	"start_auto_button"	: _("&When booting"),
 	//TRANSLATORS: Radio selection    

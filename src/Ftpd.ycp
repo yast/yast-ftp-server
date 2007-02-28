@@ -4,7 +4,7 @@
  * Summary:	Ftpd settings, input and output functions
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: Ftpd.ycp 27914 2006-02-13 14:32:08Z locilka $
+ * $Id: Ftpd.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  *
  * Representation of the configuration of ftpd.
  * Input and output routines.

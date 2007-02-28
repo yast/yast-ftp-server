@@ -4,7 +4,7 @@
  * Summary:	Dialogs definitions
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: complex.ycp 29363 2006-03-24 08:20:43Z mzugec $
+ * $Id: complex.ycp 29363 2006-03-24 08:20:43Z juhliarik $
  */
 
 {
@@ -19,7 +19,6 @@ import "Confirm";
 import "Ftpd";
 import "Package";
 import "Service";
-
 include "ftpd/helps.ycp";
 
 /**
@@ -50,17 +49,71 @@ boolean ReadFTPService () {
 *  Checking if ftp daemons are installed
 *
 */
-
+   any ret = nil;
    if (Package::Installed("vsftpd"))
 	Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
 
    if (Package::Installed("pure-ftpd"))
 	Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
-   else
-   {
-	if (Ftpd::vsftpd_init_count == 0) 
-	   Popup::Error("There aren't installed ftp daemon (vsftpd/pure-ftpd)!" );
-   }
+
+   if ((Ftpd::vsftpd_init_count == 0) && (Ftpd::pureftpd_init_count == 0)) {
+      Popup::Error("There aren't installed ftp daemon (vsftpd/pure-ftpd)!" );
+      UI::OpenDialog(
+	  `RadioButtonGroup(`id("IntstallFTPd"), 
+	     `VBox(
+		`Label("Choose daemon for installation?"),
+		`Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", true)),
+		`Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd")),
+
+		`HBox(
+		      `PushButton(`id(`cancel), "&Cancel"),
+		      `PushButton(`id(`accept), "&Accept"))
+	     )
+	   )
+      );
+      integer install = 0;
+      while (true) {
+	ret = UI::UserInput();
+	if ( ret == `accept ) {
+           install = (integer) UI::QueryWidget(`id("IntstallFTPd"), `CurrentButton);
+	   break;
+	} else if (ret == `cancel) {
+           UI::CloseDialog();
+	   y2milestone("FTP module: Installation was aborted");
+           return false;
+	}
+
+      };
+      UI::CloseDialog();
+      any result = nil;
+      list <string> daemon_list = [];
+      string daemon = "";
+      if (install == 0) {
+         daemon = "vsftpd";
+         daemon_list = add(daemon_list, daemon);
+      } else {
+         daemon = "pure-ftpd";
+         daemon_list = add(daemon_list, daemon);
+      }
+      result = Package::Available(daemon);
+      if (result == true) {
+         result = Package::DoInstall(daemon_list);
+         if (result == false) {
+  	    Popup::Error("Installation failed!");
+            y2milestone("FTP module: Installation failed");
+	    return false;
+	 }
+	 } else if (result == false) {
+	    Popup::Error("Package for ftp is not available");
+	    y2milestone("FTP module: Package for ftp is not available");
+	    return false;
+         } else if (result == nil) {
+            Popup::Error("Package was not found");
+	    y2milestone("FTP module: Package was not found");
+	    return false;
+	 }	           
+   };
+
 
 
 /**
@@ -118,7 +171,7 @@ boolean ReadFTPService () {
     
     while (true)
     {
-	any ret = UI::UserInput();
+	ret = UI::UserInput();
 
 	if ( ret == `close ) {
 
