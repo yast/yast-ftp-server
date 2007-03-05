@@ -205,9 +205,18 @@ boolean ReadFTPService () {
 symbol ReadDialog() {
     Wizard::RestoreHelp(HELPS["read"]:"");
     // Ftpd::AbortFunction = PollAbort;
+    boolean result = ReadFTPService ();
+    if (!result) return `abort;
     if (!Confirm::MustBeRoot()) return `abort;
     boolean ret = Ftpd::Read();
-    return ret ? `next : `abort;
+    if ((Ftpd::vsftpd_edit) && (ret))
+       return `next;
+    else if ((!Ftpd::vsftpd_edit) && (ret))
+       return `next_pure;
+    else
+       return `abort;
+    
+    //return ret ? `next : `abort;
 }
 
 /**

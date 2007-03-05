@@ -28,8 +28,8 @@ import "String";
 
 include "ftpd/complex.ycp";
 
-if (!ReadFTPService ())
-   return nil;
+//if (!ReadFTPService ())
+//   return nil;
 
 import "CommandLine";
 include "ftpd/wizards.ycp";

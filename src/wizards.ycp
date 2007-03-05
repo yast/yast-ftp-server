@@ -27,7 +27,7 @@ any MainSequence() {
 
     /* FIXME: adapt to your needs */
     map aliases = $[
-	"conf"		:   ``( RunFTPDialogs()),
+	"conf"		:   ``( RunFTPDialogsVsftpd()),
     ];
 
     /* FIXME: adapt to your needs */
@@ -46,6 +46,31 @@ any MainSequence() {
 }
 
 /**
+ * Main workflow of the ftpd configuration
+ * @return sequence result
+ */
+any MainSequencePure() {
+
+    /* FIXME: adapt to your needs */
+    map aliases = $[
+	"conf"		:   ``( RunFTPDialogsPureftpd()),
+    ];
+
+    /* FIXME: adapt to your needs */
+    map sequence = $[
+	"ws_start" : "conf",
+	"conf" : $[
+	    `abort	: `abort,
+	    `next	: `next,
+	],
+
+    ];
+
+    any ret = Sequencer::Run(aliases, sequence);
+
+    return ret;
+}
+/**
  * Whole configuration of ftpd
  * @return sequence result
  */
@@ -54,6 +79,7 @@ any FtpdSequence() {
     map aliases = $[
 	"read"	: [ ``( ReadDialog() ), true ],
 	"main"	:   ``( MainSequence() ),
+	"main_pure" : ``( MainSequencePure() ),
 	"write"	: [ ``( WriteDialog() ), true ]
     ];
 
@@ -62,7 +88,8 @@ any FtpdSequence() {
 	
 	"read" : $[
 	    `abort	: `abort,
-	    `next	: "main"
+	    `next	: "main",
+	    `next_pure  : "main_pure"
 	],
 	"main" : $[
 	    `abort	: `abort,
