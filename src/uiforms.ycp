@@ -52,13 +52,18 @@ term PureAddSettings = `VBox (
 		
 			`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),
 		`ReplacePoint(`id(`vsftpd_umask),`VBox (	
-			`Left(`HSquash(
-				`HBox(`TextEntry(`id("FtpDir"), _("&Ftp Directory")),
-			
-			      	`PushButton ( `id ( "SelectDir" ), `opt ( `hstretch ),  _("Select d&irectory...")))
-			     )
+			`Left(
+				`HBox(`TextEntry(`id("FtpDirLocal"), _("&Ftp Directory for Local Users")),
+			 	`VBox ( `Label(""),
+			      	`PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Select d&irectory..."))))
+			     
 			),
-			
+			`Left(
+				`HBox(`TextEntry(`id("FtpDirAnon"), _("F&tp Directory for Anonymous Users")),
+			 	`VBox ( `Label(""),
+			      	`PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select director&y..."))))
+			     
+			),
 			`Left(`TextEntry(`id("UmaskAnon"), _("&Umask for Anonymous"))),
 			`Left(`TextEntry(`id("UmaskLocal"), _("Uma&sk for Authenticated Users")))	    
 

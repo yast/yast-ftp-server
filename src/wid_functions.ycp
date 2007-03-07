@@ -84,11 +84,20 @@ void InitGenSettings(string key) {
 symbol HandleGenSettings(string key, map event) {
    if (Ftpd::vsftpd_edit)  {
       any button = event["ID"]:nil;
-      if (button == "SelectDir") {
+      if (button == "SelectDirLocal") {
           string val = UI::AskForExistingDirectory  ("/","Please select directory...");
-          UI::ChangeWidget(`id( "FtpDir" ), `Value, val);
+          UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, val);
       }
    }
+   if (Ftpd::vsftpd_edit)  {
+      any button = event["ID"]:nil;
+      if (button == "SelectDirAnon") {
+          string val = UI::AskForExistingDirectory  ("/","Please select directory...");
+          UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, val);
+      }
+   }
+
+   
    boolean xinetd = (boolean) UI::QueryWidget (`id("Xinetd"), `Value);   
    if (Service::Status("xinetd") == 0) {
       boolean ret = Inetd::Read();     
@@ -200,8 +209,32 @@ void StoreGenSettings (string key, map event) {
      });
 
   }
-  
 
+}
+
+/**
+ * Init function for general settings
+ * save values to temporary structure
+ */  
+void InitRBVsPure (string key) {
+  if (Ftpd::vsftpd_edit)
+     UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+  else
+     UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+
+}
+
+
+
+symbol HandleRBVsPure(string key, map event) {
+  if ((Ftpd::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("pure_item"), `Value))) {
+     Ftpd::vsftpd_edit = false;
+     return `pureftpd;
+  }
+  if ((!Ftpd::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("vs_item"), `Value))) {
+     Ftpd::vsftpd_edit = true;
+     return `vsftpd;
+  }
 
 }
 /**
@@ -319,7 +352,7 @@ void StoreVSFTPDSettings (string key, map event) {
   Ftpd::WriteToEditMap("Banner", (string) UI::QueryWidget(`id("Banner"), `Value));
 
   y2milestone("-------------VS_EDIT_SETTINGS-------------------");  
-  y2milestone("vsftpd configuration has been read: %1", Ftpd::VS_EDIT_SETTINGS);
+  y2milestone("vsftpd configuration has been read: %1", Ftpd::EDIT_SETTINGS);
   y2milestone("---------------------------------------------");
   
 }

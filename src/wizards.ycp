@@ -19,57 +19,49 @@ include "ftpd/dialogs.ycp";
 
 
 
+
+symbol RunDaemonSwitch() {
+  if (Ftpd::vsftpd_edit)
+     return `vsftpd;
+  else
+     return `pureftpd;
+}
+
 /**
  * Main workflow of the ftpd configuration
  * @return sequence result
  */
 any MainSequence() {
-
-    /* FIXME: adapt to your needs */
     map aliases = $[
-	"conf"		:   ``( RunFTPDialogsVsftpd()),
+	"init"          :   [ ``( RunDaemonSwitch()), false ],
+        "vsftpd"        :   ``( RunFTPDialogsVsftpd()),
+        "pureftpd"      :   ``( RunFTPDialogsPureftpd())
     ];
 
-    /* FIXME: adapt to your needs */
     map sequence = $[
-	"ws_start" : "conf",
-	"conf" : $[
-	    `abort	: `abort,
-	    `next	: `next,
-	],
-
+	"ws_start" : "init",
+        "init" : $[
+            `pureftpd	: "pureftpd",
+            `vsftpd	: "vsftpd"
+        ],
+        "pureftpd" : $[
+            `abort      : `abort,
+            `next       : `next,
+	    `vsftpd	: "vsftpd"
+        ],
+        "vsftpd" : $[
+            `abort      : `abort,
+            `next       : `next,
+	    `pureftpd	: "pureftpd"
+        ]
     ];
-
+    term temp = `Empty();
+    Wizard::SetContents("", temp, "", false, false);
     any ret = Sequencer::Run(aliases, sequence);
-
     return ret;
 }
 
-/**
- * Main workflow of the ftpd configuration
- * @return sequence result
- */
-any MainSequencePure() {
 
-    /* FIXME: adapt to your needs */
-    map aliases = $[
-	"conf"		:   ``( RunFTPDialogsPureftpd()),
-    ];
-
-    /* FIXME: adapt to your needs */
-    map sequence = $[
-	"ws_start" : "conf",
-	"conf" : $[
-	    `abort	: `abort,
-	    `next	: `next,
-	],
-
-    ];
-
-    any ret = Sequencer::Run(aliases, sequence);
-
-    return ret;
-}
 /**
  * Whole configuration of ftpd
  * @return sequence result
@@ -79,17 +71,14 @@ any FtpdSequence() {
     map aliases = $[
 	"read"	: [ ``( ReadDialog() ), true ],
 	"main"	:   ``( MainSequence() ),
-	"main_pure" : ``( MainSequencePure() ),
 	"write"	: [ ``( WriteDialog() ), true ]
     ];
 
     map sequence = $[
-	"ws_start" : "read",
-	
+	"ws_start" : "read",	
 	"read" : $[
 	    `abort	: `abort,
 	    `next	: "main",
-	    `next_pure  : "main_pure"
 	],
 	"main" : $[
 	    `abort	: `abort,

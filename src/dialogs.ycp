@@ -130,6 +130,21 @@ map<string,any> GenSettings () {
   return result;
 }
 
+map<string,any> RBVsftpdPureftpd () {
+  map<string,any> result = $[];
+  result = add(result, "label",   _("Change your daemon"));
+  result = add(result, "widget", `radio_buttons);
+  result = add(result, "items", [
+            [ "vs_item", _("&vsftpd") ],
+            [ "pure_item", _("p&ure-ftpd") ]
+	    ]
+  );
+  result = add(result, "init", InitRBVsPure);
+  result = add(result, "handle", HandleRBVsPure);
+  result = add(result, "help", _("Switch the daemon"));
+
+  return result;
+}
 map<string,any> AnonSettings () {
   map<string,any> result = $[];
 
@@ -177,14 +192,15 @@ map<string,any> start_up () {
 	       "StartMode",
 	       `VSpacing(1),
 	       // disabling start/stop buttons when it doesn't make sense
-	       "StartStop",
+	       "StartStop",	       
+	       "RBVsPureFTPd",
 	       `VStretch ()
 	      ));
   // TRANSLATORS: part of dialog caption
   result = add(result,"caption",  _("FTP Start-Up"));
   // TRANSLATORS: tree menu item
   result = add(result, "tree_item_label", _("Start-Up"));
-  result = add(result, "widget_names", [ "DisBackButton", "StartMode", "StartStop" ]);
+  result = add(result, "widget_names", [ "DisBackButton", "StartMode", "StartStop", "RBVsPureFTPd"]);
 
   return result;
 }
@@ -287,6 +303,8 @@ map<string,any> addit_settings_pure () {
 
     "PUREFTPDAddSettings": PUREFTPDAddSettings (),
 
+    "RBVsPureFTPd" : RBVsftpdPureftpd (),
+
 
   ];
 
@@ -339,7 +357,7 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
 
     "PUREFTPDAddSettings": PUREFTPDAddSettings (),
 
-
+    "RBVsPureFTPd" : RBVsftpdPureftpd (),
   ];
 
 

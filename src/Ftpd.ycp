@@ -57,7 +57,7 @@ global integer pureftpd_init_count = 0;
  *    
  */
      
-global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDir", "Umask", 
+global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","FtpDirAnon", "Umask", 
 "UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
 "MaxClientsNumber", "LocalMaxRate", "AnonymMaxRate", "AnonAuthen", "AnonyReadOnly",
 "AnonymCreatDirs", "Banner", "SSLEnable", "SSLVersion", "TLS", "AntiWarez", "SSL"];
@@ -65,7 +65,8 @@ global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDir", "Umask
 global map <string, string > DEFAULT_CONFIG = $[
      "ChrootEnable"              : "NO",
      "VerboseLogging"        	 : "NO",
-     "FtpDir"             	 : "", //if empty doesn't write this options via SCR
+     "FtpDirLocal"             	 : "", //if empty doesn't write this options via SCR
+     "FtpDirAnon"             	 : "", //if empty doesn't write this options via SCR
      "Umask"               	 : "",
      "UmaskAnon"                 : "",
      "UmaskLocal"           	 : "",
@@ -97,7 +98,7 @@ global map <string, string > PURE_SETTINGS = $[];
  * map of temporary pure-ftpd settings
  *    
  */
-global map <string, string > PURE_EDIT_SETTINGS = $[];
+//global map <string, string > PURE_EDIT_SETTINGS = $[];
 
 /**
  * map of vsftpd settings
@@ -105,12 +106,17 @@ global map <string, string > PURE_EDIT_SETTINGS = $[];
  */
 map <string, string > VS_SETTINGS = $[];
 
+/**
+ * map of vsftpd settings
+ *    
+ */
+global map <string, string > EDIT_SETTINGS = $[];
 
 /**
  * map of temporary vsftpd settings
  *    
  */
-global map <string, string > VS_EDIT_SETTINGS = $[];
+//global map <string, string > VS_EDIT_SETTINGS = $[];
 
 
 include "ftpd/write_load.ycp";
@@ -157,19 +163,20 @@ boolean ReadVSFTPDSettings () {
 boolean InitEDIT_SETTINGS () {
    foreach (string key, UI_keys, {
        string val = ValueUI(key, false);
-       if (vsftpd_edit) {
+       /*if (vsftpd_edit) {
 	  if (val != nil) VS_EDIT_SETTINGS[key] = val;
        } else {
 	  if (val != nil) PURE_EDIT_SETTINGS[key] = val;
-       }
+       }*/
+       if (val != nil) EDIT_SETTINGS[key] = val;
    });
 
    y2milestone("-------------PURE_EDIT_SETTINGS-------------------");  
-   y2milestone("Pure-ftpd configuration has been read: %1", PURE_EDIT_SETTINGS);
+   y2milestone("Pure-ftpd configuration has been read: %1", EDIT_SETTINGS);
    y2milestone("---------------------------------------------");
 
    y2milestone("-------------VS_EDIT_SETTINGS-------------------");  
-   y2milestone("Vsftpd configuration has been read: %1", VS_EDIT_SETTINGS);
+   y2milestone("Vsftpd configuration has been read: %1", EDIT_SETTINGS);
    y2milestone("---------------------------------------------");
    return true;
 }
@@ -255,12 +262,15 @@ boolean WriteToSETTINGS () {
  */
 
 global boolean WriteToEditMap (string key, string value) {
-
+ 
+ /*
   if (vsftpd_edit) {
      VS_EDIT_SETTINGS[key]= value;
   } else {
      PURE_EDIT_SETTINGS[key]= value; 
-  }
+  }*/
+
+  EDIT_SETTINGS[key]= value;
   return true;  
 }
 
@@ -293,11 +303,12 @@ boolean WriteSettings () {
  */
 
 global string ValueUIEdit (string key) {
+  /*
   if (vsftpd_edit) 
      return VS_EDIT_SETTINGS[key]:nil;
   else
-     return PURE_EDIT_SETTINGS[key]:nil;
-
+     return PURE_EDIT_SETTINGS[key]:nil;*/
+  return EDIT_SETTINGS[key]:nil;
 }
 
 
