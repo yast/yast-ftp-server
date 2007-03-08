@@ -90,17 +90,17 @@ term FTPPerforSettings() {
   term dialog = `VBox (
     `Frame ( _("Performance Settings"),
       `HBox(`HSpacing(1),`VBox (	
-	`Left(`IntField(`id("MaxIdleTime"), _("&Max Idle Time"),0,50,50)),
-	`Left(`IntField(`id("MaxClientsPerIP"), _("Max Cli&ents for One IP"),0,50,50)),
-	`Left(`IntField(`id("MaxClientsNumber"), _("Ma&x Clients"),0,50,50))
-      ))
+	`IntField(`id("MaxIdleTime"), _("&Max Idle Time"),0,50,50),
+	`IntField(`id("MaxClientsPerIP"), _("Max Cli&ents for One IP"),0,50,50),
+	`IntField(`id("MaxClientsNumber"), _("Ma&x Clients"),0,50,50)
+      ), `HStretch ())
     ), //end of `Frame ( _("Performance Settings")
     `VSpacing(1),   
     `Frame ( _("Rate Settings"),   		
       `HBox(`HSpacing(1),`VBox (
-	`Left(`IntField(`id("LocalMaxRate"),_("&Local Max Rate"),0,50,50)),
-	`Left(`IntField(`id("AnonymMaxRate"),_("Anonymous Max &Rate"),0,50,50))
-      ))
+	`IntField(`id("LocalMaxRate"),_("&Local Max Rate"),0,50,50),
+	`IntField(`id("AnonymMaxRate"),_("Anonymous Max &Rate"),0,50,50)
+      ), `HStretch ())
     ), //end of `Frame ( _("Rate Settings")
     `VStretch()
   );
