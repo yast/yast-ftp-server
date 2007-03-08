@@ -45,155 +45,142 @@ boolean PollAbort() {
 
 boolean ReadFTPService () {
 
-/**
-*  Checking if ftp daemons are installed
-*
-*/
-   any ret = nil;
-   if (Package::Installed("vsftpd"))
-	Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
 
-   if (Package::Installed("pure-ftpd"))
-	Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+  //Checking if ftp daemons are installed
 
-   if ((Ftpd::vsftpd_init_count == 0) && (Ftpd::pureftpd_init_count == 0)) {
-      Popup::Error("There aren't installed ftp daemon (vsftpd/pure-ftpd)!" );
-      UI::OpenDialog(
-	  `RadioButtonGroup(`id("IntstallFTPd"), 
-	     `VBox(
-		`Label("Choose daemon for installation?"),
-		`Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", true)),
-		`Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd")),
+  any ret = nil;
+  if (Package::Installed("vsftpd")) {
+     Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+     Ftpd::vsftpd_installed = true;
+  }
 
-		`HBox(
-		      `PushButton(`id(`cancel), "&Cancel"),
-		      `PushButton(`id(`accept), "&Accept"))
-	     )
-	   )
-      );
-      integer install = 0;
-      while (true) {
-	ret = UI::UserInput();
-	if ( ret == `accept ) {
-           install = (integer) UI::QueryWidget(`id("IntstallFTPd"), `CurrentButton);
-	   break;
-	} else if (ret == `cancel) {
-           UI::CloseDialog();
-	   y2milestone("FTP module: Installation was aborted");
-           return false;
+  if (Package::Installed("pure-ftpd")) {
+     Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+     Ftpd::pureftpd_installed = true;
+  }
+
+  if ((Ftpd::vsftpd_init_count == 0) && (Ftpd::pureftpd_init_count == 0)) {
+     //Popup::Error("There isn't installed ftp daemon (vsftpd/pure-ftpd)!" );
+     UI::OpenDialog(
+       `RadioButtonGroup(`id("IntstallFTPd"), 
+	 `VBox(
+	   `Label("There isn't installed ftp daemon (vsftpd/pure-ftpd)!"),
+	   `Label("Choose daemon for installation?"),
+	   `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", true)),
+	   `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd")),
+	   `HBox(
+	     `PushButton(`id(`cancel), "&Cancel"),
+	     `PushButton(`id(`accept), "&Accept")
+           )
+	 ) // end of `VBox(
+       ) //end of `RadioButtonGroup(`id("IntstallFTPd")
+     ); // end of UI::OpenDialog(
+     integer install = 0;
+     while (true) {
+       ret = UI::UserInput();
+       if ( ret == `accept ) {
+          install = (integer) UI::QueryWidget(`id("IntstallFTPd"), `CurrentButton);
+	  break;
+       } else if (ret == `cancel) {
+          UI::CloseDialog();
+	  y2milestone("FTP module: Installation was aborted");
+          return false;
+       }
+
+     };
+     UI::CloseDialog();
+     any result = nil;
+     list <string> daemon_list = [];
+     string daemon = "";
+     if (install == 0) {
+        daemon = "vsftpd";
+        daemon_list = add(daemon_list, daemon);
+     } else {
+        daemon = "pure-ftpd";
+        daemon_list = add(daemon_list, daemon);
+     }
+     result = Package::Available(daemon);
+     if (result == true) {
+        result = Package::DoInstall(daemon_list);
+        if (result == false) {
+  	   Popup::Error("Installation failed!");
+           y2milestone("FTP module: Installation failed");
+	   return false;
 	}
+	if (daemon == "pure-ftpd")
+           Ftpd::pureftpd_installed = true;
+        else
+	   Ftpd::vsftpd_installed = true; 
+     } else if (result == false) {
+	Popup::Error("Package for ftp is not available");
+	y2milestone("FTP module: Package for ftp is not available");
+	return false;
+     } else if (result == nil) {
+        Popup::Error("Package was not found");
+	y2milestone("FTP module: Package was not found");
+	return false;
+     } 	           
+  }; //end of if ((Ftpd::vsftpd_init_count == 0) && (Ftpd::pureftpd_init_count == 0)) {
 
-      };
-      UI::CloseDialog();
-      any result = nil;
-      list <string> daemon_list = [];
-      string daemon = "";
-      if (install == 0) {
-         daemon = "vsftpd";
-         daemon_list = add(daemon_list, daemon);
-      } else {
-         daemon = "pure-ftpd";
-         daemon_list = add(daemon_list, daemon);
-      }
-      result = Package::Available(daemon);
-      if (result == true) {
-         result = Package::DoInstall(daemon_list);
-         if (result == false) {
-  	    Popup::Error("Installation failed!");
-            y2milestone("FTP module: Installation failed");
-	    return false;
-	 }
-	 } else if (result == false) {
-	    Popup::Error("Package for ftp is not available");
-	    y2milestone("FTP module: Package for ftp is not available");
-	    return false;
-         } else if (result == nil) {
-            Popup::Error("Package was not found");
-	    y2milestone("FTP module: Package was not found");
-	    return false;
-	 }	           
-   };
+  //Checking Enabled services for ftp daemons
 
+  if (Service::Enabled("pure-ftpd")) 
+     Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
 
+  if (Service::Enabled("vsftpd")) 
+     Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
 
-/**
-*  Checking Enabled services for ftp daemons
-*
-*/
+  //Checking status of ftp daemons
 
-   if (Service::Enabled("pure-ftpd")) 
-	Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+  if (Service::Status("vsftpd") == 0) {
+     Ftpd::vsftpd_edit = true;
+     Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+  } else {
+     Ftpd::vsftpd_edit = false;
+  }
 
+  if (Service::Status("pure-ftpd") == 0) {
+     Ftpd::vsftpd_edit = false;
+     Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+  } else {
+     Ftpd::vsftpd_edit = true;
+  }
 
-   if (Service::Enabled("vsftpd")) 
-	Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+  // open dialog for choosing ftp daemon  
 
-
-/**
-*  Checking status of ftp daemons
-*
-*/
-
-
-   if (Service::Status("vsftpd") == 0) {
-	Ftpd::vsftpd_edit = true;
-	Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
-    } else {
-	Ftpd::vsftpd_edit = false;
-    }
-
-   if (Service::Status("pure-ftpd") == 0) {
-	Ftpd::vsftpd_edit = false;
-	Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
-    } else {
-	Ftpd::vsftpd_edit = true;
-    }
-
-
- 
-
-   if (Ftpd::pureftpd_init_count == Ftpd::vsftpd_init_count)
-   {
-    UI::OpenDialog(
-	`RadioButtonGroup(`id(`rb), 
-	   `VBox(
-		`Label("Choose daemon?"),
-		`Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", ((Ftpd::vsftpd_edit)? true:false))),
-		`Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd", ((Ftpd::vsftpd_edit)? false:true))),
-
-		`HBox(
-			//`PushButton(`id(`next),  "&Next"),
-			`PushButton(`id(`close), "&Accept")
-		)
-	   )
-	)
-    );
+  if (Ftpd::pureftpd_init_count == Ftpd::vsftpd_init_count) {
+     UI::OpenDialog(
+       `RadioButtonGroup(`id(`rb), `VBox(
+	 `Label("Choose daemon?"),
+	 `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", ((Ftpd::vsftpd_edit)? true:false))),
+	 `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd", ((Ftpd::vsftpd_edit)? false:true))),
+	 `HBox(
+	   //`PushButton(`id(`abort),  "&Cancel"),
+	   `PushButton(`id(`close), "&Accept")
+	 )
+       )) //end of `RadioButtonGroup(`id(`rb), `VBox(
+     ); //end of UI::OpenDialog(
     
-    while (true)
-    {
-	ret = UI::UserInput();
-
-	if ( ret == `close ) {
-
-	    Ftpd::rad_but = (integer) UI::QueryWidget(`id(`rb), `CurrentButton);
-	    break;
-	}
-
-    }
+     while (true) {
+       ret = UI::UserInput();
+       if (ret == `close) {
+	  Ftpd::rad_but = (integer) UI::QueryWidget(`id(`rb), `CurrentButton);
+	  break;
+       } else if (ret == `abort) {
+         return false;
+       }
+     } //end of  while (true) {
     
-    if (Ftpd::rad_but == 0)
+     if (Ftpd::rad_but == 0)
 	Ftpd::vsftpd_edit = true;
-    else
+     else
 	Ftpd::vsftpd_edit = false;
     
-    y2milestone("Terminating by the radiobutom ID '%1'", Ftpd::rad_but);
+     y2milestone("Terminating by the radiobutom ID '%1'", Ftpd::rad_but);
     
-    UI::CloseDialog();
-    }
-    
-
-  
-    return true;
+     UI::CloseDialog();
+  } //end of if (Ftpd::pureftpd_init_count == Ftpd::vsftpd_init_count) {
+  return true;
 }
 
 

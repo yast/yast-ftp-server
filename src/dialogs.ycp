@@ -209,7 +209,7 @@ map<string,any> gen_settings () {
   map<string,any> result = $[];
 
   result = add(result,"contents", `VBox (		
-	       FTPGenSettings()
+	       FTPGenSettingsVsftpd()
 	      ));
   // TRANSLATORS: part of dialog caption
   result = add(result,"caption",  _("FTP General Settings"));
@@ -220,6 +220,20 @@ map<string,any> gen_settings () {
   return result;
 }
 
+map<string,any> gen_settings_pure () {
+  map<string,any> result = $[];
+
+  result = add(result,"contents", `VBox (		
+	       FTPGenSettingsPureftpd()
+	      ));
+  // TRANSLATORS: part of dialog caption
+  result = add(result,"caption",  _("FTP General Settings"));
+  // TRANSLATORS: tree menu item
+  result = add(result, "tree_item_label", _("General Settings"));
+  result = add(result, "widget_names", [ "DisBackButton", "GenSettings"]);
+
+  return result;
+}
 map<string,any> perfor_settings () {
   map<string,any> result = $[];
 
@@ -270,7 +284,7 @@ map<string,any> addit_settings_pure () {
   map<string,any> result = $[];
 
   result = add(result,"contents", `VBox (		
-	       VSFTPDAddSettings()
+	       PUREFTPDSecSettings()
 	      ));
   // TRANSLATORS: part of dialog caption
   result = add(result,"caption", _("FTP Additional Settings"));
@@ -367,7 +381,7 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
   
     "start_up"  : start_up (),
 
-    "gen_settings" : gen_settings (),
+    "gen_settings" : gen_settings_pure (),
 
     "perfor_settings" :perfor_settings (),
 

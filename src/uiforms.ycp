@@ -7,188 +7,170 @@
  * $Id: uiforms.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  */
 
-
-
-term PureUmask = `VBox (
-
-	`Left(`TextEntry(`id("Umask"), _("&Umask (umask files:umask dirs)")))	    
-
-);
-
-term PureAddSettings = `VBox (
-	`Frame (
-		_("Additional Settings"),
-	    	`VBox (				
-			`Left(`CheckBox(`id("AntiWarez"), _("Disable Downloading &Unvalidated Data")))
-	    	)
-	),
-	`VSpacing(1),
-	`Frame (
-		_("Security Settings"),
-		`RadioButtonGroup(`id("SSL"), 
-	   	   `VBox(
-			`Left(`RadioButton(`id(0), "&Disable SSL/TLS")),
-			`Left(`RadioButton(`id(1), "Accept &SSL and TLS", true)),
-			`Left(`RadioButton(`id(2), "&Refuse Conections Without SSL/TLS"))
-
-	   	   )
-		)
-	),
-	`VStretch()
-
-    );
+	
 
 /**
  * UI for TreeDialogs
  */
-  term FTPGenSettings() {
-    term dialog = `VBox(
-	`Frame (
-		_("General Settings"),
-
-		`VBox (
-		
-			`Left(`CheckBox(`id("ChrootEnable"), _("&Chroot Everyone"))),
-		
-			`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),
-		`ReplacePoint(`id(`vsftpd_umask),`VBox (	
-			`Left(
-				`HBox(`TextEntry(`id("FtpDirLocal"), _("&Ftp Directory for Local Users")),
-			 	`VBox ( `Label(""),
-			      	`PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Select d&irectory..."))))
-			     
-			),
-			`Left(
-				`HBox(`TextEntry(`id("FtpDirAnon"), _("F&tp Directory for Anonymous Users")),
-			 	`VBox ( `Label(""),
-			      	`PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select director&y..."))))
-			     
-			),
-			`Left(`TextEntry(`id("UmaskAnon"), _("&Umask for Anonymous"))),
-			`Left(`TextEntry(`id("UmaskLocal"), _("Uma&sk for Authenticated Users")))	    
-
-	     	)))
-	),
-	`VSpacing(1),   
-	`Frame (
-	   	_("Passiv Mode Settings"),   		
-		
-		`VBox (
-			`Left(`TextEntry(`id("PasMinPort"), _("&Min Port for Pas. Mode"))),
-				
-			`Left(`TextEntry(`id("PasMaxPort"), _("Max Por&t for Pas. Mode")))
-		)
-  	   ),
-	`VSpacing(1),   
-	`Frame (
-	   	_("Xinetd Settings"),   		
-
-		`VBox (				
-			`Left(`CheckBox(`id("Xinetd"), _("Start via &Xinetd")))
-		)
-  	   ),
-           `VStretch()
-	);
-    return dialog;
-  }
-
-  term FTPPerforSettings() {
-    term dialog = `VBox (
-	`Frame (
-		_("Performance Settings"),
-	    	`VBox (
-		
-			`Left(`TextEntry(`id("MaxIdleTime"), _("&Max Idle Time"))),
-
-			`Left(`TextEntry(`id("MaxClientsPerIP"),_("Max Cli&ents for One IP"))),
-
-			`Left(`TextEntry(`id("MaxClientsNumber"),_("Ma&x Clients")))
-
-
-	    	)
-	),
-	`VSpacing(1),   
-	`Frame (
-	   	_("Rate Settings"),   		
-	    	`VBox (
-
-			`Left(`TextEntry(`id("LocalMaxRate"),_("&Local Max Rate"))),
-
-			`Left(`TextEntry(`id("AnonymMaxRate"),_("Anonymous Max &Rate")))
-		)
-  	   ),
- 
-
-	   `VStretch()
-
-    );
-    return dialog;
-  }
-
-
-
-
-
-term FTPAnonSettings() {
-    term dialog = `VBox (		
-	`Frame (
-	   	_("Enable/Disable Anonymous and Local Users"),  	
-		`RadioButtonGroup(`id("AnonAuthen"), 
-		   `VBox(
-			`Left(`RadioButton(`id(0), "Anonymo&us Only")),
-			`Left(`RadioButton(`id(1), "Aut&henticated Users Only" )),
-			`Left(`RadioButton(`id(2), "&Both", true))
-			)
-		    )
-	),
-	`VSpacing(1),   
-	`Frame (
-	   	_("Anonymous Settings"),   		
-	    	
-		`VBox (
-		
-			`Left(`CheckBox (`id("AnonyReadOnly"), _("Anon&ymous Can't Upload"))),
-
-			`Left(`CheckBox (`id("AnonymCreatDirs"), _("Anonymou&s Can Create Directories")))
-			
-		)					
-  	 ),
-	`VStretch()
-    );
-    return dialog;
+term FTPGenSettingsVsftpd() {
+  term dialog = `VBox(
+    `Frame ( _("General Settings"),
+      `HBox(`HSpacing(1), `VBox (
+	`Left(`CheckBox(`id("ChrootEnable"), _("&Chroot Everyone"))),	
+	`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),	
+	`Left(`HSquash( `HBox (`Left(`TextEntry(`id("UmaskAnon"), _("&Umask for Anonymous"))),
+	`Left(`TextEntry(`id("UmaskLocal"), _("Uma&sk for Authenticated Users"))))))    
+      ))
+    ),// end of `Frame ( _("General Settings")
+    `VSpacing(1),
+    `Frame ( _("FTP directories"),
+      `HBox(`HSpacing(1), `VBox (
+	`Left(`HBox(
+	  `TextEntry(`id("FtpDirAnon"), _("Ftp Directory f&or Anonymous Users")),
+	  `VBox ( `Label(""),
+	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select director&y..."))
+	  )
+	)),
+	`Left(`HBox(
+	  `TextEntry(`id("FtpDirLocal"), _("&Ftp Directory for Autheticated Users")),
+	  `VBox ( `Label(""),
+	    `PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Select d&irectory..."))
+	  )
+	))
+      )) // end of `HBox(`HSpacing(1)`VBox (
+    ), //end of `Frame ( _("FTP directories")
+    `VSpacing(1),   
+    `Frame ( _("Passiv Mode Settings"),   		
+      `HBox(`HSpacing(1), `Left(`HSquash(`HBox ( 
+	`Left(`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),0,65535,0)),			
+	`Left(`IntField(`id("PasMaxPort"),  _("Max Por&t for Pas. Mode"),0,65535,0)),
+	`HStretch()
+      ))))
+    ), //end of `Frame ( _("Passiv Mode Settings")
+    `VSpacing(1),   
+    `Frame ( _("Xinetd Settings"),   		
+      `HBox(`HSpacing(1), `VBox (				
+        `Left(`CheckBox(`id("Xinetd"), _("Start via &Xinetd")))
+      ))
+    ), //end of `Frame (_("Xinetd Settings")
+    `VStretch()
+  );//end of term dialog =
+  return dialog;
 }
 
 
+term FTPGenSettingsPureftpd() {
+  term dialog = `VBox(	
+    `Frame ( _("General Settings"),
+      `HBox(`HSpacing(1),`VBox (		
+	`Left(`CheckBox(`id("ChrootEnable"), _("&Chroot Everyone"))),	
+	`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),
+	`Left(`TextEntry(`id("Umask"), _("&Umask (umask files:umask dirs)")))
+      ))
+    ), //end of `Frame ( _("General Settings")
+    `VSpacing(1),   
+    `Frame ( _("Passiv Mode Settings"),   		
+      `HBox(`HSpacing(1),`Left(`HSquash(`HBox (  
+	`Left(`IntField(`id("PasMinPort"), _("&Min Port for Pas. Mode"),0,65535,0)),			
+	`Left(`IntField(`id("PasMaxPort"), _("Max Por&t for Pas. Mode"),0,65535,0))
+      ))))
+    ), //end of `Frame ( _("Passiv Mode Settings")
+    `VSpacing(1),   
+    `Frame ( _("Xinetd Settings"),   		
+      `HBox(`HSpacing(1),`VBox (				
+	`Left(`CheckBox(`id("Xinetd"), _("Start via &Xinetd")))
+      ))
+    ), //end of `Frame ( _("Xinetd Settings")
+    `VStretch()
+  ); //end of term dialog = 
+  return dialog;
+}
+  
+term FTPPerforSettings() {
+  term dialog = `VBox (
+    `Frame ( _("Performance Settings"),
+      `HBox(`HSpacing(1),`VBox (	
+	`Left(`IntField(`id("MaxIdleTime"), _("&Max Idle Time"),0,50,50)),
+	`Left(`IntField(`id("MaxClientsPerIP"), _("Max Cli&ents for One IP"),0,50,50)),
+	`Left(`IntField(`id("MaxClientsNumber"), _("Ma&x Clients"),0,50,50))
+      ))
+    ), //end of `Frame ( _("Performance Settings")
+    `VSpacing(1),   
+    `Frame ( _("Rate Settings"),   		
+      `HBox(`HSpacing(1),`VBox (
+	`Left(`IntField(`id("LocalMaxRate"),_("&Local Max Rate"),0,50,50)),
+	`Left(`IntField(`id("AnonymMaxRate"),_("Anonymous Max &Rate"),0,50,50))
+      ))
+    ), //end of `Frame ( _("Rate Settings")
+    `VStretch()
+  );
+  return dialog;
+}
 
+
+term FTPAnonSettings() {
+  term dialog = `VBox (		
+    `Frame ( _("Enable/Disable Anonymous and Local Users"),  	
+      `RadioButtonGroup(`id("AnonAuthen"), 
+	`HBox(`HSpacing(1),`VBox(
+	  `Left(`RadioButton(`id(0), "Anonymo&us Only")),
+	  `Left(`RadioButton(`id(1), "Aut&henticated Users Only" )),
+	  `Left(`RadioButton(`id(2), "&Both", true))
+	))
+      ) //end of `HBox(`HSpacing(1),`RadioButtonGroup(`id("AnonAuthen")
+    ), //end of `Frame ( _("Enable/Disable Anonymous and Local Users")
+    `VSpacing(1),   
+    `Frame ( _("Anonymous Settings"),   			
+      `HBox(`HSpacing(1),`VBox (
+	`Left(`CheckBox (`id("AnonyReadOnly"), _("Anon&ymous Can't Upload"))),
+	`Left(`CheckBox (`id("AnonymCreatDirs"), _("Anonymou&s Can Create Directories")))		
+      ))					
+    ), //end of `Frame ( _("Anonymous Settings")
+    `VStretch()
+  );
+  return dialog;
+}
 
 
 term VSFTPDAddSettings() {
-    term dialog1 = `ReplacePoint(`id(`vsftpd_dialog),`VBox (
-	`Frame (
-		_("Additional Settings"),
-	    	`VBox (				
+  term dialog = `VBox (
+    `Frame ( _("Additional Settings"),
+      `HBox(`HSpacing(1),`VBox (				
+	`Left(`TextEntry(`id("Banner"),_("&Welcome message")))
+      ))
+    ), //end of `Frame ( _("Additional Settings")
+    `VSpacing(1),   
+    `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true,	
+      `HBox(`HSpacing(1),`VBox (
+	`Left(`ComboBox(`id("SSLVersion"), "S&elect Version of SSL",
+	        ["Enabled SSL v2","Enabled SSL v3","Enabled SSL v2 & v3" ] )),
+	`Left(`CheckBox(`id("TLS"), _("Enable &TLS")))
+      ))
+    ), //end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true
+    `VStretch()
+  );
+  return dialog;
+}
 
-			`Left(`TextEntry(`id("Banner"),_("&Welcome message")))
-
-	    	)
-	),
-	`VSpacing(1),   
-	`CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true,	
-	    	`VBox (
-
-			`Left(`ComboBox(`id("SSLVersion"), "S&elect Version of SSL",
-				        ["Enabled SSL v2","Enabled SSL v3","Enabled SSL v2 & v3" ] )),
-			`Left(`CheckBox(`id("TLS"), _("Enable &TLS")))
-		)
-  	 ),
-
- 
-
-	`VStretch()
-
-    ));
-    return dialog1;
-  }
-
-
+term PUREFTPDSecSettings() {
+  term dialog = `VBox (
+    `Frame ( _("Additional Settings"),
+      `HBox(`HSpacing(1),`VBox (				
+	`Left(`CheckBox(`id("AntiWarez"), _("Disable Downloading &Unvalidated Data")))
+      ))
+    ), //end of `Frame ( _("Additional Settings")
+    `VSpacing(1),
+    `Frame ( _("Security Settings"),
+      `RadioButtonGroup(`id("SSL"), 
+	`HBox(`HSpacing(1),`VBox(
+	  `Left(`RadioButton(`id(0), "&Disable SSL/TLS")),
+	  `Left(`RadioButton(`id(1), "Accept &SSL and TLS", true)),
+	  `Left(`RadioButton(`id(2), "&Refuse Conections Without SSL/TLS"))
+	))
+      ) //end of `RadioButtonGroup(`id("SSL")
+    ), //end of `Frame ( _("Security Settings")
+    `VStretch()
+  );
+  return dialog;
+}
 

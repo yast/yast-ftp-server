@@ -50,6 +50,10 @@ global integer vsftpd_init_count = 0;
 
 global integer pureftpd_init_count = 0;
 
+global boolean vsftpd_installed = false;
+
+global boolean pureftpd_installed = false;
+
 
 
 /**
@@ -70,13 +74,13 @@ global map <string, string > DEFAULT_CONFIG = $[
      "Umask"               	 : "",
      "UmaskAnon"                 : "",
      "UmaskLocal"           	 : "",
-     "PasMinPort"      		 : "",
-     "PasMaxPort"                : "",
-     "MaxIdleTime"    		 : "",
-     "MaxClientsPerIP"           : "",
-     "MaxClientsNumber"      	 : "",
-     "LocalMaxRate"		 : "",
-     "AnonymMaxRate"		 : "",
+     "PasMinPort"      		 : "0",
+     "PasMaxPort"                : "0",
+     "MaxIdleTime"    		 : "15",
+     "MaxClientsPerIP"           : "10",
+     "MaxClientsNumber"      	 : "8",
+     "LocalMaxRate"		 : "0",
+     "AnonymMaxRate"		 : "0",
      "AnonAuthen"		 : "1",
      "AnonyReadOnly"		 : "NO",
      "AnonymCreatDirs"		 : "NO",

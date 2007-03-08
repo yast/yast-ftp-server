@@ -188,7 +188,7 @@ global string ValueUI (string key, boolean write) {
 	         if (size(ports)==2)
 		    return ports[0]:"";
 	      } else {
-	         return "";
+	         return Ftpd::DEFAULT_CONFIG["PasMinPort"]:nil;
 	      }
 	  }
 	}	
@@ -216,7 +216,7 @@ global string ValueUI (string key, boolean write) {
 	         if (size(ports)==2)
 		    return ports[1]:"";
 	      } else {
-	         return "";
+	         return Ftpd::DEFAULT_CONFIG["PasMaxPort"]:nil;
 	      }
 	  }
 	}	

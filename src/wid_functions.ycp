@@ -53,23 +53,19 @@ global void SetEnableService (boolean enable_service) {
  * change ValidChars for textentry
  */
 void InitGenSettings(string key) {
-
-  UI::ChangeWidget(`id( "PasMinPort" ),`ValidChars, "0123456789");
-  UI::ChangeWidget(`id( "PasMaxPort" ),`ValidChars, "0123456789");  
-  UI::ChangeWidget(`id( "UmaskAnon" ), `ValidChars, "01234567");
-  UI::ChangeWidget(`id( "UmaskLocal" ),`ValidChars, "01234567");
   if (!Ftpd::vsftpd_edit)  {
-     UI::ReplaceWidget(`vsftpd_umask, PureUmask);
      UI::ChangeWidget(`id( "Umask" ), `ValidChars, "01234567:");   
      UI::ChangeWidget(`id( "Umask" ), `Value,  Ftpd::ValueUIEdit("Umask"));	
   } else {
+     UI::ChangeWidget(`id( "UmaskAnon" ), `ValidChars, "01234567");
+     UI::ChangeWidget(`id( "UmaskLocal" ),`ValidChars, "01234567");
      UI::ChangeWidget(`id( "UmaskAnon" ), `Value,  Ftpd::ValueUIEdit("UmaskAnon"));
      UI::ChangeWidget(`id( "UmaskLocal" ), `Value,  Ftpd::ValueUIEdit("UmaskLocal"));
-     UI::ChangeWidget(`id( "FtpDir" ), `Value, Ftpd::ValueUIEdit("FtpDir"));
-  }
-  
-  UI::ChangeWidget(`id( "PasMinPort" ), `Value, Ftpd::ValueUIEdit("PasMinPort"));
-  UI::ChangeWidget(`id( "PasMaxPort" ), `Value, Ftpd::ValueUIEdit("PasMaxPort"));
+     UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, Ftpd::ValueUIEdit("FtpDirLocal"));
+     UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, Ftpd::ValueUIEdit("FtpDirAnon"));
+  }  
+  UI::ChangeWidget(`id( "PasMinPort" ), `Value, tointeger(Ftpd::ValueUIEdit("PasMinPort")));
+  UI::ChangeWidget(`id( "PasMaxPort" ), `Value, tointeger(Ftpd::ValueUIEdit("PasMaxPort")));
   UI::ChangeWidget(`id( "ChrootEnable" ), `Value, (Ftpd::ValueUIEdit("ChrootEnable") == "YES"));	
   UI::ChangeWidget(`id( "VerboseLogging" ), `Value, (Ftpd::ValueUIEdit("VerboseLogging") == "YES"));
   
@@ -172,20 +168,22 @@ boolean GenValid (string key, map event) {
       
      }
   }
-  string smin_port = (string) UI::QueryWidget (`id("PasMinPort"), `Value);
-  string smax_port = (string) UI::QueryWidget (`id("PasMaxPort"), `Value);
+  //string smin_port = (string) UI::QueryWidget (`id("PasMinPort"), `Value);
+  //string smax_port = (string) UI::QueryWidget (`id("PasMaxPort"), `Value);
 
-  integer min_port = -1;
-  integer max_port = -1;
+  integer min_port = tointeger(UI::QueryWidget (`id("PasMinPort"), `Value));
+  integer max_port = tointeger(UI::QueryWidget (`id("PasMaxPort"), `Value));
   
-  if ((size(smin_port) > 0) && (size(smax_port) > 0)) {
-      min_port = tointeger(smin_port);
-      max_port = tointeger(smax_port); 
+  //if ((size(smin_port) > 0) && (size(smax_port) > 0)) {
+  //    min_port = tointeger(smin_port);
+  //    max_port = tointeger(smax_port); 
   
       if (min_port > max_port) {
-          Popup::Message ("Ports have wrong values!");
+          Popup::Message ("Condition for ports is max port > min port.");
+          UI::SetFocus(`id("PasMinPort"));
+          return false;
       }
-  }
+  //}
   return true;
 }
 
@@ -196,7 +194,7 @@ boolean GenValid (string key, map event) {
 
 void StoreGenSettings (string key, map event) {
   foreach(string key, ["PasMinPort", "PasMaxPort"],{
-     Ftpd::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
+     Ftpd::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
   });
   foreach(string key, ["ChrootEnable", "VerboseLogging"],{
      Ftpd::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
@@ -204,7 +202,7 @@ void StoreGenSettings (string key, map event) {
   if (!Ftpd::vsftpd_edit) {
      Ftpd::WriteToEditMap("Umask", (string) UI::QueryWidget(`id("Umask"), `Value));
   } else {
-     foreach(string key, ["UmaskAnon", "UmaskLocal", "FtpDir"],{
+     foreach(string key, ["UmaskAnon", "UmaskLocal", "FtpDirLocal", "FtpDirAnon"],{
         Ftpd::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
      });
 
@@ -217,11 +215,12 @@ void StoreGenSettings (string key, map event) {
  * save values to temporary structure
  */  
 void InitRBVsPure (string key) {
-  if (Ftpd::vsftpd_edit)
-     UI::ChangeWidget(`id( "vs_item" ), `Value, true);
-  else
-     UI::ChangeWidget(`id( "pure_item" ), `Value, true);
-
+  if ((Ftpd::vsftpd_installed) && (Ftpd::pureftpd_installed)) {
+     if (Ftpd::vsftpd_edit)
+        UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+     else
+        UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+  } else UI::ChangeWidget(`id("items"), `Visible, false);
 }
 
 
@@ -245,8 +244,8 @@ void InitPerSettings (string key) {
 
   foreach(string key, ["MaxIdleTime", "MaxClientsPerIP", "MaxClientsNumber", 
 		       "LocalMaxRate", "AnonymMaxRate"],{
-      UI::ChangeWidget(`id(key), `ValidChars, "0123456789");
-      UI::ChangeWidget(`id(key), `Value, Ftpd::ValueUIEdit(key));
+      //UI::ChangeWidget(`id(key), `ValidChars, "0123456789");
+      UI::ChangeWidget(`id(key), `Value, tointeger(Ftpd::ValueUIEdit(key)));
   });
 }
 
@@ -257,7 +256,7 @@ void InitPerSettings (string key) {
 void StorePerforSettings (string key, map event) {
   foreach(string key, ["MaxIdleTime", "MaxClientsPerIP", "MaxClientsNumber", 
 		       "LocalMaxRate", "AnonymMaxRate"],{
-      Ftpd::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
+      Ftpd::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
   });
 }
 
@@ -296,8 +295,6 @@ void StoreAnonSettings (string key, map event) {
  * change values a display correct widget
  */
 void InitPUREFTPTAddSettings (string key) {
-  if (!Ftpd::vsftpd_edit)  
-     UI::ReplaceWidget(`vsftpd_dialog, PureAddSettings);
   UI::ChangeWidget(`id( "AntiWarez" ), `Value, 
      (Ftpd::ValueUIEdit("AntiWarez") == "YES"));
   integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
