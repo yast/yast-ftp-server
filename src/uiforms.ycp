@@ -90,16 +90,16 @@ term FTPPerforSettings() {
   term dialog = `VBox (
     `Frame ( _("Performance Settings"),
       `HBox(`HSpacing(1),`VBox (	
-	`IntField(`id("MaxIdleTime"), _("&Max Idle Time"),0,50,50),
-	`IntField(`id("MaxClientsPerIP"), _("Max Cli&ents for One IP"),0,50,50),
-	`IntField(`id("MaxClientsNumber"), _("Ma&x Clients"),0,50,50)
+	`Left(`HSquash(`MinWidth(20,`IntField(`id("MaxIdleTime"), _("&Max Idle Time [minutes]"),0,1440,0)))),
+	`Left(`HSquash(`MinWidth(20,`IntField(`id("MaxClientsPerIP"), _("Max Cli&ents for One IP"),0,50,0)))),
+	`Left(`HSquash(`MinWidth(20,`IntField(`id("MaxClientsNumber"), _("Ma&x Clients"),0,9999,0))))
       ), `HStretch ())
     ), //end of `Frame ( _("Performance Settings")
     `VSpacing(1),   
     `Frame ( _("Rate Settings"),   		
       `HBox(`HSpacing(1),`VBox (
-	`IntField(`id("LocalMaxRate"),_("&Local Max Rate"),0,50,50),
-	`IntField(`id("AnonymMaxRate"),_("Anonymous Max &Rate"),0,50,50)
+	`Left(`HSquash(`MinWidth(20,`IntField(`id("LocalMaxRate"),_("&Local Max Rate [kb/s]"),0,10000000,0)))),
+	`Left(`HSquash(`MinWidth(20,`IntField(`id("AnonymMaxRate"),_("Anonymous Max &Rate [kb/s]"),0,10000000,0))))
       ), `HStretch ())
     ), //end of `Frame ( _("Rate Settings")
     `VStretch()

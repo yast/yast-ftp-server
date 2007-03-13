@@ -6,7 +6,72 @@
  *
  * $Id: write_load.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  */
+import "Service";
+import "Popup";
+import "Inetd";
 
+boolean IdFTPXined () {
+  if (Service::Status("xinetd") == 0) {
+     boolean ret = Inetd::Read();     
+     if (ret) {
+        string value = "";
+	integer i = 0;
+	string ids = "";
+	while (size(Inetd::netd_conf) > i) {        				     	       
+	  ids = tostring( Inetd::netd_conf[i,"iid"]:nil);
+	  if (regexpmatch(ids, "vsftpd"))
+	     Ftpd::vsftpd_xined_id = i;
+	  else if (regexpmatch(ids, "pure-ftpd"))
+	     Ftpd::pureftpd_xined_id = i;		
+          i=i+1;	  			
+	} // while (size(Inetd::netd_conf) > i) {
+        return true;
+     } else
+	return false;
+  } else 
+    return false;
+}
+
+
+boolean InitStartViaXinetd () {
+  if (IdFTPXined ()) {		 
+     if (Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"]:nil == true)
+        Ftpd::EDIT_SETTINGS["StartVs"] = "2";
+     else
+	Ftpd::EDIT_SETTINGS["StartVs"] = "0";
+     if (Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"]:nil == true)
+        Ftpd::EDIT_SETTINGS["StartPure"] = "2";
+     else
+	Ftpd::EDIT_SETTINGS["StartPure"] = "0";
+     return true;
+  } else { //end of if (IdFTPXined ())
+     Ftpd::EDIT_SETTINGS["StartVs"] = "0";
+     Ftpd::EDIT_SETTINGS["StartPure"] = "0";
+     return false;
+  }
+}
+
+
+boolean WriteStartViaXinetd () {
+  // set pure-ftpd started via xinetd and off vsftpd
+  if (Ftpd::EDIT_SETTINGS["StartPure"]:nil == "2") {
+     Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"] = true;
+     Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"] = false;   
+  }
+  // set vsftpd started via xinetd and off pure-ftpd 
+  if (Ftpd::EDIT_SETTINGS["StartVs"]:nil == "2") {
+     Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"] = true;
+     Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"] = false;     
+  }
+  // fo applying changes is necessary set this option
+  Inetd::netd_conf[Ftpd::pureftpd_xined_id,"changed"] = true;
+  Inetd::netd_conf[Ftpd::pureftpd_xined_id,"changed"] = true;
+  // writing changes into xinetd
+  boolean status_progress = Progress::set(false);
+  Inetd::Write();
+  Progress::set(status_progress);
+   
+}
 
 
 
@@ -616,12 +681,57 @@ global string ValueUI (string key, boolean write) {
 	}
 	break;
 
+    case("StartXinetd"):
+        boolean result = false;	
+        if (write) {
+           if (Ftpd::EDIT_SETTINGS["StartXinetd"]:nil == "YES") {
+              if (Service::Status("xinetd") == 0){
+ 	         WriteStartViaXinetd ();
+              } else {
+                 result = Service::Start("xinetd");
+                 if (result) {
+                   result = IdFTPXined ();
+                 }
+                 if (result) {
+		    result = WriteStartViaXinetd ();
+                 }
+                 if (!result)
+                    Popup::Error("Initialization of starting daemon via xinetd was failed!");		  
+              }
+           } else {
+             if ((Ftpd::vsftpd_edit) && (Ftpd::EDIT_SETTINGS["StartVs"]:nil == "1"))
+                Service::Enable("vsftpd");
+	     else 
+                Service::Disable("vsftpd");
+             if ((!Ftpd::vsftpd_edit) && (Ftpd::EDIT_SETTINGS["StartPure"]:nil == "1"))
+                Service::Enable("pure-ftpd");
+             else
+                Service::Disable("pure-ftpd");
+           }
+           Ftpd::EDIT_SETTINGS = remove(Ftpd::EDIT_SETTINGS, "StartXinetd");
+           
+        } else {	   
+           result = InitStartViaXinetd ();
+	   if (Service::Enabled("vsftpd"))
+	      Ftpd::EDIT_SETTINGS["StartVs"] = "1";        
+  	   if (Service::Enabled("pure-ftpd"))
+              Ftpd::EDIT_SETTINGS["StartPure"] = "1";
+           if (result && ((Ftpd::EDIT_SETTINGS["StartPure"]:nil == "2") || 
+              (Ftpd::EDIT_SETTINGS["StartVs"]:nil == "2")))
+              return "YES";
+           else
+              return "NO";
+
+	}	   	   	
+	break; 
+
+  
     default:
 	y2milestone ("ValueUI(string key): unknown parameter %1", key);
 	return "";
 	break;
     
-
+    
   }
 
 

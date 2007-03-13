@@ -23,9 +23,19 @@ include "ftpd/uiforms.ycp";
  * that says if the service is started.
  */
 global boolean GetEnableService () {
-  if (Ftpd::vsftpd_edit)
-      return Service::Enabled("vsftpd");
-  else return Service::Enabled("pure-ftpd");
+  boolean result = false;
+  if (Ftpd::vsftpd_edit) {
+     if (Ftpd::EDIT_SETTINGS["StartVs"]:nil == "1")
+        result = true;
+     else
+        result = false; 
+  } else {
+     if (Ftpd::EDIT_SETTINGS["StartPure"]:nil == "1")
+        result = true;
+     else
+        result = false;
+  }     
+  return result;
 }
 
 
@@ -36,18 +46,79 @@ global boolean GetEnableService () {
 global void SetEnableService (boolean enable_service) {
   if (Ftpd::vsftpd_edit) {
      if (enable_service)
-        Service::Enable("vsftpd");
+        Ftpd::EDIT_SETTINGS["StartVs"] = "1";
      else
-	Service::Disable("vsftpd");
+	Ftpd::EDIT_SETTINGS["StartVs"] = "0";
    } else {
      if (enable_service)
-	Service::Enable("pure-ftpd");
+	Ftpd::EDIT_SETTINGS["StartPure"] = "1";
      else
-	Service::Disable("pure-ftpd");
+	Ftpd::EDIT_SETTINGS["StartPure"] = "0";
    }
 }
 
+/**
+ * CWMServiceStart function with no parameter returning boolean value 
+ * that says if the service is started.
+ */
+global boolean GetStartedViaXinetd () {
+  boolean result = false;
+  if (Ftpd::vsftpd_edit) {
+     if (Ftpd::EDIT_SETTINGS["StartVs"]:nil == "2")
+        result = true;
+     else
+        result = false; 
+  } else {
+     if (Ftpd::EDIT_SETTINGS["StartPure"]:nil == "2")
+        result = true;
+     else
+        result = false;
+  }       
+  return result;
+}
 
+
+/**
+ * CWMServiceStart function with one boolean parameter  
+ * returning boolean value that says if the service will be started at boot.
+ */
+global void SetStartedViaXinetd (boolean enable_service) {
+  if ((Service::Status("xinetd") != 0) && (Ftpd::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
+     //Popup::Message("xinetd is not started");
+     UI::OpenDialog(       
+       `VBox(
+	 `Label("Xinetd is not started!"),
+	 `Label("Do you want to start it?"),
+	 `HBox(
+	   `PushButton(`id(`accept), "&Start"),
+	   `PushButton(`id(`cancel), "Canc&el")
+         )
+       ) // end of `VBox(
+     ); // end of UI::OpenDialog(
+     while (true) {
+       any ret = UI::UserInput();
+       if ( ret == `accept ) {
+          Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
+	  break;
+       } else if (ret == `cancel) {
+          Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
+	  break;
+       }
+     };
+     UI::CloseDialog();
+  } //end of if (Service::Status("xinetd") != 0)
+  if (Ftpd::vsftpd_edit) {
+     if (enable_service)
+        Ftpd::EDIT_SETTINGS["StartVs"] = "2";
+     else
+	Ftpd::EDIT_SETTINGS["StartVs"] = "0";
+  } else {
+     if (enable_service)
+	Ftpd::EDIT_SETTINGS["StartPure"] = "2";
+     else
+	Ftpd::EDIT_SETTINGS["StartPure"] = "0";
+  }
+}
 /**
  * Init function for general settings
  * change ValidChars for textentry
@@ -93,7 +164,7 @@ symbol HandleGenSettings(string key, map event) {
       }
    }
 
-   
+   /*
    boolean xinetd = (boolean) UI::QueryWidget (`id("Xinetd"), `Value);   
    if (Service::Status("xinetd") == 0) {
       boolean ret = Inetd::Read();     
@@ -147,7 +218,7 @@ symbol HandleGenSettings(string key, map event) {
    	 Inetd::Write();
 	 Progress::set(status_progress);
       } //if (ret) {
-   } //if (Service::Status("xinetd") == 0) {
+   } //if (Service::Status("xinetd") == 0) {*/
 } //symbol HandleGenSettings(string key, map event) {
 
 /**
@@ -348,7 +419,7 @@ void StoreVSFTPDSettings (string key, map event) {
   Ftpd::WriteToEditMap("SSLEnable", (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));
   Ftpd::WriteToEditMap("Banner", (string) UI::QueryWidget(`id("Banner"), `Value));
 
-  y2milestone("-------------VS_EDIT_SETTINGS-------------------");  
+  y2milestone("-------------EDIT_SETTINGS-------------------");  
   y2milestone("vsftpd configuration has been read: %1", Ftpd::EDIT_SETTINGS);
   y2milestone("---------------------------------------------");
   

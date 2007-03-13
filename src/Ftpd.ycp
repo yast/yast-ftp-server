@@ -54,7 +54,9 @@ global boolean vsftpd_installed = false;
 
 global boolean pureftpd_installed = false;
 
+global integer vsftpd_xined_id = -1;
 
+global integer pureftpd_xined_id = -1;
 
 /**
  * map of "common" FTP settings
@@ -64,7 +66,7 @@ global boolean pureftpd_installed = false;
 global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","FtpDirAnon", "Umask", 
 "UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
 "MaxClientsNumber", "LocalMaxRate", "AnonymMaxRate", "AnonAuthen", "AnonyReadOnly",
-"AnonymCreatDirs", "Banner", "SSLEnable", "SSLVersion", "TLS", "AntiWarez", "SSL"];
+"AnonymCreatDirs", "Banner", "SSLEnable", "SSLVersion", "TLS", "AntiWarez", "SSL", "StartXinetd"];
 
 global map <string, string > DEFAULT_CONFIG = $[
      "ChrootEnable"              : "NO",
@@ -90,6 +92,9 @@ global map <string, string > DEFAULT_CONFIG = $[
      "TLS"			 : "YES",
      "AntiWarez"		 : "YES",
      "SSL"			 : "1",
+     "StartXinetd"		 : "NO",
+     "StartPure"		 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
+     "StartVs"			 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
 ];
 
 /**
@@ -108,7 +113,7 @@ global map <string, string > PURE_SETTINGS = $[];
  * map of vsftpd settings
  *    
  */
-map <string, string > VS_SETTINGS = $[];
+global map <string, string > VS_SETTINGS = $[];
 
 /**
  * map of vsftpd settings
@@ -173,15 +178,13 @@ boolean InitEDIT_SETTINGS () {
 	  if (val != nil) PURE_EDIT_SETTINGS[key] = val;
        }*/
        if (val != nil) EDIT_SETTINGS[key] = val;
+       if (val == nil) Popup::Message(key);; 
    });
 
-   y2milestone("-------------PURE_EDIT_SETTINGS-------------------");  
-   y2milestone("Pure-ftpd configuration has been read: %1", EDIT_SETTINGS);
+   y2milestone("-------------EDIT_SETTINGS-------------------");  
+   y2milestone("EDIT_SETTINGS configuration has been read: %1", EDIT_SETTINGS);
    y2milestone("---------------------------------------------");
 
-   y2milestone("-------------VS_EDIT_SETTINGS-------------------");  
-   y2milestone("Vsftpd configuration has been read: %1", EDIT_SETTINGS);
-   y2milestone("---------------------------------------------");
    return true;
 }
 
@@ -266,14 +269,6 @@ boolean WriteToSETTINGS () {
  */
 
 global boolean WriteToEditMap (string key, string value) {
- 
- /*
-  if (vsftpd_edit) {
-     VS_EDIT_SETTINGS[key]= value;
-  } else {
-     PURE_EDIT_SETTINGS[key]= value; 
-  }*/
-
   EDIT_SETTINGS[key]= value;
   return true;  
 }

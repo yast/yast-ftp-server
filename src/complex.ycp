@@ -69,8 +69,8 @@ boolean ReadFTPService () {
 	   `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", true)),
 	   `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd")),
 	   `HBox(
-	     `PushButton(`id(`cancel), "&Cancel"),
-	     `PushButton(`id(`accept), "&Accept")
+	     `PushButton(`id(`accept), "&Accept"),
+	     `PushButton(`id(`cancel), "&Cancel")
            )
 	 ) // end of `VBox(
        ) //end of `RadioButtonGroup(`id("IntstallFTPd")
@@ -155,8 +155,8 @@ boolean ReadFTPService () {
 	 `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", ((Ftpd::vsftpd_edit)? true:false))),
 	 `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd", ((Ftpd::vsftpd_edit)? false:true))),
 	 `HBox(
-	   //`PushButton(`id(`abort),  "&Cancel"),
-	   `PushButton(`id(`close), "&Accept")
+	   `PushButton(`id(`close), "&Accept"),
+	   `PushButton(`id(`abort),  "&Cancel")
 	 )
        )) //end of `RadioButtonGroup(`id(`rb), `VBox(
      ); //end of UI::OpenDialog(
