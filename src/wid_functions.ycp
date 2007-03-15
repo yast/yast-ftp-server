@@ -24,17 +24,10 @@ include "ftpd/uiforms.ycp";
  */
 global boolean GetEnableService () {
   boolean result = false;
-  if (Ftpd::vsftpd_edit) {
-     if (Ftpd::EDIT_SETTINGS["StartVs"]:nil == "1")
-        result = true;
-     else
-        result = false; 
-  } else {
-     if (Ftpd::EDIT_SETTINGS["StartPure"]:nil == "1")
-        result = true;
-     else
-        result = false;
-  }     
+  if (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "1")
+     result = true;
+  else
+     result = false;   
   return result;
 }
 
@@ -43,18 +36,9 @@ global boolean GetEnableService () {
  * CWMServiceStart function with one boolean parameter  
  * returning boolean value that says if the service will be started at boot.
  */
-global void SetEnableService (boolean enable_service) {
-  if (Ftpd::vsftpd_edit) {
-     if (enable_service)
-        Ftpd::EDIT_SETTINGS["StartVs"] = "1";
-     else
-	Ftpd::EDIT_SETTINGS["StartVs"] = "0";
-   } else {
-     if (enable_service)
-	Ftpd::EDIT_SETTINGS["StartPure"] = "1";
-     else
-	Ftpd::EDIT_SETTINGS["StartPure"] = "0";
-   }
+global void SetEnableService (boolean enable_service) {  
+  if (enable_service)
+     Ftpd::EDIT_SETTINGS["StartDaemon"] = "1";
 }
 
 /**
@@ -63,17 +47,10 @@ global void SetEnableService (boolean enable_service) {
  */
 global boolean GetStartedViaXinetd () {
   boolean result = false;
-  if (Ftpd::vsftpd_edit) {
-     if (Ftpd::EDIT_SETTINGS["StartVs"]:nil == "2")
-        result = true;
-     else
-        result = false; 
-  } else {
-     if (Ftpd::EDIT_SETTINGS["StartPure"]:nil == "2")
-        result = true;
-     else
-        result = false;
-  }       
+  if (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "2")
+     result = true;
+  else
+     result = false;     
   return result;
 }
 
@@ -83,7 +60,9 @@ global boolean GetStartedViaXinetd () {
  * returning boolean value that says if the service will be started at boot.
  */
 global void SetStartedViaXinetd (boolean enable_service) {
-  if ((Service::Status("xinetd") != 0) && (Ftpd::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
+  boolean result = true;
+  if ((Service::Status("xinetd") != 0) && (Ftpd::EDIT_SETTINGS["StartXinetd"]:nil == "NO") 
+     && (enable_service)) {
      //Popup::Message("xinetd is not started");
      UI::OpenDialog(       
        `VBox(
@@ -98,26 +77,25 @@ global void SetStartedViaXinetd (boolean enable_service) {
      while (true) {
        any ret = UI::UserInput();
        if ( ret == `accept ) {
-          Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
+          //Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
+          result = true;
 	  break;
        } else if (ret == `cancel) {
-          Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
+          //Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
+          result = false;
 	  break;
        }
      };
      UI::CloseDialog();
   } //end of if (Service::Status("xinetd") != 0)
-  if (Ftpd::vsftpd_edit) {
-     if (enable_service)
-        Ftpd::EDIT_SETTINGS["StartVs"] = "2";
-     else
-	Ftpd::EDIT_SETTINGS["StartVs"] = "0";
-  } else {
-     if (enable_service)
-	Ftpd::EDIT_SETTINGS["StartPure"] = "2";
-     else
-	Ftpd::EDIT_SETTINGS["StartPure"] = "0";
+  if ((enable_service) && (result)) {
+     Ftpd::EDIT_SETTINGS["StartDaemon"] = "2";
+     Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
+  } else { 
+     Ftpd::EDIT_SETTINGS["StartDaemon"] = "0";
+     Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
   }
+
 }
 /**
  * Init function for general settings

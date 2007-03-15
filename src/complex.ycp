@@ -215,6 +215,8 @@ symbol WriteDialog() {
     return ret ? `next : `abort;
 }
 
+
+
 /**
  * Summary dialog
  * @return dialog result

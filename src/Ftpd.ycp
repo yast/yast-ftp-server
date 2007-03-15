@@ -58,6 +58,8 @@ global integer vsftpd_xined_id = -1;
 
 global integer pureftpd_xined_id = -1;
 
+global boolean start_xinetd = false;
+
 /**
  * map of "common" FTP settings
  *    
@@ -93,8 +95,8 @@ global map <string, string > DEFAULT_CONFIG = $[
      "AntiWarez"		 : "YES",
      "SSL"			 : "1",
      "StartXinetd"		 : "NO",
-     "StartPure"		 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
-     "StartVs"			 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
+     "StartDaemon"		 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
+     //"StartVs"			 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
 ];
 
 /**
@@ -294,6 +296,17 @@ boolean WriteSettings () {
   return result; 
 }
 
+/**
+ * Write current configuration
+ * @return boolean result of function (true/false)
+ */
+boolean WriteXinetd () {
+  boolean result = false;  
+  if (vsftpd_xined_id != -1) {
+     result = WriteStartViaXinetd ();
+  }
+  return result; 
+}
 
 
 /**
@@ -302,11 +315,6 @@ boolean WriteSettings () {
  */
 
 global string ValueUIEdit (string key) {
-  /*
-  if (vsftpd_edit) 
-     return VS_EDIT_SETTINGS[key]:nil;
-  else
-     return PURE_EDIT_SETTINGS[key]:nil;*/
   return EDIT_SETTINGS[key]:nil;
 }
 
@@ -461,7 +469,7 @@ global boolean Write() {
     if(Abort()) return false;
     Progress::NextStage ();
     /* Error message */
-    if(false) Report::Error (_("Cannot write values to config file!"));
+    if(!WriteXinetd ()) Report::Error (_("Cannot write settings for xinetd!"));
     sleep(sl);
 
     if(Abort()) return false;

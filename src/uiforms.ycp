@@ -46,13 +46,7 @@ term FTPGenSettingsVsftpd() {
 	`Left(`IntField(`id("PasMaxPort"),  _("Max Por&t for Pas. Mode"),0,65535,0)),
 	`HStretch()
       ))))
-    ), //end of `Frame ( _("Passiv Mode Settings")
-    `VSpacing(1),   
-    `Frame ( _("Xinetd Settings"),   		
-      `HBox(`HSpacing(1), `VBox (				
-        `Left(`CheckBox(`id("Xinetd"), _("Start via &Xinetd")))
-      ))
-    ), //end of `Frame (_("Xinetd Settings")
+    ), //end of `Frame ( _("Passiv Mode Settings")    
     `VStretch()
   );//end of term dialog =
   return dialog;
@@ -74,13 +68,7 @@ term FTPGenSettingsPureftpd() {
 	`Left(`IntField(`id("PasMinPort"), _("&Min Port for Pas. Mode"),0,65535,0)),			
 	`Left(`IntField(`id("PasMaxPort"), _("Max Por&t for Pas. Mode"),0,65535,0))
       ))))
-    ), //end of `Frame ( _("Passiv Mode Settings")
-    `VSpacing(1),   
-    `Frame ( _("Xinetd Settings"),   		
-      `HBox(`HSpacing(1),`VBox (				
-	`Left(`CheckBox(`id("Xinetd"), _("Start via &Xinetd")))
-      ))
-    ), //end of `Frame ( _("Xinetd Settings")
+    ), //end of `Frame ( _("Passiv Mode Settings")   
     `VStretch()
   ); //end of term dialog = 
   return dialog;
