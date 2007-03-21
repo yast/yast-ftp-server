@@ -22,7 +22,9 @@ import "Summary";
 import "Message";
 import "Popup";
 import "String";
-
+import "Mode";
+import "Package";
+import "CommandLine";
 
 
 
@@ -60,6 +62,8 @@ global integer pureftpd_xined_id = -1;
 
 global boolean start_xinetd = false;
 
+integer sl = 1000;
+
 /**
  * map of "common" FTP settings
  *    
@@ -67,8 +71,8 @@ global boolean start_xinetd = false;
      
 global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","FtpDirAnon", "Umask", 
 "UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
-"MaxClientsNumber", "LocalMaxRate", "AnonymMaxRate", "AnonAuthen", "AnonyReadOnly",
-"AnonymCreatDirs", "Banner", "SSLEnable", "SSLVersion", "TLS", "AntiWarez", "SSL", "StartXinetd"];
+"MaxClientsNumber", "LocalMaxRate", "AnonMaxRate", "AnonAuthen", "AnonReadOnly",
+"AnonCreatDirs", "Banner", "SSLEnable", "SSLVersion", "TLS", "AntiWarez", "SSL", "StartXinetd"];
 
 global map <string, string > DEFAULT_CONFIG = $[
      "ChrootEnable"              : "NO",
@@ -84,10 +88,10 @@ global map <string, string > DEFAULT_CONFIG = $[
      "MaxClientsPerIP"           : "10",
      "MaxClientsNumber"      	 : "8",
      "LocalMaxRate"		 : "0",
-     "AnonymMaxRate"		 : "0",
-     "AnonAuthen"		 : "1",
-     "AnonyReadOnly"		 : "NO",
-     "AnonymCreatDirs"		 : "NO",
+     "AnonMaxRate"		 : "0",
+     "AnonAuthen"		 : "1", // 0 => anonymous only, 1 => authenticated only, 2=> both
+     "AnonReadOnly"		 : "NO",
+     "AnonCreatDirs"		 : "NO",
      "Banner"			 : "Welcome message",
      "SSLEnable"		 : "NO",
      "SSLVersion"		 : "2",
@@ -96,7 +100,6 @@ global map <string, string > DEFAULT_CONFIG = $[
      "SSL"			 : "1",
      "StartXinetd"		 : "NO",
      "StartDaemon"		 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
-     //"StartVs"			 : "0", //0 = start via manualy, 1 = start via inetd, 2 = start via xinetd
 ];
 
 /**
@@ -303,7 +306,7 @@ boolean WriteSettings () {
 boolean WriteXinetd () {
   boolean result = false;  
   if (vsftpd_xined_id != -1) {
-     result = WriteStartViaXinetd ();
+     result = WriteStartViaXinetd (start_xinetd);
   }
   return result; 
 }
@@ -365,64 +368,65 @@ global boolean Modified() {
  */
 global boolean Read() {
 
-    /* Ftpd read dialog caption */
-    string caption = _("Initializing ftpd Configuration");
+  /* Ftpd read dialog caption */
+  string caption = _("Initializing FTP Configuration");
+  integer steps = 2;   
 
-    // TODO FIXME Set the right number of stages
-    integer steps = 4;
+  // Part for commandline - it is necessary choose daemon if both are installed
+  if (Mode::commandline()) {
+     vsftpd_installed = Package::Installed("vsftpd");
+     pureftpd_installed = Package::Installed("pure-ftpd");
 
-    integer sl = 500;
-    sleep(sl);
+     if ((vsftpd_installed)&&(pureftpd_installed)) {
+	if (CommandLine::Interactive()) {
+	   CommandLine::Print(String::UnderlinedHeader(_("You have installed both daemons:"), 0));
+           CommandLine::Print(_("It is necessary choose one of them for configuration."));
+           CommandLine::Print(_("Do you want to configure vsftpd? (if not you choose pure-ftpd)"));
+	   CommandLine::Print("");
+           if (CommandLine::YesNo())
+              vsftpd_edit = true;
+	} else {
+	   CommandLine::Error(_("You have installed both daemons. It is necessary run configuration in interactive mode."));
+           return false;
+	}
+     }
+     if ((vsftpd_installed)&&(!pureftpd_installed))
+        vsftpd_edit = true;
+      
+     if ((!vsftpd_installed)&&(!pureftpd_installed))
+        return false;
+  }
 
-    // TODO FIXME Names of real stages
     // We do not set help text here, because it was set outside
-    Progress::New( caption, " ", steps, [
-	    /* Progress stage 1/2 */
-	    _("Read the database"),
-	    /* Progress stage 2/2 */
-	    _("Read the previous settings"),
+  Progress::New( caption, " ", 
+    steps, [
+      /* Progress stage 1/2 */
+      _("Read settings from the config file"),
+      /* Progress stage 2/2 */
+      _("Read the previous settings")
+      ], [
+      /* Progress stage 1/2 */
+      _("Reading the settings..."),
+      Message::Finished()
+      ],
+      ""
+  ); //end of Progress::New( caption, " "
 
-	], [
-	    /* Progress step 1/2 */
-	    _("Reading the database..."),
-	    /* Progress step 2/2 */
-	    _("Reading the previous settings..."),
-	    /* Progress finished */
-	    _("Finished")
-	],
-	""
-    );
+  // read settings
+  if (Abort()) return false;
+  Progress::NextStage();
+  // calling read function for reading settings form config file
+  if (!ReadSettings()) Report::Error(_("Cannot Read Current Settings."));
+  sleep(sl); 
 
-    // read database
-    if(Abort()) return false;
-    Progress::NextStage();
-    /* Error message */
-    if(!ReadSettings()) Report::Error(_("Cannot Read Current Settings."));
-    sleep(sl);
- 
-    // read another database
-    if(Abort()) return false;
-    Progress::NextStep();
-    /* Error message */
-    if(false) Report::Error(_("Cannot read database2."));
-    sleep(sl);
+  if (Abort()) return false;
+  /* Progress finished */
+  Progress::NextStage();
+  sleep(sl);
 
-   // read current settings
-    if(Abort()) return false;
-    Progress::NextStage();
-    /* Error message */
-    if(false) Report::Error(_("Cannot Read Current Settings."));
-    sleep(sl);
-
-
-    if(Abort()) return false;
-    /* Progress finished */
-    Progress::NextStage();
-    sleep(sl);
-
-    if(Abort()) return false;
-    modified = false;
-    return true;
+  if (Abort()) return false;
+  modified = false;
+  return true;
 }
 
 /**
@@ -431,54 +435,45 @@ global boolean Read() {
  */
 global boolean Write() {
 
-    /* Ftpd read dialog caption */
-    string caption = _("Saving ftpd Configuration");
+  /* Ftpd read dialog caption */
+  string caption = _("Saving FTP Configuration");
+  integer steps = 2;
 
-    // TODO FIXME And set the right number of stages
-    integer steps = 2;
+  // We do not set help text here, because it was set outside
+  Progress::New(caption, " ", 
+    steps, [
+      /* Progress stage 1/2 */
+      _("Write the settings to the config file"),
+      /* Progress stage 2/2 */
+      _("Write the settings for starting daemon")
+      ], [
+      /* Progress step 1/1 */
+      _("Writing the settings..."),
+      Message::Finished()
+      ],
+      ""
+  ); //end of Progress::New(caption, " "
 
-    integer sl = 500;
-    sleep(sl);
+  // write settings
+  if (Abort()) return false;
+  Progress::NextStage();
+  // write options to the config file
+  if(!WriteSettings ()) Report::Error (_("Cannot write settings!"));
+  sleep(sl);
 
-    // TODO FIXME Names of real stages
-    // We do not set help text here, because it was set outside
-    Progress::New(caption, " ", steps, [
-	    /* Progress stage 1/2 */
-	    _("Write the settings"),
-	    /* Progress stage 2/2 */
-	    _("Run SuSEconfig")
-	], [
-	    /* Progress step 1/2 */
-	    _("Writing the settings..."),
-	    /* Progress step 2/2 */
-	    _("Running SuSEconfig..."),
-	    /* Progress finished */
-	    _("Finished")
-	],
-	""
-    );
+  if (Abort()) return false;
+  Progress::NextStage ();
+  // write settings for starting daemon
+  if (!WriteXinetd ()) Report::Error (_("Cannot write settings for xinetd!"));
+  sleep(sl);
 
-    // write settings
-    if(Abort()) return false;
-    Progress::NextStage();
-    /* Error message */
-    if(!WriteSettings ()) Report::Error (_("Cannot write settings!"));
-    sleep(sl);
+  if(Abort()) return false;
+  /* Progress finished */
+  Progress::NextStage();
+  sleep(sl);
 
-    // run SuSEconfig
-    if(Abort()) return false;
-    Progress::NextStage ();
-    /* Error message */
-    if(!WriteXinetd ()) Report::Error (_("Cannot write settings for xinetd!"));
-    sleep(sl);
-
-    if(Abort()) return false;
-    /* Progress finished */
-    Progress::NextStage();
-    sleep(sl);
-
-    if(Abort()) return false;
-    return true;
+  if(Abort()) return false;
+  return true;
 }
 
 /**

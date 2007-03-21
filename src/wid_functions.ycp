@@ -15,6 +15,7 @@ import "Report";
 import "Label";
 import "Inetd";
 import "Service";
+import "Mode";
 
 include "ftpd/uiforms.ycp";
 
@@ -64,33 +65,38 @@ global void SetStartedViaXinetd (boolean enable_service) {
   if ((Service::Status("xinetd") != 0) && (Ftpd::EDIT_SETTINGS["StartXinetd"]:nil == "NO") 
      && (enable_service)) {
      //Popup::Message("xinetd is not started");
-     UI::OpenDialog(       
-       `VBox(
-	 `Label("Xinetd is not started!"),
-	 `Label("Do you want to start it?"),
-	 `HBox(
-	   `PushButton(`id(`accept), "&Start"),
-	   `PushButton(`id(`cancel), "Canc&el")
-         )
-       ) // end of `VBox(
-     ); // end of UI::OpenDialog(
-     while (true) {
-       any ret = UI::UserInput();
-       if ( ret == `accept ) {
-          //Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
-          result = true;
-	  break;
-       } else if (ret == `cancel) {
-          //Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
-          result = false;
-	  break;
-       }
-     };
-     UI::CloseDialog();
+     if (Mode::normal()) {
+        UI::OpenDialog(       
+          `VBox(
+	    `Label("Xinetd is not started!"),
+	    `Label("Do you want to start it?"),
+	    `HBox(
+	      `PushButton(`id(`accept), "&Start"),
+	      `PushButton(`id(`cancel), "Canc&el")
+            )
+          ) // end of `VBox(
+        ); // end of UI::OpenDialog(
+        while (true) {
+          any ret = UI::UserInput();
+          if ( ret == `accept ) {
+             //Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
+             result = true;
+	     break;
+          } else if (ret == `cancel) {
+             //Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
+             result = false;
+	     break;
+          }
+        };
+        UI::CloseDialog();
+     } 
   } //end of if (Service::Status("xinetd") != 0)
-  if ((enable_service) && (result)) {
+  if (enable_service) {
      Ftpd::EDIT_SETTINGS["StartDaemon"] = "2";
-     Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
+     if (result)
+        Ftpd::EDIT_SETTINGS["StartXinetd"] = "YES";
+     else
+        Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
   } else { 
      Ftpd::EDIT_SETTINGS["StartDaemon"] = "0";
      Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
@@ -140,63 +146,7 @@ symbol HandleGenSettings(string key, map event) {
           string val = UI::AskForExistingDirectory  ("/","Please select directory...");
           UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, val);
       }
-   }
-
-   /*
-   boolean xinetd = (boolean) UI::QueryWidget (`id("Xinetd"), `Value);   
-   if (Service::Status("xinetd") == 0) {
-      boolean ret = Inetd::Read();     
-      if (ret) {
-         string value = "";
-	 integer i = 0;
-	 string ids = "";
-	 integer vsftpd_id = 0;
-	 integer pure_ftpd_id = 0;
-	 while (size(Inetd::netd_conf) > i) {        				     
-	       
-	       ids = tostring( Inetd::netd_conf[i,"iid"]:nil);
-	       if (regexpmatch(ids, "vsftpd"))
-		  vsftpd_id = i;
-	       else if (regexpmatch(ids, "pure-ftpd"))
-		  pure_ftpd_id = i;		
-                  i=i+1;	  			
-	 } // while (size(Inetd::netd_conf) > i) {
-	 if (xinetd) {
-	    if (Ftpd::vsftpd_edit) {			 
-	       Inetd::netd_conf[vsftpd_id,"enabled"] = true;
-	       Inetd::netd_conf[pure_ftpd_id,"enabled"] = false;
-	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;			
-	       Inetd::netd_conf[vsftpd_id,"changed"] = true; 	
-            }
-	    else {
-	       Inetd::netd_conf[pure_ftpd_id,"enabled"] = true;
- 	       Inetd::netd_conf[vsftpd_id,"enabled"] = false;
-	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;
-	       Inetd::netd_conf[vsftpd_id,"changed"] = true;
-	       Inetd::netd_conf[pure_ftpd_id,"server"] = "/usr/sbin/pure-config.pl";
- 	       Inetd::netd_conf[pure_ftpd_id,"server_args"] = "/etc/pure-ftpd/pure-ftpd.conf";
-	    };
-	 } //if (xinetd) {
-	 else {
-	       Inetd::netd_conf[vsftpd_id,"enabled"] = false;
-	       Inetd::netd_conf[pure_ftpd_id,"enabled"] = false;
-	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;
-	       Inetd::netd_conf[pure_ftpd_id,"changed"] = true;			
-         }     
-	 y2milestone ("-----------------VSFTPD-----------------------");
-	 y2milestone ("%1",Inetd::netd_conf[vsftpd_id]:$[]);
-	 y2milestone ("----------------------------------------------");
-
-	 y2milestone ("-----------------PURE-FTPD--------------------");
-	 y2milestone ("%1",Inetd::netd_conf[pure_ftpd_id]:$[]);
-	 y2milestone ("----------------------------------------------");
-
-
-	 boolean status_progress = Progress::set(false);
-   	 Inetd::Write();
-	 Progress::set(status_progress);
-      } //if (ret) {
-   } //if (Service::Status("xinetd") == 0) {*/
+   }  
 } //symbol HandleGenSettings(string key, map event) {
 
 /**

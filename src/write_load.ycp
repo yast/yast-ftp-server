@@ -10,8 +10,11 @@ import "Service";
 import "Popup";
 import "Inetd";
 
+
 boolean IdFTPXined () {
+  boolean old_progress = Progress::set (false);
   boolean ret = Inetd::Read();     
+  Progress::set (old_progress);
   if (ret) {
      string value = "";
      integer i = 0;
@@ -46,7 +49,7 @@ boolean InitStartViaXinetd () {
 }
 
 
-boolean WriteStartViaXinetd () { 
+boolean WriteStartViaXinetd (boolean startxinetd) { 
   string pure_options = "";
   boolean result = false;
   if (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "2"){
@@ -65,7 +68,8 @@ boolean WriteStartViaXinetd () {
         Inetd::netd_conf[Ftpd::pureftpd_xined_id,"server"] = "/usr/sbin/pure-ftpd";
         Inetd::netd_conf[Ftpd::pureftpd_xined_id,"server_args"] = pure_options;
      }
-     Inetd::netd_status = 0; //start xinetd if not running else reload
+     if (startxinetd)
+        Inetd::netd_status = 0; //start xinetd if not running else reload
   } else {
     Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"] = false;
     Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"] = false;
@@ -394,28 +398,28 @@ global string ValueUI (string key, boolean write) {
 	}
 	break;
 
-   case("AnonymMaxRate"):
+   case("AnonMaxRate"):
 	if (Ftpd::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["AnonymMaxRate"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["anon_max_rate"] = Ftpd::EDIT_SETTINGS["AnonymMaxRate"]:nil;
+ 	      if (Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil != "")	       
+                 Ftpd::VS_SETTINGS["anon_max_rate"] = Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil;
 	      else
 		 Ftpd::VS_SETTINGS["anon_max_rate"] = nil; 		
            } else {
 	      return ((haskey(Ftpd::VS_SETTINGS, "anon_max_rate") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_max_rate"]:nil) : Ftpd::DEFAULT_CONFIG["AnonymMaxRate"]:nil));
+		     toupper(Ftpd::VS_SETTINGS["anon_max_rate"]:nil) : Ftpd::DEFAULT_CONFIG["AnonMaxRate"]:nil));
 	   } 
 
 	} else {
 	   if (write) {
- 	      if (Ftpd::EDIT_SETTINGS["AnonymMaxRate"]:nil!="")
-                 Ftpd::PURE_SETTINGS["AnonymousBandwidth"] = Ftpd::EDIT_SETTINGS["AnonymMaxRate"]:nil;
+ 	      if (Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil!="")
+                 Ftpd::PURE_SETTINGS["AnonymousBandwidth"] = Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil;
 	      else
 		Ftpd::PURE_SETTINGS["AnonymousBandwidth"] = nil;
 	   }          
            else
 	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousBandwidth") ?
-		     Ftpd::PURE_SETTINGS["AnonymousBandwidth"]:nil:Ftpd::DEFAULT_CONFIG["AnonymMaxRate"]:nil));
+		     Ftpd::PURE_SETTINGS["AnonymousBandwidth"]:nil:Ftpd::DEFAULT_CONFIG["AnonMaxRate"]:nil));
 	}
 	break;
 
@@ -423,7 +427,7 @@ global string ValueUI (string key, boolean write) {
         integer authen = 0;
 	if (Ftpd::vsftpd_edit) {
 	   if (write) { 
-              string val = Ftpd::EDIT_SETTINGS["AnonymMaxRate"]:nil;
+              string val = Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil;
 	      if (val == "0") {
 		 Ftpd::VS_SETTINGS["anonymous_enable"] = "YES";
 		 Ftpd::VS_SETTINGS["local_enable"] = "NO";
@@ -465,7 +469,7 @@ global string ValueUI (string key, boolean write) {
 
 	} else {
 	   if (write) {
-              string val = Ftpd::EDIT_SETTINGS["AnonymMaxRate"]:nil;
+              string val = Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil;
 	      if (val == "0") {
 		 Ftpd::PURE_SETTINGS["AnonymousOnly"] = "YES";
 		 Ftpd::PURE_SETTINGS["NoAnonymous"] = "NO";
@@ -500,17 +504,17 @@ global string ValueUI (string key, boolean write) {
         }
 	break;
 
-    case("AnonyReadOnly"):
+    case("AnonReadOnly"):
 	if (Ftpd::vsftpd_edit) {
 	   if (write) { 
-              Ftpd::VS_SETTINGS["anon_upload_enable"] = EDIT_SETTINGS["AnonyReadOnly"]:nil;	
+              Ftpd::VS_SETTINGS["anon_upload_enable"] = EDIT_SETTINGS["AnonReadOnly"]:nil;	
            } else {
 	      return ((haskey(Ftpd::VS_SETTINGS, "anon_upload_enable") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_upload_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonyReadOnly"]:nil));
+		     toupper(Ftpd::VS_SETTINGS["anon_upload_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil));
 	   } 
 	} else {
 	   if (write) {
-              yes_no = Ftpd::EDIT_SETTINGS["AnonyReadOnly"]:nil;
+              yes_no = Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil;
 	      if (yes_no == "YES")
 		 Ftpd::PURE_SETTINGS["AnonymousCantUpload"] = "NO";
 	      else
@@ -521,27 +525,27 @@ global string ValueUI (string key, boolean write) {
 	         yes_no = toupper(Ftpd::PURE_SETTINGS["AnonymousCantUpload"]:nil);
 	         return ((yes_no == "YES") ? "NO":"YES");		
 	      } else
-                 return Ftpd::DEFAULT_CONFIG["AnonyReadOnly"]:nil;
+                 return Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil;
    	   }        	
 	}
 	break;
     
-     case("AnonymCreatDirs"):
+     case("AnonCreatDirs"):
 	if (vsftpd_edit) {
 	   if (write) { 
-              Ftpd::VS_SETTINGS["anon_mkdir_write_enable"] = EDIT_SETTINGS["AnonymCreatDirs"]:nil;	      	
+              Ftpd::VS_SETTINGS["anon_mkdir_write_enable"] = EDIT_SETTINGS["AnonCreatDirs"]:nil;	      	
            } else {
 	      return ((haskey(Ftpd::VS_SETTINGS, "anon_mkdir_write_enable") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_mkdir_write_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonymCreatDirs"]:nil));
+		     toupper(Ftpd::VS_SETTINGS["anon_mkdir_write_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
 	   } 
 
 
 	} else {
 	   if (write)
-              Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"] = Ftpd::EDIT_SETTINGS["AnonymCreatDirs"]:nil;
+              Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"] = Ftpd::EDIT_SETTINGS["AnonCreatDirs"]:nil;
            else
 	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousCanCreateDirs") ?
-		     toupper(Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"]:nil):Ftpd::DEFAULT_CONFIG["AnonymCreatDirs"]:nil));
+		     toupper(Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"]:nil):Ftpd::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
 	}
 	break;
 
@@ -694,6 +698,10 @@ global string ValueUI (string key, boolean write) {
 	 if (write) {
 	   if (EDIT_SETTINGS["StartXinetd"]:nil == "YES") {
 	      Ftpd::start_xinetd = true;
+              if (Service::Enabled("vsftpd"))
+                 Service::Disable("vsftpd");
+              if (Service::Enabled("pure-ftpd"))
+                 Service::Disable("pure-ftpd");
            } else {           
               if (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "1") {
                  if (Ftpd::vsftpd_edit) {
@@ -708,8 +716,8 @@ global string ValueUI (string key, boolean write) {
                  Service::Disable("vsftpd");
 		 Service::Disable("pure-ftpd");
 	      }
-           }
-	   Ftpd::start_xinetd = true;
+              Ftpd::start_xinetd = false;
+           }	   
            Ftpd::EDIT_SETTINGS = remove(Ftpd::EDIT_SETTINGS, "StartXinetd");           
         } else {
            Ftpd::EDIT_SETTINGS["StartDaemon"] = "0";	   

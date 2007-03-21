@@ -35,45 +35,516 @@ import "CommandLine";
 include "ftpd/wizards.ycp";
 include "ftpd/wid_functions.ycp";
 
+
+
+boolean FTPdCMDShow (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("Display Settings:"), 0));
+  CommandLine::Print("");
+  //start-up settings
+  CommandLine::PrintNoCR(_("Start-Up:"));
+  if (GetStartedViaXinetd ()) {
+     CommandLine::Print(_("FTP daemon is started via xinetd"));
+  } else {
+     if (GetEnableService()) {
+        // TRANSLATORS: CommandLine informative text
+	CommandLine::Print(_("FTP daemon is enabled in the boot process"));
+     } else {
+	// TRANSLATORS: CommandLine informative text
+	CommandLine::Print(_("FTP daemon needs manual starting"));
+     }	   
+  }
+  //logging settings
+  CommandLine::PrintNoCR(_("Verbose Logging:"));
+  if (Ftpd::EDIT_SETTINGS["VerboseLogging"]:nil == "YES") {
+     CommandLine::Print(_("ENABLE"));
+     //CommandLine::Print("");
+  } else {
+     CommandLine::Print(_("DISABLE"));
+     //CommandLine::Print("");
+  }
+  // chroot settings
+  CommandLine::PrintNoCR(_("Chroot Everyone:"));
+  if (Ftpd::EDIT_SETTINGS["ChrootEnable"]:nil == "YES") {
+     CommandLine::Print(_("ENABLE"));
+     //CommandLine::Print("");
+  } else {
+     CommandLine::Print(_("DISABLE"));
+     //CommandLine::Print("");
+  }
+
+  // UMASK settings
+  if (Ftpd::vsftpd_edit) {    
+     if (Ftpd::EDIT_SETTINGS["UmaskAnon"]:nil != "")   {
+	CommandLine::PrintNoCR(_("Umask for Anonymous: "));
+	CommandLine::Print(Ftpd::EDIT_SETTINGS["UmaskAnon"]:nil);
+     } else {
+        CommandLine::PrintNoCR(_("Umask for Anonymous:"));	   
+	CommandLine::Print(_("Option is not set now!"));
+     }
+     if (Ftpd::EDIT_SETTINGS["UmaskLocal"]:nil != "") {
+	CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));
+	CommandLine::Print(Ftpd::EDIT_SETTINGS["UmaskLocal"]:nil);
+	//CommandLine::Print("");
+     } else {
+	CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));	   
+	CommandLine::Print(_("Option is not set now!"));
+	//CommandLine::Print("");
+     }     
+  } else {     
+     if (Ftpd::EDIT_SETTINGS["Umask"]:nil != "") {
+	CommandLine::PrintNoCR(_("Umask: "));
+	CommandLine::Print(Ftpd::EDIT_SETTINGS["Umask"]:nil);
+	//CommandLine::Print("");
+     } else {
+	CommandLine::PrintNoCR(_("Umask: "));	   
+	CommandLine::Print(_("Option is not set now!"));
+	//CommandLine::Print("");
+     }     
+  } // end of if (Ftpd::vsftpd_edit)
+  
+  //authenticated and anonymous dirs
+  if (Ftpd::vsftpd_edit) {
+     CommandLine::PrintNoCR(_("Authenticated dir: "));
+     if (Ftpd::EDIT_SETTINGS["FtpDirLocal"]:nil != "") {
+	CommandLine::Print(Ftpd::EDIT_SETTINGS["FtpDirLocal"]:nil);
+     } else {	   
+	CommandLine::Print(_("Option is not set now!"));
+     }
+     
+     CommandLine::PrintNoCR(_("Anonymous dir: "));
+     if (Ftpd::EDIT_SETTINGS["FtpDirAnon"]:nil != "") {
+	CommandLine::Print(Ftpd::EDIT_SETTINGS["FtpDirAnon"]:nil);
+     } else {	   
+	CommandLine::Print(_("Option is not set now!"));
+     }
+  }
+  // port range
+  CommandLine::PrintNoCR(_("Port Range: "));
+  if (Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil!="0") {
+     CommandLine::PrintNoCR(Ftpd::EDIT_SETTINGS["PasMinPort"]:nil);
+     CommandLine::PrintNoCR(_(" - "));
+     CommandLine::Print(Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil);
+  } else {
+     CommandLine::Print(_("Option is not set now!"));
+  }
+  
+  // idle time
+  CommandLine::PrintNoCR(_("Maximum Idle Time [minutes]: "));
+  if (Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil!="0") {
+     CommandLine::Print(Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil);
+  } else {
+     CommandLine::Print(_("Option is not set now!"));
+  }
+  
+  // maximum clients per IP
+  CommandLine::PrintNoCR(_("Maximum Clients per IP: "));
+  if (Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="0") {
+     CommandLine::Print(Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil);
+  } else {
+     CommandLine::Print(_("Option is not set now!"));
+  }
+
+  // maximum clients
+  CommandLine::PrintNoCR(_("Maximum Number of Clients: "));
+  if (Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil!="0") {
+     CommandLine::Print(Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil);
+  } else {
+     CommandLine::Print(_("Option is not set now!"));
+  }
+  
+  // max rate for authenticated users
+  CommandLine::PrintNoCR(_("Maximum Rate for Authenticated Users [kb/s]: "));
+  if (Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil!="0") {
+     CommandLine::Print(Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil);
+  } else {
+     CommandLine::Print(_("Option is not set now!"));
+  }
+
+   // max rate for anonymous users
+  CommandLine::PrintNoCR(_("Maximum Rate for Anonymous Users [kb/s]: "));
+  if (Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil!="0") {
+     CommandLine::Print(Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil);
+  } else {
+     CommandLine::Print(_("Option is not set now!"));
+  }
+
+  // general settings for access
+  CommandLine::PrintNoCR(_("Access Alowed for: "));
+  if (Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
+     CommandLine::Print(_("Anonymous Users"));
+  } else  if (Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
+     CommandLine::Print(_("Authenticated Users"));
+  } else  if (Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
+     CommandLine::Print(_("Anonymous and Authenticated Users"));
+  } else {
+     CommandLine::Print(_("Option has wrong value!"));
+  }
+
+  // access permissions for anonymous users
+  CommandLine::PrintNoCR(_("Access Permissions for Anonymous: "));
+  if (Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil == "NO") {
+     CommandLine::PrintNoCR(_("Upload: ENABLED; "));
+  } else {
+     CommandLine::PrintNoCR(_("Upload: DISABLED; "));
+  }  
+  if (Ftpd::EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES") {
+     CommandLine::Print(_("Create Directories: ENABLED"));
+  } else  {
+     CommandLine::Print(_("Create Directories: DISABLED"));
+  } 
+
+
+
+
+
+  CommandLine::Print("");
+}
+
+
 boolean FTPdCMDStartup (map options) {
   if (options["atboot"]:nil!=nil && options["manual"]:nil!=nil) {
-	    // TRANSLATORS: CommandLine error message
-	    CommandLine::Error(_("Only one parameter is allowed."));
-	} else if (options["atboot"]:nil!= nil) {
-	    CommandLine::Print("");
-	    // TRANSLATORS: CommandLine header
-	    CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
-	    CommandLine::Print("");
-	    // TRANSLATORS: CommandLine progress information
-	    CommandLine::Print(_("Enabling FTP daemon in the boot process..."));
-	    CommandLine::Print("");
-	    SetEnableService(true);
-	} else if (options["manual"]:nil!=nil) {
-	    CommandLine::Print("");
-	    // TRANSLATORS: CommandLine header
-	    CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
-	    CommandLine::Print("");
-	    // TRANSLATORS: CommandLine progress information
-	    CommandLine::Print(_("Removing FTP daemon from the boot process..."));
-	    CommandLine::Print("");
-	    SetEnableService(false);
-	} else if (options["show"]:nil!=nil) {
-	    CommandLine::Print("");
-	    // TRANSLATORS: CommandLine header
-	    CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
-	    CommandLine::Print("");
-	    if (GetEnableService()) {
-		// TRANSLATORS: CommandLine informative text
-		CommandLine::Print(_("FTP daemon is enabled in the boot process"));
-	    } else {
-		// TRANSLATORS: CommandLine informative text
-		CommandLine::Print(_("FTP daemon needs manual starting"));
-	    }
-	    CommandLine::Print("");
-	}
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only one parameter (atboot/manual) is allowed."));
+  } else if (options["atboot"]:nil!= nil) {
+     CommandLine::Print("");
+     // TRANSLATORS: CommandLine header
+     CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
+     CommandLine::Print("");
+     // TRANSLATORS: CommandLine progress information
+     CommandLine::Print(_("Enabling FTP daemon in the boot process..."));
+     CommandLine::Print("");
+     SetEnableService(true);
+  } else if (options["manual"]:nil!=nil) {
+     CommandLine::Print("");
+     // TRANSLATORS: CommandLine header
+     CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
+     CommandLine::Print("");
+     // TRANSLATORS: CommandLine progress information
+     CommandLine::Print(_("Removing FTP daemon from the boot process..."));
+     CommandLine::Print("");
+     SetEnableService(false);
+  } else if (options["xinetd"]:nil!=nil) {
+     CommandLine::Print("");
+     // TRANSLATORS: CommandLine header
+     CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
+     CommandLine::Print("");
+     // TRANSLATORS: CommandLine progress information
+     CommandLine::Print(_("Start FTP daemon via xinetd"));
+     CommandLine::Print("");
+     SetStartedViaXinetd(true);
+     if (options["startxinetd"]:nil == nil) {
+        Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
+     }
+  } 
+  return true;
+}
 
+boolean FTPdCMDLogging (map options) {
+  if (size(options) > 1) {
+     // TRANSLATORS: CommandLine error message
+    CommandLine::Error(_("Only one parameter (enable/disable/show) is allowed."));
+  } else if (options["enable"]:nil!=nil) {
+    Ftpd::EDIT_SETTINGS["VerboseLogging"] = "YES";
+  } else if (options["disable"]:nil!=nil) {
+    Ftpd::EDIT_SETTINGS["VerboseLogging"] = "NO";
+  } //end of else if (options["show"]:nil!=nil
+}
+
+boolean FTPdCMDChrooting (map options) {
+  if (size(options) > 1) {
+      // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only one parameter (enable/disable/show) is allowed."));
+  } else if (options["enable"]:nil!=nil) {
+     Ftpd::EDIT_SETTINGS["ChrootEnable"] = "YES";
+  } else if (options["disable"]:nil!=nil) {
+     Ftpd::EDIT_SETTINGS["ChrootEnable"] = "NO";
+  } //end of else if (options["show"]:nil!=nil
+
+}
+
+
+
+boolean FTPdCMDUmask (map options) {
+  list <string> temp = [];
+     CommandLine::Print(String::UnderlinedHeader(_("Umask:"), 0));
+     CommandLine::Print("");
+  if (size(options) > 1) {
+      // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only one parameter (show/set_umask) is allowed."));
+  } else if (Ftpd::vsftpd_edit) {     
+     if (options["set_umask"]:nil!=nil) {
+	string value = (string) options["set_umask"]:nil;
+	value = filterchars(value, "01234567:");
+	if (value != "") {
+	   temp = splitstring(value, ":");
+	   if (size(temp)>1) {
+	      CommandLine::PrintNoCR(_("Umask for Anonymous: "));
+	      CommandLine::Print(temp[0]:nil);
+	      CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));
+	      CommandLine::Print(temp[1]:nil);
+	      CommandLine::Print("");
+	      Ftpd::EDIT_SETTINGS["UmaskAnon"] = temp[0]:nil;
+	      Ftpd::EDIT_SETTINGS["UmaskLocal"] = temp[1]:nil;
+	   } else {
+	      CommandLine::Error(_("Entered umask is not valid!"));
+	      CommandLine::Print("Example of correct umask <local users>:<anonymous> (177:077)");
+	      CommandLine::Print("");
+	   }
+	} else {
+	   CommandLine::Error(_("Entered umask is not valid!"));
+	   CommandLine::Print("Example of correct umask <local users>:<anonymous> (177:077)");
+	   CommandLine::Print("");
+	}
+     }
+  } else { // else [ if (vsftpd_edit) ]
+     //part for pure-fptd     
+     if (options["set_umask"]:nil!=nil) {
+	string value = (string) options["set_umask"]:nil;
+	value = filterchars(value, "01234567:");
+	if (value != "") {	   
+	   CommandLine::PrintNoCR(_("Umask: "));
+	   CommandLine::Print(value);
+	   CommandLine::Print("");
+	   Ftpd::EDIT_SETTINGS["Umask"] = value;
+	} else {
+	   CommandLine::Error(_("Entered umask is not valid!"));
+	   CommandLine::Print("Example of correct umask <files>:<dirs> (set_umask=177:077)");
+	   CommandLine::Print("");
+	}
+     } // end of if (options["set_umask"]:nil!=nil)
+  } //end of if (vsftpd_edit)
+}
+
+
+boolean FTPdCMDAnonDir (map options) {
+  CommandLine::Print(String::UnderlinedHeader(_("Anonymous users:"), 0));
+  CommandLine::Print("");
+  if (Ftpd::vsftpd_edit) {
+     if (size(options) == 1) {
+        if (options["set_anon_dir"]:nil!=nil) {
+	   string value = (string) options["set_anon_dir"]:nil;
+	   if (value != nil) {
+	      CommandLine::PrintNoCR(_("Anonymous directory:"));
+	      CommandLine::Print(value);
+	      CommandLine::Print("");
+	      Ftpd::EDIT_SETTINGS["FtpDirAnon"] = value;
+	   } else {
+	      CommandLine::Error(_("Option is empty."));
+	      CommandLine::Print("Example of correct imput set_anon_dir=/srv/ftp"); 
+	      CommandLine::Print("");
+	   }
+        } 
+     } else {
+        // TRANSLATORS: CommandLine error message
+        CommandLine::Error(_("Only one parameter is allowed."));
+	CommandLine::Print("");
+     }
+  } else {
+    // TRANSLATORS: CommandLine error message
+    CommandLine::Error(_("Options is not supported in pure-ftpd."));
+    CommandLine::Print("");
+  }  
+}
+
+boolean FTPdCMDAuthenDir(map options) {
+  CommandLine::Print(String::UnderlinedHeader(_("Authenticated users:"), 0));
+  CommandLine::Print("");
+  if (Ftpd::vsftpd_edit) {
+     if (size(options) == 1) {
+        if (options["set_authen_dir"]:nil!=nil) {
+	   string value = (string) options["set_authen_dir"]:nil;
+	   if (value != nil) {
+	      CommandLine::PrintNoCR(_("Authenticated directory:"));
+	      CommandLine::Print(value);
+	      CommandLine::Print("");
+	      Ftpd::EDIT_SETTINGS["FtpDirLocal"] = value;
+	   } else {
+	      CommandLine::Error(_("Option is empty."));
+	      CommandLine::Print("Example of correct imput set_authen_dir=/srv/ftp"); 
+	      CommandLine::Print("");
+	   }
+        } 
+     } else {
+        // TRANSLATORS: CommandLine error message
+        CommandLine::Error(_("Only one parameter is allowed."));
+	CommandLine::Print("");
+     }
+  } else {
+    // TRANSLATORS: CommandLine error message
+    CommandLine::Error(_("Options is not supported in pure-ftpd."));
+    CommandLine::Print("");
+  }  
+}
+
+boolean FTPdCMDPassPorts (map options) {
+  CommandLine::Print(String::UnderlinedHeader(_("Port range:"), 0));
+  CommandLine::Print("");
+  if (size(options) == 2) {
+     integer min_port = (integer) options["set_min_port"]:nil;
+     integer max_port = (integer) options["set_max_port"]:nil;
+     if ((min_port != nil) && (max_port != nil)) {
+	if ((min_port <= max_port) && (max_port > 0)) {
+           Ftpd::EDIT_SETTINGS["PasMinPort"] = tostring(min_port);
+	   Ftpd::EDIT_SETTINGS["PasMaxPort"] = tostring(max_port);
+	   CommandLine::PrintNoCR(_("Port range for passive mode: "));
+	   CommandLine::PrintNoCR(Ftpd::EDIT_SETTINGS["PasMinPort"]:nil);
+	   CommandLine::PrintNoCR(_(" - "));
+	   CommandLine::Print(Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil);
+	   CommandLine::Print("");	   
+	} else {
+	   // TRANSLATORS: CommandLine error message
+     	   CommandLine::Error(_("Please enter minimal port > maximal port."));
+     	   CommandLine::Print("");
+	}
+     } else {
+	// TRANSLATORS: CommandLine error message
+     	CommandLine::Error(_("Please enter correct numbers."));
+     	CommandLine::Print("");
+     }
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 2 parameters are allowed."));
+     CommandLine::Print("");
+  }
+}
+
+
+
+boolean CommonHandler (map options, string str_key_option, 
+                       string map_key, string underline_text, string result_text) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(underline_text, 0));
+  CommandLine::Print("");
+  if (size(options) == 1) {
+     integer result = (integer) options[str_key_option]:nil;
+     if (result != nil) {
+	Ftpd::EDIT_SETTINGS[map_key] = tostring(result);
+	CommandLine::PrintNoCR(result_text);
+	CommandLine::Print(Ftpd::EDIT_SETTINGS[map_key]:nil);
+	CommandLine::Print("");
 	return true;
-    }
+     } else {
+       // TRANSLATORS: CommandLine error message
+       CommandLine::Error(_("Wrong value of option."));
+       CommandLine::Print("");
+       return false;
+     }
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Print("");
+     return false;
+  }
+}
+
+
+boolean FTPdCMDIdleTime (map options) {
+  return CommonHandler (options, "set_idle_time", "MaxIdleTime",
+                        "Maximal Idle Time [minutes]:", "Maximal Idle Time is "); 
+  
+}
+
+
+boolean FTPdCMDMaxClientsIP (map options) {
+  return CommonHandler (options, "set_max_clients", "MaxClientsPerIP",
+                        "Maximum Clients per IP:", "The Maximum Number of Clients per IP is ");
+}
+
+
+boolean FTPdCMDMaxClients (map options) {
+  return CommonHandler (options, "set_max_clients", "MaxClientsNumber",
+                        "Maximum Clients:", "The Maximum Number of Clients is ");
+}
+
+
+boolean FTPdCMDMaxRateAuthen (map options) {
+  return CommonHandler (options, "set_max_rate", "LocalMaxRate",
+                        "The Maximum Rate for Authenticated Users [kb/s]:", 
+ 			"The Maximum Rate for Authenticated Users is ");
+}
+
+boolean FTPdCMDMaxRateAnon (map options) {
+  return CommonHandler (options, "set_max_rate", "AnonMaxRate",
+                        "The Maximum Rate for Anonymous Users [kb/s]:", 
+ 			"The Maximum Rate for Anonymous Users is ");
+}
+
+boolean FTPdCMDAccess (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("Access (Anonymous/Authenticated):"), 0));
+  CommandLine::Print("");
+  if (size(options) == 1) {	
+     CommandLine::PrintNoCR(_("Access alowed for: "));	
+     if (options["anon_only"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["AnonAuthen"] = "0";
+	CommandLine::PrintNoCR(_("anonymous users"));
+     } else if (options["authen_only"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["AnonAuthen"] = "1";
+	CommandLine::PrintNoCR(_("autheticated users"));
+     } else if (options["anon_and_authen"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["AnonAuthen"] = "2";
+	CommandLine::PrintNoCR(_("anonymous and autheticated users"));
+     } else {
+        // TRANSLATORS: CommandLine error message
+        CommandLine::Error(_("Uknown option."));
+        CommandLine::Print("");
+        return false;
+     }
+     CommandLine::Print("");
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Print("");
+     return false;
+  }
+}
+
+
+boolean FTPdCMDAnonAccess (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("Access permission for anonymous users:"), 0));
+  CommandLine::Print("");
+  if ((size(options) > 0) && (size(options) <= 2))  {
+     if (options["can_upload"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["AnonReadOnly"] = "NO";
+	CommandLine::PrintNoCR(_("upload ENABLED"));
+     } else {
+        Ftpd::EDIT_SETTINGS["AnonReadOnly"] = "YES";
+	CommandLine::PrintNoCR(_("upload DISABLED"));
+     }
+     CommandLine::PrintNoCR(_("; "));
+     if (options["create_dirs"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["AnonCreatDirs"] = "YES";
+	CommandLine::PrintNoCR(_("create dirs ENABLED"));
+     } else {
+	Ftpd::EDIT_SETTINGS["AnonCreatDirs"] = "NO";
+	CommandLine::PrintNoCR(_("create dirs DISABLED"));
+     } 
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 1 or 2 parameters are allowed."));
+     CommandLine::Print("");
+     return false;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 map cmdline_description = $[
@@ -84,22 +555,164 @@ map cmdline_description = $[
   "initialize"	: Ftpd::Read,
   "finish"	: Ftpd::Write,
   "actions"	: $[
+
+	"show"    : $[
+	"handler" : FTPdCMDShow,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Display settings"),
+	"example" : [
+		   "show",
+	            ],
+	],
 	"startup" : $[
 	"handler" : FTPdCMDStartup,
 	// TRANSLATORS: CommandLine help
 	"help" 	  : _("Start-up settings"),
 	"example" : [
-		   "startup show",
 		   "startup atboot",
 		   "startup manual",
+                   "startup xinetd",
+                   "startup xinetd startxinetd"
+	            ],
+        ],
+	"chroot" : $[
+	"handler" : FTPdCMDChrooting,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Enable/disable chrooting."),
+	"example" : [
+		   "chroot enable",
+		   "chroot disable",
+	            ],
+        ],
+
+	"logging" : $[
+	"handler" : FTPdCMDLogging,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Saved log messages into the log file."),
+	"example" : [
+		   "logging enable",
+		   "logging disable",
+	            ],
+        ],
+
+	"umask" : $[
+	"handler" : FTPdCMDUmask,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Umask vsftpd: <local users>:<anonymous>, pure-ftpd: <files>:<dirs>"),
+	"example" : [
+		   "umask set_umask=177:077",
+	            ],
+        ],
+
+	"anon_dir" : $[
+	"handler" : FTPdCMDAnonDir,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Enter the existing directory for anonymous users. (only vsftpd)"),
+	"example" : [
+		   "anon_dir set_anon_dir=/srv/ftp",
+	            ],
+        ],
+
+	"authen_dir" : $[
+	"handler" : FTPdCMDAuthenDir,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Enter the existing directory for authenticated users.(only pure-ftpd)"),
+	"example" : [
+		   "authen_dir set_authen_dir=/srv/ftp",
+	            ],
+        ],
+
+	"port_range" : $[
+	"handler" : FTPdCMDPassPorts,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The port range for passive connection replies"),
+	"example" : [
+		   "port_range set_min_port=20000 set_max_port=30000",
+	            ],
+        ],
+
+	"idle_time" : $[
+	"handler" : FTPdCMDIdleTime,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The maximum Idle Time in minutes"),
+	"example" : [
+		   "idle_time set_idle_time=15",
+	            ],
+        ],
+        
+	"max_clients_ip" : $[
+	"handler" : FTPdCMDMaxClientsIP,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The maximum clients connected per IP"),
+	"example" : [
+		   "max_clients_ip set_max_clients=20",
+	            ],
+        ],
+
+	"max_clients" : $[
+	"handler" : FTPdCMDMaxClients,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The maximum connected clients"),
+	"example" : [
+		   "max_clients set_max_clients=1500",
+	            ],
+        ],
+
+	"max_rate_authen" : $[
+	"handler" : FTPdCMDMaxRateAuthen,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The maximum data transfer rate permitted for local authenticated users.[kb/s]"),
+	"example" : [
+		   "max_rate_authen set_max_rate=10000",
+	            ],
+        ],
+
+	"max_rate_anon" : $[
+	"handler" : FTPdCMDMaxRateAnon,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The maximum data transfer rate permitted for anonymous clients.[kb/s]"),
+	"example" : [
+		   "max_rate_anon set_max_rate=10000",
+	            ],
+        ],
+
+        "access" : $[
+	"handler" : FTPdCMDAccess,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The access permissions"),
+	"example" : [
+		   "access anon_only",
+		   "access authen_only",
+		   "access anon_and_authen",
+	            ],
+        ],
+
+	"anon_access" : $[
+	"handler" : FTPdCMDAnonAccess,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("The access permissions for anonymous users"),
+	"example" : [
+		   "access anon_only",
+		   "access authen_only",
+		   "access anon_and_authen",
 	            ],
         ],
   ],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   "options"	: $[
-	"show"    : $[
-		// TRANSLATORS: CommandLine help
-		"help"    : _("Show current settings"),
-	],
 	"atboot"  : $[
 		// TRANSLATORS: CommandLine help
 		"help" : _("Start FTP daemon in the boot process"),
@@ -108,11 +721,162 @@ map cmdline_description = $[
 		// TRANSLATORS: CommandLine help
 		"help" : _("Start FTP daemon manually"),
 	],
+        "xinetd": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Start FTP daemon via xinetd"),
+	],
+	"startxinetd": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Start xinetd if it is not running"),
+	],
+
+	"enable": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Enable option"),
+	],
+
+	"disable": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Disable option"),
+	],
+
+	"set_umask": $[
+     		"type" : "string",
+		// TRANSLATORS: CommandLine help
+		"help" : _("Disable option"),
+	],
+
+	"set_anon_dir":$[
+     		"type" : "string",
+		// TRANSLATORS: CommandLine help
+		"help" : _("Directory for anonymous users"),
+	],
+
+        "set_authen_dir":$[
+     		"type" : "string",
+		// TRANSLATORS: CommandLine help
+		"help" : _("Directory for authenticated users"),
+	],
+
+	"set_min_port":$[
+     		"type" : "integer",
+		// TRANSLATORS: CommandLine help
+		"help" : _("The minimum value for port range for passive connection replies."),
+	],
+	
+	"set_max_port":$[
+     		"type" : "integer",
+		// TRANSLATORS: CommandLine help
+		"help" : _("The maximum value for port range for passive connection replies."),
+	],
+
+	"set_idle_time":$[
+     		"type" : "integer",
+		// TRANSLATORS: CommandLine help
+		"help" : _("Maximal Idle Time [minutes]."),
+	],
+
+
+	"set_max_clients":$[
+     		"type" : "integer",
+		// TRANSLATORS: CommandLine help
+		"help" : _("The maximum connected clients"),
+	],
+
+
+	"set_max_rate":$[
+     		"type" : "integer",
+		// TRANSLATORS: CommandLine help
+		"help" : _("The maximum rate for ftp users [kb/s]."),
+	],
+
+	"anon_only": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Access only for anonymous"),
+	],
+
+	"authen_only": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Access only for authenticated users"),
+	],
+
+	"anon_and_authen": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Access for anonymous and authenticated users"),
+	],
+
+        "can_upload": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Anonymous users can upload"),
+	],
+
+        "create_dirs": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Anonymous users can create directories"),
+	],
+
+
     ],
     "mappings"		: $[
-	"startup" : [
-		"show", "atboot", "manual",
+	"show" : [
 	],
+
+	"startup" : [
+		"atboot", "manual", "xinetd", "startxinetd",
+	],
+        
+	"logging" : [
+		"enable", "disable",
+	],
+
+	"chroot" : [
+		"enable", "disable",
+	],
+
+	"umask" : [
+		"set_umask",
+	],
+
+	"anon_dir" : [ 
+		"set_anon_dir",
+	],
+
+	"authen_dir" : [
+		"set_authen_dir",
+	],
+
+	"port_range" : [
+		"set_min_port", "set_max_port",
+	],
+
+	"idle_time" : [
+		"set_idle_time",
+	],
+        
+	"max_clients_ip" : [
+		"set_max_clients",
+	],
+
+	"max_clients" : [
+		"set_max_clients",
+	],
+
+	"max_rate_authen" : [
+		"set_max_rate",
+	],
+
+	"max_rate_anon" : [
+		"set_max_rate",
+	],      
+
+        "access" : [
+		"anon_only", "authen_only", "anon_and_authen",
+	],
+
+	"anon_access" : [
+		"can_upload", "create_dirs",
+	],
+
     ]
 ];
 
