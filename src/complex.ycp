@@ -16,21 +16,21 @@ import "Popup";
 import "Wizard";
 import "Wizard_hw";
 import "Confirm";
-import "Ftpd";
+import "FtpServer";
 import "Package";
 import "Service";
-include "ftpd/helps.ycp";
+include "ftp-server/helps.ycp";
 
 /**
  * Return a modification status
  * @return true if data was modified
  */
 boolean Modified() {
-    return Ftpd::Modified();
+    return FtpServer::Modified();
 }
 
 boolean ReallyAbort() {
-    return !Ftpd::Modified() || Popup::ReallyAbort(true);
+    return !FtpServer::Modified() || Popup::ReallyAbort(true);
 }
 
 boolean PollAbort() {
@@ -50,16 +50,16 @@ boolean ReadFTPService () {
 
   any ret = nil;
   if (Package::Installed("vsftpd")) {
-     Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
-     Ftpd::vsftpd_installed = true;
+     FtpServer::vsftpd_init_count = FtpServer::vsftpd_init_count + 1;
+     FtpServer::vsftpd_installed = true;
   }
 
   if (Package::Installed("pure-ftpd")) {
-     Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
-     Ftpd::pureftpd_installed = true;
+     FtpServer::pureftpd_init_count = FtpServer::pureftpd_init_count + 1;
+     FtpServer::pureftpd_installed = true;
   }
 
-  if ((Ftpd::vsftpd_init_count == 0) && (Ftpd::pureftpd_init_count == 0)) {
+  if ((FtpServer::vsftpd_init_count == 0) && (FtpServer::pureftpd_init_count == 0)) {
      //Popup::Error("There isn't installed ftp daemon (vsftpd/pure-ftpd)!" );
      UI::OpenDialog(
        `RadioButtonGroup(`id("IntstallFTPd"), 
@@ -108,9 +108,9 @@ boolean ReadFTPService () {
 	   return false;
 	}
 	if (daemon == "pure-ftpd")
-           Ftpd::pureftpd_installed = true;
+           FtpServer::pureftpd_installed = true;
         else
-	   Ftpd::vsftpd_installed = true; 
+	   FtpServer::vsftpd_installed = true; 
      } else if (result == false) {
 	Popup::Error("Package for ftp is not available");
 	y2milestone("FTP module: Package for ftp is not available");
@@ -120,40 +120,40 @@ boolean ReadFTPService () {
 	y2milestone("FTP module: Package was not found");
 	return false;
      } 	           
-  }; //end of if ((Ftpd::vsftpd_init_count == 0) && (Ftpd::pureftpd_init_count == 0)) {
+  }; //end of if ((FtpServer::vsftpd_init_count == 0) && (FtpServer::pureftpd_init_count == 0)) {
 
   //Checking Enabled services for ftp daemons
 
   if (Service::Enabled("pure-ftpd")) 
-     Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+     FtpServer::pureftpd_init_count = FtpServer::pureftpd_init_count + 1;
 
   if (Service::Enabled("vsftpd")) 
-     Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+     FtpServer::vsftpd_init_count = FtpServer::vsftpd_init_count + 1;
 
   //Checking status of ftp daemons
 
   if (Service::Status("vsftpd") == 0) {
-     Ftpd::vsftpd_edit = true;
-     Ftpd::vsftpd_init_count = Ftpd::vsftpd_init_count + 1;
+     FtpServer::vsftpd_edit = true;
+     FtpServer::vsftpd_init_count = FtpServer::vsftpd_init_count + 1;
   } else {
-     Ftpd::vsftpd_edit = false;
+     FtpServer::vsftpd_edit = false;
   }
 
   if (Service::Status("pure-ftpd") == 0) {
-     Ftpd::vsftpd_edit = false;
-     Ftpd::pureftpd_init_count = Ftpd::pureftpd_init_count + 1;
+     FtpServer::vsftpd_edit = false;
+     FtpServer::pureftpd_init_count = FtpServer::pureftpd_init_count + 1;
   } else {
-     Ftpd::vsftpd_edit = true;
+     FtpServer::vsftpd_edit = true;
   }
 
   // open dialog for choosing ftp daemon  
 
-  if (Ftpd::pureftpd_init_count == Ftpd::vsftpd_init_count) {
+  if (FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) {
      UI::OpenDialog(
        `RadioButtonGroup(`id(`rb), `VBox(
 	 `Label("Choose daemon?"),
-	 `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", ((Ftpd::vsftpd_edit)? true:false))),
-	 `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd", ((Ftpd::vsftpd_edit)? false:true))),
+	 `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", ((FtpServer::vsftpd_edit)? true:false))),
+	 `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd", ((FtpServer::vsftpd_edit)? false:true))),
 	 `HBox(
 	   `PushButton(`id(`close), "&Accept"),
 	   `PushButton(`id(`abort),  "&Cancel")
@@ -164,22 +164,22 @@ boolean ReadFTPService () {
      while (true) {
        ret = UI::UserInput();
        if (ret == `close) {
-	  Ftpd::rad_but = (integer) UI::QueryWidget(`id(`rb), `CurrentButton);
+	  FtpServer::rad_but = (integer) UI::QueryWidget(`id(`rb), `CurrentButton);
 	  break;
        } else if (ret == `abort) {
          return false;
        }
      } //end of  while (true) {
     
-     if (Ftpd::rad_but == 0)
-	Ftpd::vsftpd_edit = true;
+     if (FtpServer::rad_but == 0)
+	FtpServer::vsftpd_edit = true;
      else
-	Ftpd::vsftpd_edit = false;
+	FtpServer::vsftpd_edit = false;
     
-     y2milestone("Terminating by the radiobutom ID '%1'", Ftpd::rad_but);
+     y2milestone("Terminating by the radiobutom ID '%1'", FtpServer::rad_but);
     
      UI::CloseDialog();
-  } //end of if (Ftpd::pureftpd_init_count == Ftpd::vsftpd_init_count) {
+  } //end of if (FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) {
   return true;
 }
 
@@ -191,12 +191,12 @@ boolean ReadFTPService () {
  */
 symbol ReadDialog() {
     Wizard::RestoreHelp(HELPS["read"]:"");
-    // Ftpd::AbortFunction = PollAbort;
+    // FtpServer::AbortFunction = PollAbort;
     boolean result = ReadFTPService ();
     if (!result) return `abort;
     if (!Confirm::MustBeRoot()) return `abort;
-    boolean ret = Ftpd::Read();
-    if (((Ftpd::vsftpd_edit) && (ret)) || ((!Ftpd::vsftpd_edit) && (ret)))
+    boolean ret = FtpServer::Read();
+    if (((FtpServer::vsftpd_edit) && (ret)) || ((!FtpServer::vsftpd_edit) && (ret)))
        return `next;
     else
        return `abort;
@@ -210,8 +210,8 @@ symbol ReadDialog() {
  */
 symbol WriteDialog() {
     Wizard::RestoreHelp(HELPS["write"]:"");
-    // Ftpd::AbortFunction = PollAbort;
-    boolean ret = Ftpd::Write();
+    // FtpServer::AbortFunction = PollAbort;
+    boolean ret = FtpServer::Write();
     return ret ? `next : `abort;
 }
 
@@ -227,7 +227,7 @@ any SummaryDialog() {
     string caption = _("Ftpd Configuration");
 
     /* FIXME */
-    list summary = Ftpd::Summary();
+    list summary = FtpServer::Summary();
     list unconfigured = summary[1]:[];
     string configured = summary[0]:"";
 
@@ -286,7 +286,7 @@ any OverviewDialog() {
     /* Ftpd overview dialog caption */
     string caption = _("Ftpd Overview");
 
-    list overview = Ftpd::Overview();
+    list overview = FtpServer::Overview();
 
     /* FIXME table header */
     term contents = Wizard_hw::ConfiguredContent(

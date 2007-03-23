@@ -15,7 +15,7 @@
  * <h3>Configuration of ftpd</h3>
  */
 
-textdomain "ftpd";
+textdomain "ftp-server";
 
 /* The main () */
 y2milestone ("----------------------------------------");
@@ -26,14 +26,14 @@ import "Report";
 import "Summary";
 import "String";
 
-include "ftpd/complex.ycp";
+include "ftp-server/complex.ycp";
 
 //if (!ReadFTPService ())
 //   return nil;
 
 import "CommandLine";
-include "ftpd/wizards.ycp";
-include "ftpd/wid_functions.ycp";
+include "ftp-server/wizards.ycp";
+include "ftp-server/wid_functions.ycp";
 
 
 
@@ -56,7 +56,7 @@ boolean FTPdCMDShow (map options) {
   }
   //logging settings
   CommandLine::PrintNoCR(_("Verbose Logging:"));
-  if (Ftpd::EDIT_SETTINGS["VerboseLogging"]:nil == "YES") {
+  if (FtpServer::EDIT_SETTINGS["VerboseLogging"]:nil == "YES") {
      CommandLine::Print(_("ENABLE"));
      //CommandLine::Print("");
   } else {
@@ -65,7 +65,7 @@ boolean FTPdCMDShow (map options) {
   }
   // chroot settings
   CommandLine::PrintNoCR(_("Chroot Everyone:"));
-  if (Ftpd::EDIT_SETTINGS["ChrootEnable"]:nil == "YES") {
+  if (FtpServer::EDIT_SETTINGS["ChrootEnable"]:nil == "YES") {
      CommandLine::Print(_("ENABLE"));
      //CommandLine::Print("");
   } else {
@@ -74,17 +74,17 @@ boolean FTPdCMDShow (map options) {
   }
 
   // UMASK settings
-  if (Ftpd::vsftpd_edit) {    
-     if (Ftpd::EDIT_SETTINGS["UmaskAnon"]:nil != "")   {
+  if (FtpServer::vsftpd_edit) {    
+     if (FtpServer::EDIT_SETTINGS["UmaskAnon"]:nil != "")   {
 	CommandLine::PrintNoCR(_("Umask for Anonymous: "));
-	CommandLine::Print(Ftpd::EDIT_SETTINGS["UmaskAnon"]:nil);
+	CommandLine::Print(FtpServer::EDIT_SETTINGS["UmaskAnon"]:nil);
      } else {
         CommandLine::PrintNoCR(_("Umask for Anonymous:"));	   
 	CommandLine::Print(_("Option is not set now!"));
      }
-     if (Ftpd::EDIT_SETTINGS["UmaskLocal"]:nil != "") {
+     if (FtpServer::EDIT_SETTINGS["UmaskLocal"]:nil != "") {
 	CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));
-	CommandLine::Print(Ftpd::EDIT_SETTINGS["UmaskLocal"]:nil);
+	CommandLine::Print(FtpServer::EDIT_SETTINGS["UmaskLocal"]:nil);
 	//CommandLine::Print("");
      } else {
 	CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));	   
@@ -92,90 +92,90 @@ boolean FTPdCMDShow (map options) {
 	//CommandLine::Print("");
      }     
   } else {     
-     if (Ftpd::EDIT_SETTINGS["Umask"]:nil != "") {
+     if (FtpServer::EDIT_SETTINGS["Umask"]:nil != "") {
 	CommandLine::PrintNoCR(_("Umask: "));
-	CommandLine::Print(Ftpd::EDIT_SETTINGS["Umask"]:nil);
+	CommandLine::Print(FtpServer::EDIT_SETTINGS["Umask"]:nil);
 	//CommandLine::Print("");
      } else {
 	CommandLine::PrintNoCR(_("Umask: "));	   
 	CommandLine::Print(_("Option is not set now!"));
 	//CommandLine::Print("");
      }     
-  } // end of if (Ftpd::vsftpd_edit)
+  } // end of if (FtpServer::vsftpd_edit)
   
   //authenticated and anonymous dirs
-  if (Ftpd::vsftpd_edit) {
+  if (FtpServer::vsftpd_edit) {
      CommandLine::PrintNoCR(_("Authenticated dir: "));
-     if (Ftpd::EDIT_SETTINGS["FtpDirLocal"]:nil != "") {
-	CommandLine::Print(Ftpd::EDIT_SETTINGS["FtpDirLocal"]:nil);
+     if (FtpServer::EDIT_SETTINGS["FtpDirLocal"]:nil != "") {
+	CommandLine::Print(FtpServer::EDIT_SETTINGS["FtpDirLocal"]:nil);
      } else {	   
 	CommandLine::Print(_("Option is not set now!"));
      }
      
      CommandLine::PrintNoCR(_("Anonymous dir: "));
-     if (Ftpd::EDIT_SETTINGS["FtpDirAnon"]:nil != "") {
-	CommandLine::Print(Ftpd::EDIT_SETTINGS["FtpDirAnon"]:nil);
+     if (FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != "") {
+	CommandLine::Print(FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil);
      } else {	   
 	CommandLine::Print(_("Option is not set now!"));
      }
   }
   // port range
   CommandLine::PrintNoCR(_("Port Range: "));
-  if (Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil!="0") {
-     CommandLine::PrintNoCR(Ftpd::EDIT_SETTINGS["PasMinPort"]:nil);
+  if (FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil!="0") {
+     CommandLine::PrintNoCR(FtpServer::EDIT_SETTINGS["PasMinPort"]:nil);
      CommandLine::PrintNoCR(_(" - "));
-     CommandLine::Print(Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil);
+     CommandLine::Print(FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil);
   } else {
      CommandLine::Print(_("Option is not set now!"));
   }
   
   // idle time
   CommandLine::PrintNoCR(_("Maximum Idle Time [minutes]: "));
-  if (Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil!="0") {
-     CommandLine::Print(Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil);
+  if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil!="0") {
+     CommandLine::Print(FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil);
   } else {
      CommandLine::Print(_("Option is not set now!"));
   }
   
   // maximum clients per IP
   CommandLine::PrintNoCR(_("Maximum Clients per IP: "));
-  if (Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="0") {
-     CommandLine::Print(Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil);
+  if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="0") {
+     CommandLine::Print(FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil);
   } else {
      CommandLine::Print(_("Option is not set now!"));
   }
 
   // maximum clients
   CommandLine::PrintNoCR(_("Maximum Number of Clients: "));
-  if (Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil!="0") {
-     CommandLine::Print(Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil);
+  if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil!="0") {
+     CommandLine::Print(FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil);
   } else {
      CommandLine::Print(_("Option is not set now!"));
   }
   
   // max rate for authenticated users
   CommandLine::PrintNoCR(_("Maximum Rate for Authenticated Users [kb/s]: "));
-  if (Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil!="0") {
-     CommandLine::Print(Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil);
+  if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil!="0") {
+     CommandLine::Print(FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil);
   } else {
      CommandLine::Print(_("Option is not set now!"));
   }
 
    // max rate for anonymous users
   CommandLine::PrintNoCR(_("Maximum Rate for Anonymous Users [kb/s]: "));
-  if (Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil!="0") {
-     CommandLine::Print(Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil);
+  if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil!="0") {
+     CommandLine::Print(FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil);
   } else {
      CommandLine::Print(_("Option is not set now!"));
   }
 
   // general settings for access
   CommandLine::PrintNoCR(_("Access Alowed for: "));
-  if (Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
+  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
      CommandLine::Print(_("Anonymous Users"));
-  } else  if (Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
+  } else  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
      CommandLine::Print(_("Authenticated Users"));
-  } else  if (Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
+  } else  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
      CommandLine::Print(_("Anonymous and Authenticated Users"));
   } else {
      CommandLine::Print(_("Option has wrong value!"));
@@ -183,22 +183,22 @@ boolean FTPdCMDShow (map options) {
 
   // access permissions for anonymous users
   CommandLine::PrintNoCR(_("Access Permissions for Anonymous: "));
-  if (Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil == "NO") {
+  if (FtpServer::EDIT_SETTINGS["AnonReadOnly"]:nil == "NO") {
      CommandLine::PrintNoCR(_("Upload: ENABLED; "));
   } else {
      CommandLine::PrintNoCR(_("Upload: DISABLED; "));
   }  
-  if (Ftpd::EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES") {
+  if (FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES") {
      CommandLine::Print(_("Create Directories: ENABLED"));
   } else  {
      CommandLine::Print(_("Create Directories: DISABLED"));
   } 
 
   // welcome message vsftpd only
-  if (Ftpd::vsftpd_edit) {
+  if (FtpServer::vsftpd_edit) {
      CommandLine::PrintNoCR(_("Welcome message: "));
-     if (Ftpd::EDIT_SETTINGS["Banner"]:nil != "") {
-        CommandLine::Print(Ftpd::EDIT_SETTINGS["Banner"]:nil);
+     if (FtpServer::EDIT_SETTINGS["Banner"]:nil != "") {
+        CommandLine::Print(FtpServer::EDIT_SETTINGS["Banner"]:nil);
      } else {
         CommandLine::Print(_("Option is not set now!"));
      }
@@ -206,24 +206,24 @@ boolean FTPdCMDShow (map options) {
      CommandLine::PrintNoCR(_("Security settings: "));
 
      // SSL options (SSL version and TLS)
-     if (Ftpd::EDIT_SETTINGS["SSLEnable"]:nil != "YES")
+     if (FtpServer::EDIT_SETTINGS["SSLEnable"]:nil != "YES")
         CommandLine::Print(_("Option is not set now!"));
      else {
         CommandLine::PrintNoCR(_("SSL enabled; "));
-        if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "0")
+        if (FtpServer::EDIT_SETTINGS["SSLVersion"]:nil == "0")
 	   CommandLine::PrintNoCR(_("SSL v2 enabled; "));
-	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "1")
+	if (FtpServer::EDIT_SETTINGS["SSLVersion"]:nil == "1")
 	   CommandLine::PrintNoCR(_("SSL v2 disabled; "));
-	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "2")
+	if (FtpServer::EDIT_SETTINGS["SSLVersion"]:nil == "2")
 	   CommandLine::PrintNoCR(_("SSL v3 enabled; "));
-	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "3")
+	if (FtpServer::EDIT_SETTINGS["SSLVersion"]:nil == "3")
 	   CommandLine::PrintNoCR(_("SSL v3 disabled; "));
-	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "4")
+	if (FtpServer::EDIT_SETTINGS["SSLVersion"]:nil == "4")
 	   CommandLine::PrintNoCR(_("SSL v2 and v3 enabled; "));
-	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "5")
+	if (FtpServer::EDIT_SETTINGS["SSLVersion"]:nil == "5")
 	   CommandLine::PrintNoCR(_("SSL v2 and v3 disabled; "));
 
-        if (Ftpd::EDIT_SETTINGS["TLS"]:nil == "YES")
+        if (FtpServer::EDIT_SETTINGS["TLS"]:nil == "YES")
 	   CommandLine::Print(_("TLS enabled"));
 	else
 	   CommandLine::Print(_("TLS disabled"));
@@ -235,16 +235,16 @@ boolean FTPdCMDShow (map options) {
   } else {
      // AntiWarez option
      CommandLine::PrintNoCR(_("Antiwarez: "));
-     if (Ftpd::EDIT_SETTINGS["AntiWarez"]:nil == "YES") {
+     if (FtpServer::EDIT_SETTINGS["AntiWarez"]:nil == "YES") {
         CommandLine::Print(_("Antiwarez enabled"));
      } else {
         CommandLine::Print(_("Antiwarez disabled"));
      }
      // SSL/TLS settings
      CommandLine::PrintNoCR(_("SSL/TLS settings: "));
-     if (Ftpd::EDIT_SETTINGS["SSL"]:nil == "0") {
+     if (FtpServer::EDIT_SETTINGS["SSL"]:nil == "0") {
         CommandLine::Print(_("SSL/TLS disabled"));
-     } else if (Ftpd::EDIT_SETTINGS["SSL"]:nil == "1") {
+     } else if (FtpServer::EDIT_SETTINGS["SSL"]:nil == "1") {
         CommandLine::Print(_("SSL/TLS enabled"));
      } else {
         CommandLine::Print(_("Refuse connections without SSL/TLS"));
@@ -289,7 +289,7 @@ boolean FTPdCMDStartup (map options) {
      CommandLine::Print("");
      SetStartedViaXinetd(true);
      if (options["startxinetd"]:nil == nil) {
-        Ftpd::EDIT_SETTINGS["StartXinetd"] = "NO";
+        FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
      }
   } 
   return true;
@@ -300,9 +300,9 @@ boolean FTPdCMDLogging (map options) {
      // TRANSLATORS: CommandLine error message
     CommandLine::Error(_("Only one parameter (enable/disable) is allowed."));
   } else if (options["enable"]:nil!=nil) {
-    Ftpd::EDIT_SETTINGS["VerboseLogging"] = "YES";
+    FtpServer::EDIT_SETTINGS["VerboseLogging"] = "YES";
   } else if (options["disable"]:nil!=nil) {
-    Ftpd::EDIT_SETTINGS["VerboseLogging"] = "NO";
+    FtpServer::EDIT_SETTINGS["VerboseLogging"] = "NO";
   } //end of else if (options["show"]:nil!=nil
 }
 
@@ -311,9 +311,9 @@ boolean FTPdCMDChrooting (map options) {
       // TRANSLATORS: CommandLine error message
      CommandLine::Error(_("Only one parameter (enable/disable) is allowed."));
   } else if (options["enable"]:nil!=nil) {
-     Ftpd::EDIT_SETTINGS["ChrootEnable"] = "YES";
+     FtpServer::EDIT_SETTINGS["ChrootEnable"] = "YES";
   } else if (options["disable"]:nil!=nil) {
-     Ftpd::EDIT_SETTINGS["ChrootEnable"] = "NO";
+     FtpServer::EDIT_SETTINGS["ChrootEnable"] = "NO";
   } //end of else if (options["show"]:nil!=nil
 
 }
@@ -327,7 +327,7 @@ boolean FTPdCMDUmask (map options) {
   if (size(options) > 1) {
       // TRANSLATORS: CommandLine error message
      CommandLine::Error(_("Only one parameter (show/set_umask) is allowed."));
-  } else if (Ftpd::vsftpd_edit) {     
+  } else if (FtpServer::vsftpd_edit) {     
      if (options["set_umask"]:nil!=nil) {
 	string value = (string) options["set_umask"]:nil;
 	value = filterchars(value, "01234567:");
@@ -339,8 +339,8 @@ boolean FTPdCMDUmask (map options) {
 	      CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));
 	      CommandLine::Print(temp[1]:nil);
 	      CommandLine::Print("");
-	      Ftpd::EDIT_SETTINGS["UmaskAnon"] = temp[0]:nil;
-	      Ftpd::EDIT_SETTINGS["UmaskLocal"] = temp[1]:nil;
+	      FtpServer::EDIT_SETTINGS["UmaskAnon"] = temp[0]:nil;
+	      FtpServer::EDIT_SETTINGS["UmaskLocal"] = temp[1]:nil;
 	   } else {
 	      CommandLine::Error(_("Entered umask is not valid!"));
 	      CommandLine::Print("Example of correct umask <local users>:<anonymous> (177:077)");
@@ -361,7 +361,7 @@ boolean FTPdCMDUmask (map options) {
 	   CommandLine::PrintNoCR(_("Umask: "));
 	   CommandLine::Print(value);
 	   CommandLine::Print("");
-	   Ftpd::EDIT_SETTINGS["Umask"] = value;
+	   FtpServer::EDIT_SETTINGS["Umask"] = value;
 	} else {
 	   CommandLine::Error(_("Entered umask is not valid!"));
 	   CommandLine::Print("Example of correct umask <files>:<dirs> (set_umask=177:077)");
@@ -375,7 +375,7 @@ boolean FTPdCMDUmask (map options) {
 boolean FTPdCMDAnonDir (map options) {
   CommandLine::Print(String::UnderlinedHeader(_("Anonymous users:"), 0));
   CommandLine::Print("");
-  if (Ftpd::vsftpd_edit) {
+  if (FtpServer::vsftpd_edit) {
      if (size(options) == 1) {
         if (options["set_anon_dir"]:nil!=nil) {
 	   string value = (string) options["set_anon_dir"]:nil;
@@ -383,7 +383,7 @@ boolean FTPdCMDAnonDir (map options) {
 	      CommandLine::PrintNoCR(_("Anonymous directory:"));
 	      CommandLine::Print(value);
 	      CommandLine::Print("");
-	      Ftpd::EDIT_SETTINGS["FtpDirAnon"] = value;
+	      FtpServer::EDIT_SETTINGS["FtpDirAnon"] = value;
 	   } else {
 	      CommandLine::Error(_("Option is empty."));
 	      CommandLine::Print("Example of correct imput set_anon_dir=/srv/ftp"); 
@@ -405,7 +405,7 @@ boolean FTPdCMDAnonDir (map options) {
 boolean FTPdCMDAuthenDir(map options) {
   CommandLine::Print(String::UnderlinedHeader(_("Authenticated users:"), 0));
   CommandLine::Print("");
-  if (Ftpd::vsftpd_edit) {
+  if (FtpServer::vsftpd_edit) {
      if (size(options) == 1) {
         if (options["set_authen_dir"]:nil!=nil) {
 	   string value = (string) options["set_authen_dir"]:nil;
@@ -413,7 +413,7 @@ boolean FTPdCMDAuthenDir(map options) {
 	      CommandLine::PrintNoCR(_("Authenticated directory:"));
 	      CommandLine::Print(value);
 	      CommandLine::Print("");
-	      Ftpd::EDIT_SETTINGS["FtpDirLocal"] = value;
+	      FtpServer::EDIT_SETTINGS["FtpDirLocal"] = value;
 	   } else {
 	      CommandLine::Error(_("Option is empty."));
 	      CommandLine::Print("Example of correct imput set_authen_dir=/srv/ftp"); 
@@ -440,12 +440,12 @@ boolean FTPdCMDPassPorts (map options) {
      integer max_port = (integer) options["set_max_port"]:nil;
      if ((min_port != nil) && (max_port != nil)) {
 	if ((min_port <= max_port) && (max_port > 0)) {
-           Ftpd::EDIT_SETTINGS["PasMinPort"] = tostring(min_port);
-	   Ftpd::EDIT_SETTINGS["PasMaxPort"] = tostring(max_port);
+           FtpServer::EDIT_SETTINGS["PasMinPort"] = tostring(min_port);
+	   FtpServer::EDIT_SETTINGS["PasMaxPort"] = tostring(max_port);
 	   CommandLine::PrintNoCR(_("Port range for passive mode: "));
-	   CommandLine::PrintNoCR(Ftpd::EDIT_SETTINGS["PasMinPort"]:nil);
+	   CommandLine::PrintNoCR(FtpServer::EDIT_SETTINGS["PasMinPort"]:nil);
 	   CommandLine::PrintNoCR(_(" - "));
-	   CommandLine::Print(Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil);
+	   CommandLine::Print(FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil);
 	   CommandLine::Print("");	   
 	} else {
 	   // TRANSLATORS: CommandLine error message
@@ -474,9 +474,9 @@ boolean CommonHandler (map options, string str_key_option,
   if (size(options) == 1) {
      integer result = (integer) options[str_key_option]:nil;
      if (result != nil) {
-	Ftpd::EDIT_SETTINGS[map_key] = tostring(result);
+	FtpServer::EDIT_SETTINGS[map_key] = tostring(result);
 	CommandLine::PrintNoCR(result_text);
-	CommandLine::Print(Ftpd::EDIT_SETTINGS[map_key]:nil);
+	CommandLine::Print(FtpServer::EDIT_SETTINGS[map_key]:nil);
 	CommandLine::Print("");
 	return true;
      } else {
@@ -532,13 +532,13 @@ boolean FTPdCMDAccess (map options) {
   if (size(options) == 1) {	
      CommandLine::PrintNoCR(_("Access alowed for: "));	
      if (options["anon_only"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["AnonAuthen"] = "0";
+	FtpServer::EDIT_SETTINGS["AnonAuthen"] = "0";
 	CommandLine::PrintNoCR(_("anonymous users"));
      } else if (options["authen_only"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["AnonAuthen"] = "1";
+	FtpServer::EDIT_SETTINGS["AnonAuthen"] = "1";
 	CommandLine::PrintNoCR(_("autheticated users"));
      } else if (options["anon_and_authen"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["AnonAuthen"] = "2";
+	FtpServer::EDIT_SETTINGS["AnonAuthen"] = "2";
 	CommandLine::PrintNoCR(_("anonymous and autheticated users"));
      } else {
         // TRANSLATORS: CommandLine error message
@@ -562,18 +562,18 @@ boolean FTPdCMDAnonAccess (map options) {
   CommandLine::Print("");
   if ((size(options) > 0) && (size(options) <= 2))  {
      if (options["can_upload"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["AnonReadOnly"] = "NO";
+	FtpServer::EDIT_SETTINGS["AnonReadOnly"] = "NO";
 	CommandLine::PrintNoCR(_("upload ENABLED"));
      } else {
-        Ftpd::EDIT_SETTINGS["AnonReadOnly"] = "YES";
+        FtpServer::EDIT_SETTINGS["AnonReadOnly"] = "YES";
 	CommandLine::PrintNoCR(_("upload DISABLED"));
      }
      CommandLine::PrintNoCR(_("; "));
      if (options["create_dirs"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["AnonCreatDirs"] = "YES";
+	FtpServer::EDIT_SETTINGS["AnonCreatDirs"] = "YES";
 	CommandLine::PrintNoCR(_("create dirs ENABLED"));
      } else {
-	Ftpd::EDIT_SETTINGS["AnonCreatDirs"] = "NO";
+	FtpServer::EDIT_SETTINGS["AnonCreatDirs"] = "NO";
 	CommandLine::PrintNoCR(_("create dirs DISABLED"));
      } 
   } else {
@@ -590,7 +590,7 @@ boolean FTPdCMDWelMessage (map options) {
   CommandLine::Print("");
   CommandLine::Print(String::UnderlinedHeader(_("Welcome Message:"), 0));
   CommandLine::Print("");
-  if (!Ftpd::vsftpd_edit) {
+  if (!FtpServer::vsftpd_edit) {
      // TRANSLATORS: CommandLine error message
      CommandLine::Error(_("This option is allowed only in vsftpd."));
      CommandLine::Print("");
@@ -598,8 +598,8 @@ boolean FTPdCMDWelMessage (map options) {
   }
   if (size(options) == 1) {
      if (options["set_message"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["Banner"] = (string) options["set_message"]:nil;
-	CommandLine::Print(Ftpd::EDIT_SETTINGS["Banner"]:nil);
+	FtpServer::EDIT_SETTINGS["Banner"] = (string) options["set_message"]:nil;
+	CommandLine::Print(FtpServer::EDIT_SETTINGS["Banner"]:nil);
         return true;
      } else {
         // TRANSLATORS: CommandLine error message
@@ -625,7 +625,7 @@ boolean FTPdCMDSSL (map options) {
   CommandLine::Print("");
   CommandLine::Print(String::UnderlinedHeader(_("Welcome Message:"), 0));
   CommandLine::Print("");
-  if (!Ftpd::vsftpd_edit) {
+  if (!FtpServer::vsftpd_edit) {
      // TRANSLATORS: CommandLine error message
      CommandLine::Error(_("This option is allowed only in vsftpd."));
      CommandLine::Print("");
@@ -634,12 +634,12 @@ boolean FTPdCMDSSL (map options) {
   if ((size(options) > 0) && (size(options) <= 3)) {
      if (size(options) == 1) {
 	if (options["enabled"]:nil != nil) {
-           Ftpd::EDIT_SETTINGS["SSLEnable"] = "YES";
+           FtpServer::EDIT_SETTINGS["SSLEnable"] = "YES";
            CommandLine::Print(_("SSL is enabled"));
            CommandLine::Print("");
 	   return true;
         } else if (options["disable"]:nil != nil) {
-	   Ftpd::EDIT_SETTINGS["SSLEnable"] = "NO";
+	   FtpServer::EDIT_SETTINGS["SSLEnable"] = "NO";
            CommandLine::Print(_("SSL is disabled"));
            CommandLine::Print("");
 	   return true;
@@ -651,14 +651,14 @@ boolean FTPdCMDSSL (map options) {
 	} 
      } else if (size(options) == 2) {
 	if (options["enabled"]:nil != nil) {
-	   Ftpd::EDIT_SETTINGS["SSLEnable"] = "YES";
+	   FtpServer::EDIT_SETTINGS["SSLEnable"] = "YES";
 	   if (options["SSL2"]:nil !=nil) {
-	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "0";
+	     FtpServer::EDIT_SETTINGS["SSLVersion"] = "0";
              CommandLine::Print(_("SSL v2 is enabled"));
              CommandLine::Print("");
              return true; 
 	   } else if (options["SSL3"]:nil !=nil) {
-	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "2";
+	     FtpServer::EDIT_SETTINGS["SSLVersion"] = "2";
              CommandLine::Print(_("SSL v3 is enabled"));
              CommandLine::Print("");
 	     return true; 
@@ -671,12 +671,12 @@ boolean FTPdCMDSSL (map options) {
 	   
 	} else if (options["disabled"]:nil != nil) {
 	   if (options["SSL2"]:nil !=nil) {
-	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "1";
+	     FtpServer::EDIT_SETTINGS["SSLVersion"] = "1";
              CommandLine::Print(_("SSL v2 is disabled"));
              CommandLine::Print("");
              return true; 
 	   } else if (options["SSL3"]:nil !=nil) {
-	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "3";
+	     FtpServer::EDIT_SETTINGS["SSLVersion"] = "3";
              CommandLine::Print(_("SSL v3 is disabled"));
              CommandLine::Print("");
 	     return true; 
@@ -689,9 +689,9 @@ boolean FTPdCMDSSL (map options) {
 	}
      } else if (size(options) == 3) {
 	if (options["enabled"]:nil != nil) {
-	   Ftpd::EDIT_SETTINGS["SSLEnable"] = "YES";
+	   FtpServer::EDIT_SETTINGS["SSLEnable"] = "YES";
 	   if ((options["SSL2"]:nil !=nil) && (options["SSL3"]:nil !=nil)) {
-	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "4";
+	     FtpServer::EDIT_SETTINGS["SSLVersion"] = "4";
              CommandLine::Print(_("SSL v2 and v3 are enabled"));
              CommandLine::Print("");
              return true; 
@@ -703,7 +703,7 @@ boolean FTPdCMDSSL (map options) {
 	   }	   
 	} else if (options["disabled"]:nil != nil) {
 	   if ((options["SSL2"]:nil !=nil) && (options["SSL3"]:nil !=nil)) {
-	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "5";
+	     FtpServer::EDIT_SETTINGS["SSLVersion"] = "5";
              CommandLine::Print(_("SSL v2 and v3 are disabled"));
              CommandLine::Print("");
              return true; 
@@ -734,7 +734,7 @@ boolean FTPdCMDTLS (map options) {
   CommandLine::Print("");
   CommandLine::Print(String::UnderlinedHeader(_("TLS connections:"), 0));
   CommandLine::Print("");
-  if (!Ftpd::vsftpd_edit) {
+  if (!FtpServer::vsftpd_edit) {
      // TRANSLATORS: CommandLine error message
      CommandLine::Error(_("This option is allowed only in vsftpd."));
      CommandLine::Print("");
@@ -742,12 +742,12 @@ boolean FTPdCMDTLS (map options) {
   }
   if (size(options) == 1) {
      if (options["enable"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["TLS"] = "YES";
+	FtpServer::EDIT_SETTINGS["TLS"] = "YES";
 	CommandLine::Print(_("TLS is enabled"));
 	CommandLine::Print("");
         return true;
      } else if (options["disable"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["TLS"] = "NO";
+	FtpServer::EDIT_SETTINGS["TLS"] = "NO";
 	CommandLine::Print(_("TLS is disabled"));
 	CommandLine::Print("");
 
@@ -773,7 +773,7 @@ boolean FTPdCMDAntiwarez (map options) {
   CommandLine::Print("");
   CommandLine::Print(String::UnderlinedHeader(_("Antiwarez:"), 0));
   CommandLine::Print("");
-  if (Ftpd::vsftpd_edit) {
+  if (FtpServer::vsftpd_edit) {
      // TRANSLATORS: CommandLine error message
      CommandLine::Error(_("This option is allowed only in pure-ftpd."));
      CommandLine::Print("");
@@ -781,12 +781,12 @@ boolean FTPdCMDAntiwarez (map options) {
   }
   if (size(options) == 1) {
      if (options["enable"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["AntiWarez"] = "YES";
+	FtpServer::EDIT_SETTINGS["AntiWarez"] = "YES";
 	CommandLine::Print(_("Antiwarez is enabled"));
 	CommandLine::Print("");
         return true;
      } else if (options["disable"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["AntiWarez"] = "NO";
+	FtpServer::EDIT_SETTINGS["AntiWarez"] = "NO";
 	CommandLine::Print(_("Antiwarez is disabled"));
 	CommandLine::Print("");
 
@@ -811,7 +811,7 @@ boolean  FTPdCMDSSL_TLS (map options) {
   CommandLine::Print("");
   CommandLine::Print(String::UnderlinedHeader(_("Security Settings:"), 0));
   CommandLine::Print("");
-  if (Ftpd::vsftpd_edit) {
+  if (FtpServer::vsftpd_edit) {
      // TRANSLATORS: CommandLine error message
      CommandLine::Error(_("This option is allowed only in pure-ftpd."));
      CommandLine::Print("");
@@ -819,16 +819,16 @@ boolean  FTPdCMDSSL_TLS (map options) {
   }
   if (size(options) == 1) {
      if (options["enable"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["SSL"] = "0";
+	FtpServer::EDIT_SETTINGS["SSL"] = "0";
 	CommandLine::Print(_("SSL and TLS are enabled"));
 	CommandLine::Print("");
         return true;
      } else if (options["disable"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["SSL"] = "1";
+	FtpServer::EDIT_SETTINGS["SSL"] = "1";
 	CommandLine::Print(_("SSL and TLS are disabled"));
 	CommandLine::Print("");
      } else if (options["only"]:nil != nil) {
-	Ftpd::EDIT_SETTINGS["SSL"] = "2";
+	FtpServer::EDIT_SETTINGS["SSL"] = "2";
 	CommandLine::Print(_("Refuse connection without SSL/TLS"));
 	CommandLine::Print("");
 
@@ -854,8 +854,8 @@ map cmdline_description = $[
     /* Command line help text for the Xftpd module */
   "help"	: _("Configuration of ftpd"),
   "guihandler"	: FtpdSequence,
-  "initialize"	: Ftpd::Read,
-  "finish"	: Ftpd::Write,
+  "initialize"	: FtpServer::Read,
+  "finish"	: FtpServer::Write,
   "actions"	: $[
 
 	"show"    : $[

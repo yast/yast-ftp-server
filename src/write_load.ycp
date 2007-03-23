@@ -22,9 +22,9 @@ boolean IdFTPXined () {
      while (size(Inetd::netd_conf) > i) {        				     	       
        ids = tostring( Inetd::netd_conf[i,"iid"]:nil);
        if (regexpmatch(ids, "vsftpd"))
-	  Ftpd::vsftpd_xined_id = i;
+	  FtpServer::vsftpd_xined_id = i;
        else if (regexpmatch(ids, "pure-ftpd"))
-          Ftpd::pureftpd_xined_id = i;		
+          FtpServer::pureftpd_xined_id = i;		
        i=i+1;	  			
      } // while (size(Inetd::netd_conf) > i) {
      return true;
@@ -36,12 +36,12 @@ boolean IdFTPXined () {
 
 boolean InitStartViaXinetd () {
   if (IdFTPXined ()) {
-     if (Ftpd::vsftpd_edit) {		 
-        if (Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"]:nil == true)
-           Ftpd::EDIT_SETTINGS["StartDaemon"] = "2"; 
+     if (FtpServer::vsftpd_edit) {		 
+        if (Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"]:nil == true)
+           FtpServer::EDIT_SETTINGS["StartDaemon"] = "2"; 
      } else {
-        if (Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"]:nil == true)
-           Ftpd::EDIT_SETTINGS["StartDaemon"] = "2";
+        if (Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"]:nil == true)
+           FtpServer::EDIT_SETTINGS["StartDaemon"] = "2";
      }
      return true;
   } else //end of if (IdFTPXined ())]
@@ -52,31 +52,31 @@ boolean InitStartViaXinetd () {
 boolean WriteStartViaXinetd (boolean startxinetd) { 
   string pure_options = "";
   boolean result = false;
-  if (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "2"){
-     if (Ftpd::vsftpd_edit) {
-        Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"] = true;
-        Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"] = false;
+  if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2"){
+     if (FtpServer::vsftpd_edit) {
+        Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = true;
+        Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = false;
      } else {
-        Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"] = true;
-        Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"] = false;
+        Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = true;
+        Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = false;
         map options = (map)SCR::Execute (.target.bash_output, 
                       "/usr/sbin/pure-config-args /etc/pure-ftpd/pure-ftpd.conf");        
 	if (options["exit"]:nil ==  0)
            pure_options = (string) options["stdout"]:nil;
         else
            return false; 
-        Inetd::netd_conf[Ftpd::pureftpd_xined_id,"server"] = "/usr/sbin/pure-ftpd";
-        Inetd::netd_conf[Ftpd::pureftpd_xined_id,"server_args"] = pure_options;
+        Inetd::netd_conf[FtpServer::pureftpd_xined_id,"server"] = "/usr/sbin/pure-ftpd";
+        Inetd::netd_conf[FtpServer::pureftpd_xined_id,"server_args"] = pure_options;
      }
      if (startxinetd)
         Inetd::netd_status = 0; //start xinetd if not running else reload
   } else {
-    Inetd::netd_conf[Ftpd::pureftpd_xined_id,"enabled"] = false;
-    Inetd::netd_conf[Ftpd::vsftpd_xined_id,"enabled"] = false;
-  } //end of else [ if (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "2")]
+    Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = false;
+    Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = false;
+  } //end of else [ if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2")]
 
-  Inetd::netd_conf[Ftpd::pureftpd_xined_id,"changed"] = true;
-  Inetd::netd_conf[Ftpd::vsftpd_xined_id,"changed"] = true;
+  Inetd::netd_conf[FtpServer::pureftpd_xined_id,"changed"] = true;
+  Inetd::netd_conf[FtpServer::vsftpd_xined_id,"changed"] = true;
   // writing changes into xinetd
   boolean status_progress = Progress::set(false);
   result = Inetd::Write();
@@ -100,54 +100,54 @@ global string ValueUI (string key, boolean write) {
   string yes_no = "";
   switch(key) {
     case("ChrootEnable"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-              Ftpd::VS_SETTINGS["chroot_local_user"] = Ftpd::EDIT_SETTINGS["ChrootEnable"]:nil;	
+              FtpServer::VS_SETTINGS["chroot_local_user"] = FtpServer::EDIT_SETTINGS["ChrootEnable"]:nil;	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "chroot_local_user") ? 
-		     toupper(Ftpd::VS_SETTINGS["chroot_local_user"]:nil) : Ftpd::DEFAULT_CONFIG["ChrootEnable"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "chroot_local_user") ? 
+		     toupper(FtpServer::VS_SETTINGS["chroot_local_user"]:nil) : FtpServer::DEFAULT_CONFIG["ChrootEnable"]:nil));
  	   }	
 	} else {
 	   if (write) {              
-	      Ftpd::PURE_SETTINGS["ChrootEveryone"] = Ftpd::EDIT_SETTINGS["ChrootEnable"]:nil;	
+	      FtpServer::PURE_SETTINGS["ChrootEveryone"] = FtpServer::EDIT_SETTINGS["ChrootEnable"]:nil;	
            } else {
-	      return ((haskey(Ftpd::PURE_SETTINGS, "ChrootEveryone") ? 
-		     toupper(Ftpd::PURE_SETTINGS["ChrootEveryone"]:nil) : Ftpd::DEFAULT_CONFIG["ChrootEnable"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "ChrootEveryone") ? 
+		     toupper(FtpServer::PURE_SETTINGS["ChrootEveryone"]:nil) : FtpServer::DEFAULT_CONFIG["ChrootEnable"]:nil));
  	   }	   
 	}
 	break;
     case("VerboseLogging"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-              Ftpd::VS_SETTINGS["log_ftp_protocol"] = Ftpd::EDIT_SETTINGS["VerboseLogging"]:nil;	
+              FtpServer::VS_SETTINGS["log_ftp_protocol"] = FtpServer::EDIT_SETTINGS["VerboseLogging"]:nil;	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "log_ftp_protocol") ? 
-		     toupper(Ftpd::VS_SETTINGS["log_ftp_protocol"]:nil) : Ftpd::DEFAULT_CONFIG["VerboseLogging"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "log_ftp_protocol") ? 
+		     toupper(FtpServer::VS_SETTINGS["log_ftp_protocol"]:nil) : FtpServer::DEFAULT_CONFIG["VerboseLogging"]:nil));
  	   }	
 	} else {
 	   if (write)
-              Ftpd::PURE_SETTINGS["VerboseLog"] = Ftpd::EDIT_SETTINGS["VerboseLogging"]:nil;
+              FtpServer::PURE_SETTINGS["VerboseLog"] = FtpServer::EDIT_SETTINGS["VerboseLogging"]:nil;
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "VerboseLog") ?
-		     toupper(Ftpd::PURE_SETTINGS["VerboseLog"]:nil):Ftpd::DEFAULT_CONFIG["VerboseLogging"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "VerboseLog") ?
+		     toupper(FtpServer::PURE_SETTINGS["VerboseLog"]:nil):FtpServer::DEFAULT_CONFIG["VerboseLogging"]:nil));
 	}
 	break;
 
     //only vsftpd
     case("FtpDirLocal"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-	      if (Ftpd::EDIT_SETTINGS["FtpDirLocal"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["local_root"] = Ftpd::EDIT_SETTINGS["FtpDirLocal"]:nil;
+	      if (FtpServer::EDIT_SETTINGS["FtpDirLocal"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["local_root"] = FtpServer::EDIT_SETTINGS["FtpDirLocal"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["local_root"] = nil;	
+		 FtpServer::VS_SETTINGS["local_root"] = nil;	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "local_root") ? 
-		     toupper(Ftpd::VS_SETTINGS["local_root"]:nil) : Ftpd::DEFAULT_CONFIG["FtpDirLocal"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "local_root") ? 
+		     toupper(FtpServer::VS_SETTINGS["local_root"]:nil) : FtpServer::DEFAULT_CONFIG["FtpDirLocal"]:nil));
  	   }	
 	} else {	   
 	   if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["FtpDirLocal"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["FtpDirLocal"]:nil;
            else
               return "";
 	}
@@ -155,38 +155,38 @@ global string ValueUI (string key, boolean write) {
 
    //only vsftpd
     case("FtpDirAnon"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-	      if (Ftpd::EDIT_SETTINGS["FtpDirAnon"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["anon_root"] = Ftpd::EDIT_SETTINGS["FtpDirAnon"]:nil;
+	      if (FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["anon_root"] = FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["anon_root"] = nil;	
+		 FtpServer::VS_SETTINGS["anon_root"] = nil;	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "anon_root") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_root"]:nil) : Ftpd::DEFAULT_CONFIG["FtpDirAnon"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "anon_root") ? 
+		     toupper(FtpServer::VS_SETTINGS["anon_root"]:nil) : FtpServer::DEFAULT_CONFIG["FtpDirAnon"]:nil));
  	   }	
 	} else {	   
 	   if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["FtpDirAnon"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["FtpDirAnon"]:nil;
            else
               return "";
 	}
 	break;
     //only vsftpd
     case("UmaskAnon"):
-        if (Ftpd::vsftpd_edit) {
+        if (FtpServer::vsftpd_edit) {
 	   if (write) {
-	      if (Ftpd::EDIT_SETTINGS["UmaskAnon"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["anon_umask"] = Ftpd::EDIT_SETTINGS["UmaskAnon"]:nil;
+	      if (FtpServer::EDIT_SETTINGS["UmaskAnon"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["anon_umask"] = FtpServer::EDIT_SETTINGS["UmaskAnon"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["anon_umask"] = nil;
+		 FtpServer::VS_SETTINGS["anon_umask"] = nil;
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "anon_umask") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_umask"]:nil) : Ftpd::DEFAULT_CONFIG["UmaskAnon"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "anon_umask") ? 
+		     toupper(FtpServer::VS_SETTINGS["anon_umask"]:nil) : FtpServer::DEFAULT_CONFIG["UmaskAnon"]:nil));
  	   }	
         }  else {
 	    if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["UmaskAnon"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["UmaskAnon"]:nil;
             else
               return "";
 	}
@@ -194,19 +194,19 @@ global string ValueUI (string key, boolean write) {
 
     //only vsftpd
     case("UmaskLocal"):
-        if (Ftpd::vsftpd_edit) {
+        if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["UmaskLocal"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["local_umask"] = Ftpd::EDIT_SETTINGS["UmaskLocal"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["UmaskLocal"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["local_umask"] = FtpServer::EDIT_SETTINGS["UmaskLocal"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["local_umask"] = nil;             	
+		 FtpServer::VS_SETTINGS["local_umask"] = nil;             	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "local_umask") ? 
-		     toupper(Ftpd::VS_SETTINGS["local_umask"]:nil) : Ftpd::DEFAULT_CONFIG["UmaskLocal"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "local_umask") ? 
+		     toupper(FtpServer::VS_SETTINGS["local_umask"]:nil) : FtpServer::DEFAULT_CONFIG["UmaskLocal"]:nil));
  	   }	  
         } else {
 	   if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["UmaskLocal"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["UmaskLocal"]:nil;
             else
               return "";
 	}
@@ -214,58 +214,58 @@ global string ValueUI (string key, boolean write) {
 
     //only pure-ftpd
     case("Umask"):
-        if (Ftpd::vsftpd_edit) {
+        if (FtpServer::vsftpd_edit) {
 	   if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["Umask"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["Umask"]:nil;
            else
               return "";
         } else {
 	   if (write) {
-              if (Ftpd::EDIT_SETTINGS["Umask"]:nil != "")
-		 Ftpd::PURE_SETTINGS["Umask"] = Ftpd::EDIT_SETTINGS["Umask"]:nil;
+              if (FtpServer::EDIT_SETTINGS["Umask"]:nil != "")
+		 FtpServer::PURE_SETTINGS["Umask"] = FtpServer::EDIT_SETTINGS["Umask"]:nil;
 	      else
-		 Ftpd::PURE_SETTINGS["Umask"] = nil;	
+		 FtpServer::PURE_SETTINGS["Umask"] = nil;	
 	   }
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "Umask") ?
-	             Ftpd::PURE_SETTINGS["Umask"]:nil:Ftpd::DEFAULT_CONFIG["Umask"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "Umask") ?
+	             FtpServer::PURE_SETTINGS["Umask"]:nil:FtpServer::DEFAULT_CONFIG["Umask"]:nil));
 	}
 	break;
 
     case("PasMinPort"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["PasMinPort"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["pasv_min_port"] = Ftpd::EDIT_SETTINGS["PasMinPort"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["PasMinPort"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["pasv_min_port"] = FtpServer::EDIT_SETTINGS["PasMinPort"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["pasv_min_port"] = nil; 	
+		 FtpServer::VS_SETTINGS["pasv_min_port"] = nil; 	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "pasv_min_port") ? 
-		     toupper(Ftpd::VS_SETTINGS["pasv_min_port"]:nil) : Ftpd::DEFAULT_CONFIG["PasMinPort"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "pasv_min_port") ? 
+		     toupper(FtpServer::VS_SETTINGS["pasv_min_port"]:nil) : FtpServer::DEFAULT_CONFIG["PasMinPort"]:nil));
 	   }
 	} else {
 	   if (write) {
-	      if ((Ftpd::EDIT_SETTINGS["PasMinPort"]:nil != "") && 
-		 (Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil != "")) {		 
-	         ports = add(ports, Ftpd::EDIT_SETTINGS["PasMinPort"]:nil);
-	         ports = add(ports, Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil);
+	      if ((FtpServer::EDIT_SETTINGS["PasMinPort"]:nil != "") && 
+		 (FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil != "")) {		 
+	         ports = add(ports, FtpServer::EDIT_SETTINGS["PasMinPort"]:nil);
+	         ports = add(ports, FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil);
 	         if (size(ports) == 2) {
 		    string val = ports[0]:nil;
 		    val = val+" ";
 		    val = val+ports[1]:nil;
-		    Ftpd::PURE_SETTINGS["PassivePortRange"] = val;
+		    FtpServer::PURE_SETTINGS["PassivePortRange"] = val;
 	         }
 	      } else {
-		    Ftpd::PURE_SETTINGS["PassivePortRange"] = nil;
+		    FtpServer::PURE_SETTINGS["PassivePortRange"] = nil;
 	      }
  	   }	
            else {
-	      if (haskey(Ftpd::PURE_SETTINGS, "PassivePortRange")) {
-	         ports = splitstring(Ftpd::PURE_SETTINGS["PassivePortRange"]:nil," ");
+	      if (haskey(FtpServer::PURE_SETTINGS, "PassivePortRange")) {
+	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil," ");
 	         if (size(ports)==2)
 		    return ports[0]:"";
 	      } else {
-	         return Ftpd::DEFAULT_CONFIG["PasMinPort"]:nil;
+	         return FtpServer::DEFAULT_CONFIG["PasMinPort"]:nil;
 	      }
 	  }
 	}	
@@ -273,176 +273,176 @@ global string ValueUI (string key, boolean write) {
 
        
     case("PasMaxPort"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["pasv_max_port"] = Ftpd::EDIT_SETTINGS["PasMaxPort"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["pasv_max_port"] = FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["pasv_max_port"] = nil; 	
+		 FtpServer::VS_SETTINGS["pasv_max_port"] = nil; 	
   	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "pasv_max_port") ? 
-		     toupper(Ftpd::VS_SETTINGS["pasv_max_port"]:nil) : Ftpd::DEFAULT_CONFIG["PasMaxPort"]:nil)); 
+	      return ((haskey(FtpServer::VS_SETTINGS, "pasv_max_port") ? 
+		     toupper(FtpServer::VS_SETTINGS["pasv_max_port"]:nil) : FtpServer::DEFAULT_CONFIG["PasMaxPort"]:nil)); 
 	   }
 	} else {
 	   if (write)
               return "";
            else {
-	      if (haskey(Ftpd::PURE_SETTINGS, "PassivePortRange")) {
-	         ports = splitstring(Ftpd::PURE_SETTINGS["PassivePortRange"]:nil," ");
+	      if (haskey(FtpServer::PURE_SETTINGS, "PassivePortRange")) {
+	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil," ");
 	         if (size(ports)==2)
 		    return ports[1]:"";
 	      } else {
-	         return Ftpd::DEFAULT_CONFIG["PasMaxPort"]:nil;
+	         return FtpServer::DEFAULT_CONFIG["PasMaxPort"]:nil;
 	      }
 	  }
 	}	
 	break;
 
     case("MaxIdleTime"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["idle_session_timeout"] = Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["idle_session_timeout"] = FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["idle_session_timeout"] = nil; 		
+		 FtpServer::VS_SETTINGS["idle_session_timeout"] = nil; 		
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "idle_session_timeout") ? 
-		     toupper(Ftpd::VS_SETTINGS["idle_session_timeout"]:nil) : Ftpd::DEFAULT_CONFIG["MaxIdleTime"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "idle_session_timeout") ? 
+		     toupper(FtpServer::VS_SETTINGS["idle_session_timeout"]:nil) : FtpServer::DEFAULT_CONFIG["MaxIdleTime"]:nil));
 	   } 
 	} else {
 	   if (write) {
-	      if (Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil!="") {
-                 Ftpd::PURE_SETTINGS["MaxIdleTime"] = Ftpd::EDIT_SETTINGS["MaxIdleTime"]:nil;
+	      if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil!="") {
+                 FtpServer::PURE_SETTINGS["MaxIdleTime"] = FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil;
 	      } else {
-		 Ftpd::PURE_SETTINGS["MaxIdleTime"] = nil;
+		 FtpServer::PURE_SETTINGS["MaxIdleTime"] = nil;
 	      }
 	   }
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "MaxIdleTime") ?
-		     Ftpd::PURE_SETTINGS["MaxIdleTime"]:nil:Ftpd::DEFAULT_CONFIG["MaxIdleTime"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "MaxIdleTime") ?
+		     FtpServer::PURE_SETTINGS["MaxIdleTime"]:nil:FtpServer::DEFAULT_CONFIG["MaxIdleTime"]:nil));
 	}
 	break;
 
    case("MaxClientsPerIP"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["max_per_ip"] = Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["max_per_ip"] = FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["max_per_ip"] = nil; 			
+		 FtpServer::VS_SETTINGS["max_per_ip"] = nil; 			
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "max_per_ip") ? 
-		     toupper(Ftpd::VS_SETTINGS["max_per_ip"]:nil) : Ftpd::DEFAULT_CONFIG["MaxClientsPerIP"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "max_per_ip") ? 
+		     toupper(FtpServer::VS_SETTINGS["max_per_ip"]:nil) : FtpServer::DEFAULT_CONFIG["MaxClientsPerIP"]:nil));
 	   } 
 
 	} else {
 	   if (write) {
-	      if (Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="")
-                 Ftpd::PURE_SETTINGS["MaxClientsPerIP"] = Ftpd::EDIT_SETTINGS["MaxClientsPerIP"]:nil;
+	      if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="")
+                 FtpServer::PURE_SETTINGS["MaxClientsPerIP"] = FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil;
 	      else
-		Ftpd::PURE_SETTINGS["MaxClientsPerIP"] = nil; 
+		FtpServer::PURE_SETTINGS["MaxClientsPerIP"] = nil; 
 	   }
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "MaxClientsPerIP") ?
-		     Ftpd::PURE_SETTINGS["MaxClientsPerIP"]:nil:Ftpd::DEFAULT_CONFIG["MaxClientsPerIP"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "MaxClientsPerIP") ?
+		     FtpServer::PURE_SETTINGS["MaxClientsPerIP"]:nil:FtpServer::DEFAULT_CONFIG["MaxClientsPerIP"]:nil));
 	}
 	break;
 
 
    case("MaxClientsNumber"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["max_clients"] = Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["max_clients"] = FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["max_clients"] = nil; 		
+		 FtpServer::VS_SETTINGS["max_clients"] = nil; 		
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "max_clients") ? 
-		     toupper(Ftpd::VS_SETTINGS["max_clients"]:nil) : Ftpd::DEFAULT_CONFIG["MaxClientsNumber"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "max_clients") ? 
+		     toupper(FtpServer::VS_SETTINGS["max_clients"]:nil) : FtpServer::DEFAULT_CONFIG["MaxClientsNumber"]:nil));
 	   } 
 	} else {
 	   if (write) {
-	      if (Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil!="")
-                 Ftpd::PURE_SETTINGS["MaxClientsNumber"] = Ftpd::EDIT_SETTINGS["MaxClientsNumber"]:nil;
+	      if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil!="")
+                 FtpServer::PURE_SETTINGS["MaxClientsNumber"] = FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil;
 	      else
-		Ftpd::PURE_SETTINGS["MaxClientsNumber"] = nil;
+		FtpServer::PURE_SETTINGS["MaxClientsNumber"] = nil;
 	   }
            else
-	     return ((haskey(Ftpd::PURE_SETTINGS, "MaxClientsNumber") ?
-		    Ftpd::PURE_SETTINGS["MaxClientsNumber"]:nil:Ftpd::DEFAULT_CONFIG["MaxClientsNumber"]:nil));
+	     return ((haskey(FtpServer::PURE_SETTINGS, "MaxClientsNumber") ?
+		    FtpServer::PURE_SETTINGS["MaxClientsNumber"]:nil:FtpServer::DEFAULT_CONFIG["MaxClientsNumber"]:nil));
 	}
 	break;
 
    case("LocalMaxRate"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["local_max_rate"] = Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["local_max_rate"] = FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["local_max_rate"] = nil; 		
+		 FtpServer::VS_SETTINGS["local_max_rate"] = nil; 		
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "local_max_rate") ? 
-		     toupper(Ftpd::VS_SETTINGS["local_max_rate"]:nil) : Ftpd::DEFAULT_CONFIG["LocalMaxRate"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "local_max_rate") ? 
+		     toupper(FtpServer::VS_SETTINGS["local_max_rate"]:nil) : FtpServer::DEFAULT_CONFIG["LocalMaxRate"]:nil));
 	   } 
 	} else {
 	   if (write) {
-	      if (Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil!="")
-                 Ftpd::PURE_SETTINGS["UserBandwidth"] = Ftpd::EDIT_SETTINGS["LocalMaxRate"]:nil;
+	      if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil!="")
+                 FtpServer::PURE_SETTINGS["UserBandwidth"] = FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil;
 	      else
-		Ftpd::PURE_SETTINGS["UserBandwidth"] = nil;
+		FtpServer::PURE_SETTINGS["UserBandwidth"] = nil;
 	   }
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "UserBandwidth") ?
-		     Ftpd::PURE_SETTINGS["UserBandwidth"]:nil:Ftpd::DEFAULT_CONFIG["LocalMaxRate"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "UserBandwidth") ?
+		     FtpServer::PURE_SETTINGS["UserBandwidth"]:nil:FtpServer::DEFAULT_CONFIG["LocalMaxRate"]:nil));
 	}
 	break;
 
    case("AnonMaxRate"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["anon_max_rate"] = Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["anon_max_rate"] = FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["anon_max_rate"] = nil; 		
+		 FtpServer::VS_SETTINGS["anon_max_rate"] = nil; 		
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "anon_max_rate") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_max_rate"]:nil) : Ftpd::DEFAULT_CONFIG["AnonMaxRate"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "anon_max_rate") ? 
+		     toupper(FtpServer::VS_SETTINGS["anon_max_rate"]:nil) : FtpServer::DEFAULT_CONFIG["AnonMaxRate"]:nil));
 	   } 
 
 	} else {
 	   if (write) {
- 	      if (Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil!="")
-                 Ftpd::PURE_SETTINGS["AnonymousBandwidth"] = Ftpd::EDIT_SETTINGS["AnonMaxRate"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil!="")
+                 FtpServer::PURE_SETTINGS["AnonymousBandwidth"] = FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil;
 	      else
-		Ftpd::PURE_SETTINGS["AnonymousBandwidth"] = nil;
+		FtpServer::PURE_SETTINGS["AnonymousBandwidth"] = nil;
 	   }          
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousBandwidth") ?
-		     Ftpd::PURE_SETTINGS["AnonymousBandwidth"]:nil:Ftpd::DEFAULT_CONFIG["AnonMaxRate"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "AnonymousBandwidth") ?
+		     FtpServer::PURE_SETTINGS["AnonymousBandwidth"]:nil:FtpServer::DEFAULT_CONFIG["AnonMaxRate"]:nil));
 	}
 	break;
 
    case("AnonAuthen"):
         integer authen = 0;
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-              string val = Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil;
+              string val = FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil;
 	      if (val == "0") {
-		 Ftpd::VS_SETTINGS["anonymous_enable"] = "YES";
-		 Ftpd::VS_SETTINGS["local_enable"] = "NO";
+		 FtpServer::VS_SETTINGS["anonymous_enable"] = "YES";
+		 FtpServer::VS_SETTINGS["local_enable"] = "NO";
 	      } else if (val == "1") {
-		 Ftpd::VS_SETTINGS["anonymous_enable"] = "NO";
-		 Ftpd::VS_SETTINGS["local_enable"] = "YES";
+		 FtpServer::VS_SETTINGS["anonymous_enable"] = "NO";
+		 FtpServer::VS_SETTINGS["local_enable"] = "YES";
 	      } else {
-		 Ftpd::VS_SETTINGS["anonymous_enable"] = "YES";
-		 Ftpd::VS_SETTINGS["local_enable"] = "YES";
+		 FtpServer::VS_SETTINGS["anonymous_enable"] = "YES";
+		 FtpServer::VS_SETTINGS["local_enable"] = "YES";
 	      }
 	      
            } else {
 	      yes_no ="";
-	      if (haskey(Ftpd::VS_SETTINGS, "anonymous_enable")) {
-		 yes_no = toupper(Ftpd::VS_SETTINGS["anonymous_enable"]:nil);
+	      if (haskey(FtpServer::VS_SETTINGS, "anonymous_enable")) {
+		 yes_no = toupper(FtpServer::VS_SETTINGS["anonymous_enable"]:nil);
 	      } else {
 		 yes_no = "YES";
 	      }
@@ -451,8 +451,8 @@ global string ValueUI (string key, boolean write) {
 	      } else {
                  authen = 1;
 	      }	      
-	      if (haskey(Ftpd::VS_SETTINGS, "local_enable")) {
-		 yes_no = toupper(Ftpd::VS_SETTINGS["local_enable"]:nil);
+	      if (haskey(FtpServer::VS_SETTINGS, "local_enable")) {
+		 yes_no = toupper(FtpServer::VS_SETTINGS["local_enable"]:nil);
 	      } else {
 		 yes_no = "NO";
 	      }
@@ -469,30 +469,30 @@ global string ValueUI (string key, boolean write) {
 
 	} else {
 	   if (write) {
-              string val = Ftpd::EDIT_SETTINGS["AnonAuthen"]:nil;
+              string val = FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil;
 	      if (val == "0") {
-		 Ftpd::PURE_SETTINGS["AnonymousOnly"] = "YES";
-		 Ftpd::PURE_SETTINGS["NoAnonymous"] = "NO";
+		 FtpServer::PURE_SETTINGS["AnonymousOnly"] = "YES";
+		 FtpServer::PURE_SETTINGS["NoAnonymous"] = "NO";
 	      } else if (val == "1") {
-		 Ftpd::PURE_SETTINGS["AnonymousOnly"] = "NO";
-		 Ftpd::PURE_SETTINGS["NoAnonymous"] = "YES";
+		 FtpServer::PURE_SETTINGS["AnonymousOnly"] = "NO";
+		 FtpServer::PURE_SETTINGS["NoAnonymous"] = "YES";
 	      } else {
-		 Ftpd::PURE_SETTINGS["AnonymousOnly"] = "NO";
-		 Ftpd::PURE_SETTINGS["NoAnonymous"] = "NO";
+		 FtpServer::PURE_SETTINGS["AnonymousOnly"] = "NO";
+		 FtpServer::PURE_SETTINGS["NoAnonymous"] = "NO";
 	      }
 	   }
            else {
               yes_no = "";
-	      if (haskey(Ftpd::PURE_SETTINGS, "AnonymousOnly")) {
-	         yes_no = toupper(Ftpd::PURE_SETTINGS["AnonymousOnly"]:nil);
+	      if (haskey(FtpServer::PURE_SETTINGS, "AnonymousOnly")) {
+	         yes_no = toupper(FtpServer::PURE_SETTINGS["AnonymousOnly"]:nil);
               }
 	      if (yes_no == "YES")
 	         authen = 0;
 	      else
                  authen = 1;
 	      yes_no = "";
-              if (haskey(Ftpd::PURE_SETTINGS, "NoAnonymous")) {
-	         string yes_no = toupper(Ftpd::PURE_SETTINGS["NoAnonymous"]:nil);
+              if (haskey(FtpServer::PURE_SETTINGS, "NoAnonymous")) {
+	         string yes_no = toupper(FtpServer::PURE_SETTINGS["NoAnonymous"]:nil);
 	      
               }           
 	      if (yes_no == "YES")
@@ -505,27 +505,27 @@ global string ValueUI (string key, boolean write) {
 	break;
 
     case("AnonReadOnly"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) {
-	      yes_no = Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil;
+	      yes_no = FtpServer::EDIT_SETTINGS["AnonReadOnly"]:nil;
 	      if (yes_no == "YES") 
-                 Ftpd::VS_SETTINGS["anon_upload_enable"] = "NO";
+                 FtpServer::VS_SETTINGS["anon_upload_enable"] = "NO";
 	      else
-		 Ftpd::VS_SETTINGS["anon_upload_enable"] = "YES";	
+		 FtpServer::VS_SETTINGS["anon_upload_enable"] = "YES";	
            } else {
-              if (haskey(Ftpd::VS_SETTINGS, "anon_upload_enable")) {
-		  yes_no = toupper(Ftpd::VS_SETTINGS["anon_upload_enable"]:nil);
+              if (haskey(FtpServer::VS_SETTINGS, "anon_upload_enable")) {
+		  yes_no = toupper(FtpServer::VS_SETTINGS["anon_upload_enable"]:nil);
 		  return ((yes_no == "YES") ? "NO":"YES");
 	      } else {
-		  return Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil;
+		  return FtpServer::DEFAULT_CONFIG["AnonReadOnly"]:nil;
 	      }
 	   } 
 	} else {
 	   if (write) {
-	      Ftpd::PURE_SETTINGS["AnonymousCantUpload"] = Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil;
+	      FtpServer::PURE_SETTINGS["AnonymousCantUpload"] = FtpServer::EDIT_SETTINGS["AnonReadOnly"]:nil;
 	   } else {
-	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousCantUpload") ? 
-		     toupper(Ftpd::PURE_SETTINGS["AnonymousCantUpload"]:nil) : Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil)); 
+	      return ((haskey(FtpServer::PURE_SETTINGS, "AnonymousCantUpload") ? 
+		     toupper(FtpServer::PURE_SETTINGS["AnonymousCantUpload"]:nil) : FtpServer::DEFAULT_CONFIG["AnonReadOnly"]:nil)); 
    	   }        	
 	}
 	break;
@@ -533,37 +533,37 @@ global string ValueUI (string key, boolean write) {
      case("AnonCreatDirs"):
 	if (vsftpd_edit) {
 	   if (write) { 
-              Ftpd::VS_SETTINGS["anon_mkdir_write_enable"] = EDIT_SETTINGS["AnonCreatDirs"]:nil;	      	
+              FtpServer::VS_SETTINGS["anon_mkdir_write_enable"] = EDIT_SETTINGS["AnonCreatDirs"]:nil;	      	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "anon_mkdir_write_enable") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_mkdir_write_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "anon_mkdir_write_enable") ? 
+		     toupper(FtpServer::VS_SETTINGS["anon_mkdir_write_enable"]:nil) : FtpServer::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
 	   } 
 
 
 	} else {
 	   if (write)
-              Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"] = Ftpd::EDIT_SETTINGS["AnonCreatDirs"]:nil;
+              FtpServer::PURE_SETTINGS["AnonymousCanCreateDirs"] = FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil;
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousCanCreateDirs") ?
-		     toupper(Ftpd::PURE_SETTINGS["AnonymousCanCreateDirs"]:nil):Ftpd::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
+	      return ((haskey(FtpServer::PURE_SETTINGS, "AnonymousCanCreateDirs") ?
+		     toupper(FtpServer::PURE_SETTINGS["AnonymousCanCreateDirs"]:nil):FtpServer::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
 	}
 	break;
 
     //only vsftpd
     case("Banner"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["Banner"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["ftpd_banner"] = Ftpd::EDIT_SETTINGS["Banner"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["Banner"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["ftpd_banner"] = FtpServer::EDIT_SETTINGS["Banner"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["ftpd_banner"] = nil;	
+		 FtpServer::VS_SETTINGS["ftpd_banner"] = nil;	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "ftpd_banner") ? 
-		     Ftpd::VS_SETTINGS["ftpd_banner"]:nil : Ftpd::DEFAULT_CONFIG["Banner"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "ftpd_banner") ? 
+		     FtpServer::VS_SETTINGS["ftpd_banner"]:nil : FtpServer::DEFAULT_CONFIG["Banner"]:nil));
 	   } 
 	} else {
            if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["Banner"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["Banner"]:nil;
            else
               return "";
         }
@@ -572,19 +572,19 @@ global string ValueUI (string key, boolean write) {
 
     //only vsftpd
     case("SSLEnable"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (Ftpd::EDIT_SETTINGS["SSLEnable"]:nil != "")	       
-                 Ftpd::VS_SETTINGS["ssl_enable"] = Ftpd::EDIT_SETTINGS["SSLEnable"]:nil;
+ 	      if (FtpServer::EDIT_SETTINGS["SSLEnable"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["ssl_enable"] = FtpServer::EDIT_SETTINGS["SSLEnable"]:nil;
 	      else
-		 Ftpd::VS_SETTINGS["ssl_enable"] = "NO";	
+		 FtpServer::VS_SETTINGS["ssl_enable"] = "NO";	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "ssl_enable") ? 
-		     toupper(Ftpd::VS_SETTINGS["ssl_enable"]:nil) : Ftpd::DEFAULT_CONFIG["SSLEnable"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "ssl_enable") ? 
+		     toupper(FtpServer::VS_SETTINGS["ssl_enable"]:nil) : FtpServer::DEFAULT_CONFIG["SSLEnable"]:nil));
 	   } 
 	} else {
            if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["SSLEnable"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["SSLEnable"]:nil;
            else
               return "";
         }
@@ -596,45 +596,45 @@ global string ValueUI (string key, boolean write) {
    //only vsftpd
    case("SSLVersion"):
 	integer ssl_vsftpd = 0;
-	if (Ftpd::vsftpd_edit) {
-	   if (haskey(Ftpd::EDIT_SETTINGS, "SSLEnable"))
-	      yes_no = toupper(Ftpd::EDIT_SETTINGS["SSLEnable"]:nil);
+	if (FtpServer::vsftpd_edit) {
+	   if (haskey(FtpServer::EDIT_SETTINGS, "SSLEnable"))
+	      yes_no = toupper(FtpServer::EDIT_SETTINGS["SSLEnable"]:nil);
 	   else 
 	      yes_no = "NO";
 	   if (write) {
-	      Ftpd::VS_SETTINGS["ssl_enable"] = Ftpd::EDIT_SETTINGS["SSLEnable"]:nil;
+	      FtpServer::VS_SETTINGS["ssl_enable"] = FtpServer::EDIT_SETTINGS["SSLEnable"]:nil;
 	      if (yes_no == "YES") {
-		 if (haskey(Ftpd::EDIT_SETTINGS, "SSLVersion")) {
-		    ssl_vsftpd = tointeger(Ftpd::EDIT_SETTINGS["SSLVersion"]:nil);
+		 if (haskey(FtpServer::EDIT_SETTINGS, "SSLVersion")) {
+		    ssl_vsftpd = tointeger(FtpServer::EDIT_SETTINGS["SSLVersion"]:nil);
 		    if (ssl_vsftpd == 0) {
-		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "YES";
-		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "NO";
+		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "YES";
+		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "NO";
 		    } else if (ssl_vsftpd == 1) {
-		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "NO";
+		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "NO";
 		    } else if (ssl_vsftpd == 2) {
-		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "NO";
-		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "YES";
+		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "NO";
+		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "YES";
 		    } else if (ssl_vsftpd == 3) {
-		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "NO";
+		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "NO";
 		    } else if (ssl_vsftpd == 4) {
- 		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "YES";
-		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "YES";
+ 		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "YES";
+		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "YES";
 		    } else {
-		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "NO";
-		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "NO";
+		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "NO";
+		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "NO";
 		    }		    
 		 }
 	      }
            } else {	      
 	      if (yes_no == "YES") {
-		 if (haskey(Ftpd::VS_SETTINGS, "ssl_sslv2"))
-		    yes_no =  toupper(Ftpd::VS_SETTINGS["ssl_sslv2"]:nil);
+		 if (haskey(FtpServer::VS_SETTINGS, "ssl_sslv2"))
+		    yes_no =  toupper(FtpServer::VS_SETTINGS["ssl_sslv2"]:nil);
 		 if (yes_no == "YES")
 		    ssl_vsftpd = 0;
 		 else
 		    ssl_vsftpd = 1;
-		 if (haskey(Ftpd::VS_SETTINGS, "ssl_sslv3"))
-		    yes_no =  toupper(Ftpd::VS_SETTINGS["ssl_sslv3"]:nil);
+		 if (haskey(FtpServer::VS_SETTINGS, "ssl_sslv3"))
+		    yes_no =  toupper(FtpServer::VS_SETTINGS["ssl_sslv3"]:nil);
 		 if (yes_no == "YES") {
 		    if (ssl_vsftpd == 0)
 		        ssl_vsftpd = 4;
@@ -651,7 +651,7 @@ global string ValueUI (string key, boolean write) {
 	   } 
 	} else {
            if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["SSLVersion"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["SSLVersion"]:nil;
            else
               return "";
         }
@@ -659,16 +659,16 @@ global string ValueUI (string key, boolean write) {
 
    //only vsftpd
    case("TLS"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-              Ftpd::VS_SETTINGS["ssl_tlsv1"] = EDIT_SETTINGS["TLS"]:nil;
+              FtpServer::VS_SETTINGS["ssl_tlsv1"] = EDIT_SETTINGS["TLS"]:nil;
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "ssl_tlsv1") ? 
-		     toupper(Ftpd::VS_SETTINGS["ssl_tlsv1"]:nil) : Ftpd::DEFAULT_CONFIG["TLS"]:nil));
+	      return ((haskey(FtpServer::VS_SETTINGS, "ssl_tlsv1") ? 
+		     toupper(FtpServer::VS_SETTINGS["ssl_tlsv1"]:nil) : FtpServer::DEFAULT_CONFIG["TLS"]:nil));
 	   } 
 	} else {
            if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["TLS"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["TLS"]:nil;
            else
               return "";
         }
@@ -676,34 +676,34 @@ global string ValueUI (string key, boolean write) {
 
    //only pure-ftpd
    case("AntiWarez"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["AntiWarez"]:nil;
+ 	      return FtpServer::DEFAULT_CONFIG["AntiWarez"]:nil;
            else
               return "";
 
 	} else {
 	   if (write)
-              Ftpd::PURE_SETTINGS["AntiWarez"] = Ftpd::EDIT_SETTINGS["AntiWarez"]:nil;
+              FtpServer::PURE_SETTINGS["AntiWarez"] = FtpServer::EDIT_SETTINGS["AntiWarez"]:nil;
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "AntiWarez") ?
-		     toupper(Ftpd::PURE_SETTINGS["AntiWarez"]:nil):Ftpd::DEFAULT_CONFIG["AntiWarez"]:nil));	   	   
+	      return ((haskey(FtpServer::PURE_SETTINGS, "AntiWarez") ?
+		     toupper(FtpServer::PURE_SETTINGS["AntiWarez"]:nil):FtpServer::DEFAULT_CONFIG["AntiWarez"]:nil));	   	   
 	}
 	break;
 
    //only pure-ftpd
    case("SSL"):
-	if (Ftpd::vsftpd_edit) {
+	if (FtpServer::vsftpd_edit) {
 	   if (!write)
  	      return "";
            else
               return "";
 	} else {
 	   if (write)
-              Ftpd::PURE_SETTINGS["TLS"] = Ftpd::EDIT_SETTINGS["SSL"]:nil;
+              FtpServer::PURE_SETTINGS["TLS"] = FtpServer::EDIT_SETTINGS["SSL"]:nil;
            else
-	      return ((haskey(Ftpd::PURE_SETTINGS, "TLS") ?
-		     Ftpd::PURE_SETTINGS["TLS"]:nil:Ftpd::DEFAULT_CONFIG["SSL"]:nil));	   	   
+	      return ((haskey(FtpServer::PURE_SETTINGS, "TLS") ?
+		     FtpServer::PURE_SETTINGS["TLS"]:nil:FtpServer::DEFAULT_CONFIG["SSL"]:nil));	   	   
 	}
 	break;
 
@@ -711,14 +711,14 @@ global string ValueUI (string key, boolean write) {
         boolean result = false;	
 	 if (write) {
 	   if (EDIT_SETTINGS["StartXinetd"]:nil == "YES") {
-	      Ftpd::start_xinetd = true;
+	      FtpServer::start_xinetd = true;
               if (Service::Enabled("vsftpd"))
                  Service::Disable("vsftpd");
               if (Service::Enabled("pure-ftpd"))
                  Service::Disable("pure-ftpd");
            } else {           
-              if (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "1") {
-                 if (Ftpd::vsftpd_edit) {
+              if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "1") {
+                 if (FtpServer::vsftpd_edit) {
 		    Service::Disable("pure-ftpd");
                     Service::Enable("vsftpd");
       
@@ -730,19 +730,19 @@ global string ValueUI (string key, boolean write) {
                  Service::Disable("vsftpd");
 		 Service::Disable("pure-ftpd");
 	      }
-              Ftpd::start_xinetd = false;
+              FtpServer::start_xinetd = false;
            }	   
-           Ftpd::EDIT_SETTINGS = remove(Ftpd::EDIT_SETTINGS, "StartXinetd");           
+           FtpServer::EDIT_SETTINGS = remove(FtpServer::EDIT_SETTINGS, "StartXinetd");           
         } else {
-           Ftpd::EDIT_SETTINGS["StartDaemon"] = "0";	   
+           FtpServer::EDIT_SETTINGS["StartDaemon"] = "0";	   
            result = InitStartViaXinetd ();
            if (!result) {
-	      if ((Service::Enabled("vsftpd")) && (Ftpd::vsftpd_edit))
-	         Ftpd::EDIT_SETTINGS["StartDaemon"] = "1";        
-  	      if ((Service::Enabled("pure-ftpd")) && (!Ftpd::vsftpd_edit))
-                 Ftpd::EDIT_SETTINGS["StartDaemon"] = "1";
+	      if ((Service::Enabled("vsftpd")) && (FtpServer::vsftpd_edit))
+	         FtpServer::EDIT_SETTINGS["StartDaemon"] = "1";        
+  	      if ((Service::Enabled("pure-ftpd")) && (!FtpServer::vsftpd_edit))
+                 FtpServer::EDIT_SETTINGS["StartDaemon"] = "1";
            }
-           if (result && (Ftpd::EDIT_SETTINGS["StartDaemon"]:nil == "2"))
+           if (result && (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2"))
               return "YES";
            else
               return "NO";

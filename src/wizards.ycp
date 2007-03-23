@@ -9,19 +9,19 @@
 
 {
 
-textdomain "ftpd";
+textdomain "ftp-server";
 
 import "Sequencer";
 import "Wizard";
 
-include "ftpd/complex.ycp";
-include "ftpd/dialogs.ycp";
+include "ftp-server/complex.ycp";
+include "ftp-server/dialogs.ycp";
 
 
 
 
 symbol RunDaemonSwitch() {
-  if (Ftpd::vsftpd_edit)
+  if (FtpServer::vsftpd_edit)
      return `vsftpd;
   else
      return `pureftpd;

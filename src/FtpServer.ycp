@@ -12,8 +12,8 @@
 
 {
 
-module "Ftpd";
-textdomain "ftpd";
+module "FtpServer";
+textdomain "ftp-server";
 
 
 import "Progress";

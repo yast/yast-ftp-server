@@ -1,4 +1,4 @@
-# Makefile.am for ftpd/doc
+# Makefile.am for ftp-server/doc
 
 SUBDIRS = autodocs
 

@@ -21,11 +21,11 @@ Summary:	Configuration of ftpd
 
 %files
 %defattr(-,root,root)
-%dir @yncludedir@/ftpd
-@yncludedir@/ftpd/*
-@clientdir@/ftpd.ycp
-@clientdir@/ftpd_*.ycp
-@moduledir@/Ftpd.*
-@moduledir@/Ftpd2.*
-@desktopdir@/ftpd.desktop
+%dir @yncludedir@/ftp-server
+@yncludedir@/ftp-server/*
+@clientdir@/ftp-server.ycp
+@clientdir@/ftp-server_*.ycp
+@moduledir@/FtpServer.*
+@moduledir@/FtpServer2.*
+@desktopdir@/ftp-server.desktop
 %doc @docdir@

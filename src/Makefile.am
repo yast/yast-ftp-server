@@ -1,10 +1,10 @@
-# Makefile.am for ftpd/src
+# Makefile.am for ftp-server/src
 
-yncludedir = @yncludedir@/ftpd
+yncludedir = @yncludedir@/ftp-server
 
 client_DATA =			\
-	ftpd.ycp		\
-	ftpd_auto.ycp	
+	ftp-server.ycp		\
+	ftp-server_auto.ycp	
 
 ynclude_DATA =			\
 	helps.ycp		\
@@ -16,15 +16,15 @@ ynclude_DATA =			\
 	write_load.ycp
 
 desktop_DATA =			\
-	ftpd.desktop
+	ftp-server.desktop
 
 module_DATA =			\
-	Ftpd.ycp
+	FtpServer.ycp
 	
 # create a symlink for local build, #145327
-ftpd:
+ftp-server:
 	ln -sf . $@
-ycpchook = ftpd
+ycpchook = ftp-server
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
 

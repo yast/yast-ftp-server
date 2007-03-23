@@ -16,12 +16,12 @@ import "CWMServiceStart";
 import "DialogTree";
 import "Label";
 import "Wizard";
-import "Ftpd";
+import "FtpServer";
 import "Popup";
 
-include "ftpd/helps.ycp";
-include "ftpd/wid_functions.ycp";
-include "ftpd/uiforms.ycp";
+include "ftp-server/helps.ycp";
+include "ftp-server/wid_functions.ycp";
+include "ftp-server/uiforms.ycp";
 
 
 
@@ -31,13 +31,13 @@ include "ftpd/uiforms.ycp";
 
  
  string HelpVsftp(string key) {
-    if (Ftpd::vsftpd_edit)
+    if (FtpServer::vsftpd_edit)
  	return DialogHelpText("vsftpd_settings");
     else return "";
 }
 
 string HelpPureftp(string key) {
-    if (!Ftpd::vsftpd_edit)
+    if (!FtpServer::vsftpd_edit)
  	return DialogHelpText("pureftpd_settings");
     else return "";
 }
