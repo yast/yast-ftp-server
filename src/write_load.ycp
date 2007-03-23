@@ -506,26 +506,26 @@ global string ValueUI (string key, boolean write) {
 
     case("AnonReadOnly"):
 	if (Ftpd::vsftpd_edit) {
-	   if (write) { 
-              Ftpd::VS_SETTINGS["anon_upload_enable"] = EDIT_SETTINGS["AnonReadOnly"]:nil;	
+	   if (write) {
+	      yes_no = Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil;
+	      if (yes_no == "YES") 
+                 Ftpd::VS_SETTINGS["anon_upload_enable"] = "NO";
+	      else
+		 Ftpd::VS_SETTINGS["anon_upload_enable"] = "YES";	
            } else {
-	      return ((haskey(Ftpd::VS_SETTINGS, "anon_upload_enable") ? 
-		     toupper(Ftpd::VS_SETTINGS["anon_upload_enable"]:nil) : Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil));
+              if (haskey(Ftpd::VS_SETTINGS, "anon_upload_enable")) {
+		  yes_no = toupper(Ftpd::VS_SETTINGS["anon_upload_enable"]:nil);
+		  return ((yes_no == "YES") ? "NO":"YES");
+	      } else {
+		  return Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil;
+	      }
 	   } 
 	} else {
 	   if (write) {
-              yes_no = Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil;
-	      if (yes_no == "YES")
-		 Ftpd::PURE_SETTINGS["AnonymousCantUpload"] = "NO";
-	      else
-		 Ftpd::PURE_SETTINGS["AnonymousCantUpload"] = "YES";
-	   }
-           else {
-	      if (haskey(Ftpd::PURE_SETTINGS, "AnonymousCantUpload")) {
-	         yes_no = toupper(Ftpd::PURE_SETTINGS["AnonymousCantUpload"]:nil);
-	         return ((yes_no == "YES") ? "NO":"YES");		
-	      } else
-                 return Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil;
+	      Ftpd::PURE_SETTINGS["AnonymousCantUpload"] = Ftpd::EDIT_SETTINGS["AnonReadOnly"]:nil;
+	   } else {
+	      return ((haskey(Ftpd::PURE_SETTINGS, "AnonymousCantUpload") ? 
+		     toupper(Ftpd::PURE_SETTINGS["AnonymousCantUpload"]:nil) : Ftpd::DEFAULT_CONFIG["AnonReadOnly"]:nil)); 
    	   }        	
 	}
 	break;
@@ -606,18 +606,23 @@ global string ValueUI (string key, boolean write) {
 	      if (yes_no == "YES") {
 		 if (haskey(Ftpd::EDIT_SETTINGS, "SSLVersion")) {
 		    ssl_vsftpd = tointeger(Ftpd::EDIT_SETTINGS["SSLVersion"]:nil);
-		    if (ssl_vsftpd == 0)
+		    if (ssl_vsftpd == 0) {
 		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "YES";
-		    else
 		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "NO";
-		    if (ssl_vsftpd == 1)
-		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "YES";
-		    else
+		    } else if (ssl_vsftpd == 1) {
 		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "NO";
-		    if (ssl_vsftpd == 2) {
-		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "YES";
+		    } else if (ssl_vsftpd == 2) {
+		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "NO";
 		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "YES";
-		    }
+		    } else if (ssl_vsftpd == 3) {
+		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "NO";
+		    } else if (ssl_vsftpd == 4) {
+ 		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "YES";
+		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "YES";
+		    } else {
+		       Ftpd::VS_SETTINGS["ssl_sslv2"] = "NO";
+		       Ftpd::VS_SETTINGS["ssl_sslv3"] = "NO";
+		    }		    
 		 }
 	      }
            } else {	      
@@ -625,14 +630,23 @@ global string ValueUI (string key, boolean write) {
 		 if (haskey(Ftpd::VS_SETTINGS, "ssl_sslv2"))
 		    yes_no =  toupper(Ftpd::VS_SETTINGS["ssl_sslv2"]:nil);
 		 if (yes_no == "YES")
-		    ssl_vsftpd = ssl_vsftpd +1;
+		    ssl_vsftpd = 0;
+		 else
+		    ssl_vsftpd = 1;
 		 if (haskey(Ftpd::VS_SETTINGS, "ssl_sslv3"))
 		    yes_no =  toupper(Ftpd::VS_SETTINGS["ssl_sslv3"]:nil);
-		 if (yes_no == "YES")
-		    ssl_vsftpd = ssl_vsftpd +2;
+		 if (yes_no == "YES") {
+		    if (ssl_vsftpd == 0)
+		        ssl_vsftpd = 4;
+		    else if (ssl_vsftpd == 1)
+			ssl_vsftpd = 2;
+		 } else {
+		    if (ssl_vsftpd == 0)
+		        ssl_vsftpd = 5;
+		 }
 		 return tostring(ssl_vsftpd);
 	      
-	      } else return "4"; //it means that ssl is not permited
+	      } else return "5"; //it means that ssl is not permited
 
 	   } 
 	} else {
@@ -681,7 +695,7 @@ global string ValueUI (string key, boolean write) {
    case("SSL"):
 	if (Ftpd::vsftpd_edit) {
 	   if (!write)
- 	      return Ftpd::DEFAULT_CONFIG["SSL"]:nil;
+ 	      return "";
            else
               return "";
 	} else {

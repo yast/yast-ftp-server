@@ -268,7 +268,7 @@ void InitAnonSettings(string key) {
   integer val = tointeger(Ftpd::ValueUIEdit("AnonAuthen"));
   UI::ChangeWidget(`id("AnonAuthen"), `CurrentButton, val);
   UI::ChangeWidget(`id( "AnonyReadOnly" ), `Value, 
-      (Ftpd::ValueUIEdit("AnonyReadOnly") == "YES"));
+      (Ftpd::ValueUIEdit("AnonyReadOnly") == "NO"));
   UI::ChangeWidget(`id( "AnonymCreatDirs" ), `Value, 
       (Ftpd::ValueUIEdit("AnonymCreatDirs") == "YES"));
 
@@ -282,9 +282,12 @@ void InitAnonSettings(string key) {
  */
 void StoreAnonSettings (string key, map event) {
   Ftpd::WriteToEditMap("AnonAuthen", tostring(UI::QueryWidget(`id("AnonAuthen"), `CurrentButton)));
-  foreach(string key, ["AnonyReadOnly", "AnonymCreatDirs"],{
+  foreach(string key, ["AnonymCreatDirs"],{
      Ftpd::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
   });
+
+  Ftpd::WriteToEditMap("AnonyReadOnly", (((boolean) UI::QueryWidget(`id("AnonyReadOnly"), `Value) == true) ? "NO":"YES"));
+  
 }
 
 
@@ -336,12 +339,16 @@ void StoreVSFTPDSettings (string key, map event) {
   string UIval = tostring(UI::QueryWidget(`id("SSLVersion"), `Value));
   if (UIval == "Enabled SSL v2")
      val = 0;
-  else if (UIval == "Enabled SSL v3")
+  else if (UIval == "Disabled SSL v2")
      val = 1;
-  else if (UIval == "Enabled SSL v2 & v3")
+  else if (UIval == "Enabled SSL v3")
      val = 2;
-  else
+  else if (UIval == "Disabled SSL v3")
+     val = 3;
+  else if (UIval == "Enabled SSL v2 & v3")
      val = 4;
+  else
+     val = 5;
   Ftpd::WriteToEditMap("SSLVersion", tostring(val));
   Ftpd::WriteToEditMap("TLS", (((boolean) UI::QueryWidget(`id("TLS"), `Value) == true) ? "YES":"NO"));
   Ftpd::WriteToEditMap("SSLEnable", (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));

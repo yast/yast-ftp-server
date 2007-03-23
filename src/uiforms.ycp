@@ -110,7 +110,7 @@ term FTPAnonSettings() {
     `VSpacing(1),   
     `Frame ( _("Anonymous Settings"),   			
       `HBox(`HSpacing(1),`VBox (
-	`Left(`CheckBox (`id("AnonyReadOnly"), _("Anon&ymous Can't Upload"))),
+	`Left(`CheckBox (`id("AnonyReadOnly"), _("Anon&ymous Can Upload"))),
 	`Left(`CheckBox (`id("AnonymCreatDirs"), _("Anonymou&s Can Create Directories")))		
       ))					
     ), //end of `Frame ( _("Anonymous Settings")
@@ -131,7 +131,8 @@ term VSFTPDAddSettings() {
     `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true,	
       `HBox(`HSpacing(1),`VBox (
 	`Left(`ComboBox(`id("SSLVersion"), "S&elect Version of SSL",
-	        ["Enabled SSL v2","Enabled SSL v3","Enabled SSL v2 & v3" ] )),
+	        ["Enabled SSL v2","Disable SSL v2","Enabled SSL v3","Disable SSL v3",
+		 "Enabled SSL v2 & v3", "Disable SSL v2 & v3" ] )),
 	`Left(`CheckBox(`id("TLS"), _("Enable &TLS")))
       ))
     ), //end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true

@@ -90,7 +90,7 @@ global map <string, string > DEFAULT_CONFIG = $[
      "LocalMaxRate"		 : "0",
      "AnonMaxRate"		 : "0",
      "AnonAuthen"		 : "1", // 0 => anonymous only, 1 => authenticated only, 2=> both
-     "AnonReadOnly"		 : "NO",
+     "AnonReadOnly"		 : "YES",
      "AnonCreatDirs"		 : "NO",
      "Banner"			 : "Welcome message",
      "SSLEnable"		 : "NO",

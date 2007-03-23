@@ -194,8 +194,63 @@ boolean FTPdCMDShow (map options) {
      CommandLine::Print(_("Create Directories: DISABLED"));
   } 
 
+  // welcome message vsftpd only
+  if (Ftpd::vsftpd_edit) {
+     CommandLine::PrintNoCR(_("Welcome message: "));
+     if (Ftpd::EDIT_SETTINGS["Banner"]:nil != "") {
+        CommandLine::Print(Ftpd::EDIT_SETTINGS["Banner"]:nil);
+     } else {
+        CommandLine::Print(_("Option is not set now!"));
+     }
 
+     CommandLine::PrintNoCR(_("Security settings: "));
 
+     // SSL options (SSL version and TLS)
+     if (Ftpd::EDIT_SETTINGS["SSLEnable"]:nil != "YES")
+        CommandLine::Print(_("Option is not set now!"));
+     else {
+        CommandLine::PrintNoCR(_("SSL enabled; "));
+        if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "0")
+	   CommandLine::PrintNoCR(_("SSL v2 enabled; "));
+	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "1")
+	   CommandLine::PrintNoCR(_("SSL v2 disabled; "));
+	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "2")
+	   CommandLine::PrintNoCR(_("SSL v3 enabled; "));
+	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "3")
+	   CommandLine::PrintNoCR(_("SSL v3 disabled; "));
+	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "4")
+	   CommandLine::PrintNoCR(_("SSL v2 and v3 enabled; "));
+	if (Ftpd::EDIT_SETTINGS["SSLVersion"]:nil == "5")
+	   CommandLine::PrintNoCR(_("SSL v2 and v3 disabled; "));
+
+        if (Ftpd::EDIT_SETTINGS["TLS"]:nil == "YES")
+	   CommandLine::Print(_("TLS enabled"));
+	else
+	   CommandLine::Print(_("TLS disabled"));
+
+     }
+ 
+
+  
+  } else {
+     // AntiWarez option
+     CommandLine::PrintNoCR(_("Antiwarez: "));
+     if (Ftpd::EDIT_SETTINGS["AntiWarez"]:nil == "YES") {
+        CommandLine::Print(_("Antiwarez enabled"));
+     } else {
+        CommandLine::Print(_("Antiwarez disabled"));
+     }
+     // SSL/TLS settings
+     CommandLine::PrintNoCR(_("SSL/TLS settings: "));
+     if (Ftpd::EDIT_SETTINGS["SSL"]:nil == "0") {
+        CommandLine::Print(_("SSL/TLS disabled"));
+     } else if (Ftpd::EDIT_SETTINGS["SSL"]:nil == "1") {
+        CommandLine::Print(_("SSL/TLS enabled"));
+     } else {
+        CommandLine::Print(_("Refuse connections without SSL/TLS"));
+     }
+     
+  }
 
 
   CommandLine::Print("");
@@ -243,7 +298,7 @@ boolean FTPdCMDStartup (map options) {
 boolean FTPdCMDLogging (map options) {
   if (size(options) > 1) {
      // TRANSLATORS: CommandLine error message
-    CommandLine::Error(_("Only one parameter (enable/disable/show) is allowed."));
+    CommandLine::Error(_("Only one parameter (enable/disable) is allowed."));
   } else if (options["enable"]:nil!=nil) {
     Ftpd::EDIT_SETTINGS["VerboseLogging"] = "YES";
   } else if (options["disable"]:nil!=nil) {
@@ -254,7 +309,7 @@ boolean FTPdCMDLogging (map options) {
 boolean FTPdCMDChrooting (map options) {
   if (size(options) > 1) {
       // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("Only one parameter (enable/disable/show) is allowed."));
+     CommandLine::Error(_("Only one parameter (enable/disable) is allowed."));
   } else if (options["enable"]:nil!=nil) {
      Ftpd::EDIT_SETTINGS["ChrootEnable"] = "YES";
   } else if (options["disable"]:nil!=nil) {
@@ -531,20 +586,267 @@ boolean FTPdCMDAnonAccess (map options) {
 
 
 
+boolean FTPdCMDWelMessage (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("Welcome Message:"), 0));
+  CommandLine::Print("");
+  if (!Ftpd::vsftpd_edit) {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("This option is allowed only in vsftpd."));
+     CommandLine::Print("");
+     return false;
+  }
+  if (size(options) == 1) {
+     if (options["set_message"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["Banner"] = (string) options["set_message"]:nil;
+	CommandLine::Print(Ftpd::EDIT_SETTINGS["Banner"]:nil);
+        return true;
+     } else {
+        // TRANSLATORS: CommandLine error message
+        CommandLine::Error(_("Missing value of option"));
+        CommandLine::Print("");
+        return false;
+     }
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Print("");
+     CommandLine::Print(_("Example of correct input: welcome_message=\"Hello everybody\""));
+     CommandLine::Print("");
+     return false;
+  }
+}
 
 
 
 
 
+boolean FTPdCMDSSL (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("Welcome Message:"), 0));
+  CommandLine::Print("");
+  if (!Ftpd::vsftpd_edit) {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("This option is allowed only in vsftpd."));
+     CommandLine::Print("");
+     return false;
+  }
+  if ((size(options) > 0) && (size(options) <= 3)) {
+     if (size(options) == 1) {
+	if (options["enabled"]:nil != nil) {
+           Ftpd::EDIT_SETTINGS["SSLEnable"] = "YES";
+           CommandLine::Print(_("SSL is enabled"));
+           CommandLine::Print("");
+	   return true;
+        } else if (options["disable"]:nil != nil) {
+	   Ftpd::EDIT_SETTINGS["SSLEnable"] = "NO";
+           CommandLine::Print(_("SSL is disabled"));
+           CommandLine::Print("");
+	   return true;
+	}else {
+	  // TRANSLATORS: CommandLine error message
+     	  CommandLine::Error(_("Wrong number or type of parameters!"));
+          CommandLine::Print("");
+          return false;
+	} 
+     } else if (size(options) == 2) {
+	if (options["enabled"]:nil != nil) {
+	   Ftpd::EDIT_SETTINGS["SSLEnable"] = "YES";
+	   if (options["SSL2"]:nil !=nil) {
+	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "0";
+             CommandLine::Print(_("SSL v2 is enabled"));
+             CommandLine::Print("");
+             return true; 
+	   } else if (options["SSL3"]:nil !=nil) {
+	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "2";
+             CommandLine::Print(_("SSL v3 is enabled"));
+             CommandLine::Print("");
+	     return true; 
+	   } else {
+	     // TRANSLATORS: CommandLine error message
+     	     CommandLine::Error(_("Wrong number or type of parameters!"));
+             CommandLine::Print("");
+             return false;
+	   }
+	   
+	} else if (options["disabled"]:nil != nil) {
+	   if (options["SSL2"]:nil !=nil) {
+	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "1";
+             CommandLine::Print(_("SSL v2 is disabled"));
+             CommandLine::Print("");
+             return true; 
+	   } else if (options["SSL3"]:nil !=nil) {
+	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "3";
+             CommandLine::Print(_("SSL v3 is disabled"));
+             CommandLine::Print("");
+	     return true; 
+	   } else {
+	     // TRANSLATORS: CommandLine error message
+     	     CommandLine::Error(_("Wrong number or type of parameters!"));
+             CommandLine::Print("");
+             return false;
+	   }
+	}
+     } else if (size(options) == 3) {
+	if (options["enabled"]:nil != nil) {
+	   Ftpd::EDIT_SETTINGS["SSLEnable"] = "YES";
+	   if ((options["SSL2"]:nil !=nil) && (options["SSL3"]:nil !=nil)) {
+	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "4";
+             CommandLine::Print(_("SSL v2 and v3 are enabled"));
+             CommandLine::Print("");
+             return true; 
+	   } else {
+	     // TRANSLATORS: CommandLine error message
+     	     CommandLine::Error(_("Wrong number or type of parameters!"));
+             CommandLine::Print("");
+             return false;
+	   }	   
+	} else if (options["disabled"]:nil != nil) {
+	   if ((options["SSL2"]:nil !=nil) && (options["SSL3"]:nil !=nil)) {
+	     Ftpd::EDIT_SETTINGS["SSLVersion"] = "5";
+             CommandLine::Print(_("SSL v2 and v3 are disabled"));
+             CommandLine::Print("");
+             return true; 
+	   } else {
+	     // TRANSLATORS: CommandLine error message
+     	     CommandLine::Error(_("Wrong number or type of parameters!"));
+             CommandLine::Print("");
+             return false;
+	   }
+	}
+     } //end [else] if (size(options) == 3) {
+
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Wrong number of parameters!"));
+     CommandLine::Print("");
+     return false;
+
+  } //end of if ((size(options) > 0) && ((size(options) <= 3))
+
+
+}
 
 
 
 
+boolean FTPdCMDTLS (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("TLS connections:"), 0));
+  CommandLine::Print("");
+  if (!Ftpd::vsftpd_edit) {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("This option is allowed only in vsftpd."));
+     CommandLine::Print("");
+     return false;
+  }
+  if (size(options) == 1) {
+     if (options["enable"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["TLS"] = "YES";
+	CommandLine::Print(_("TLS is enabled"));
+	CommandLine::Print("");
+        return true;
+     } else if (options["disable"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["TLS"] = "NO";
+	CommandLine::Print(_("TLS is disabled"));
+	CommandLine::Print("");
+
+     } else {
+        // TRANSLATORS: CommandLine error message
+        CommandLine::Error(_("Wrong option!"));
+        CommandLine::Print("");
+        return false;
+     }
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Print("");
+     CommandLine::Print(_("Example of correct using: TLS enable/disable"));
+     CommandLine::Print("");
+     return false;
+  }
+
+}
 
 
+boolean FTPdCMDAntiwarez (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("Antiwarez:"), 0));
+  CommandLine::Print("");
+  if (Ftpd::vsftpd_edit) {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("This option is allowed only in pure-ftpd."));
+     CommandLine::Print("");
+     return false;
+  }
+  if (size(options) == 1) {
+     if (options["enable"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["AntiWarez"] = "YES";
+	CommandLine::Print(_("Antiwarez is enabled"));
+	CommandLine::Print("");
+        return true;
+     } else if (options["disable"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["AntiWarez"] = "NO";
+	CommandLine::Print(_("Antiwarez is disabled"));
+	CommandLine::Print("");
+
+     } else {
+        // TRANSLATORS: CommandLine error message
+        CommandLine::Error(_("Wrong option!"));
+        CommandLine::Print("");
+        return false;
+     }
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Print("");
+     CommandLine::Print(_("Example of correct input: antiwarez enable/disable"));
+     CommandLine::Print("");
+     return false;
+  } 
+}
 
 
+boolean  FTPdCMDSSL_TLS (map options) {
+  CommandLine::Print("");
+  CommandLine::Print(String::UnderlinedHeader(_("Security Settings:"), 0));
+  CommandLine::Print("");
+  if (Ftpd::vsftpd_edit) {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("This option is allowed only in pure-ftpd."));
+     CommandLine::Print("");
+     return false;
+  }
+  if (size(options) == 1) {
+     if (options["enable"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["SSL"] = "0";
+	CommandLine::Print(_("SSL and TLS are enabled"));
+	CommandLine::Print("");
+        return true;
+     } else if (options["disable"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["SSL"] = "1";
+	CommandLine::Print(_("SSL and TLS are disabled"));
+	CommandLine::Print("");
+     } else if (options["only"]:nil != nil) {
+	Ftpd::EDIT_SETTINGS["SSL"] = "2";
+	CommandLine::Print(_("Refuse connection without SSL/TLS"));
+	CommandLine::Print("");
 
+     } else {
+        // TRANSLATORS: CommandLine error message
+        CommandLine::Error(_("Wrong option!"));
+        CommandLine::Print("");
+        return false;
+     }
+  } else {
+     // TRANSLATORS: CommandLine error message
+     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Print("");
+     CommandLine::Print(_("Example of correct input: SSL_TLS enable/disable/only"));
+     CommandLine::Print("");
+     return false;
+  } 
+}
 
 
 map cmdline_description = $[
@@ -697,20 +999,73 @@ map cmdline_description = $[
 		   "access anon_and_authen",
 	            ],
         ],
+
+ 	// only vsftpd
+	"welcome_message" : $[
+	"handler" : FTPdCMDWelMessage,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Welcome message is text to display when someone connects to the server (vsftpd only)"),
+	"example" : [
+		   "welcome_message=\"hello everybody\"",
+	            ],
+        ],
+ 
+	// only vsftpd
+	"SSL" : $[
+	"handler" : FTPdCMDSSL,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("vsftpd support secure connections via SSL (vsftpd only)"),
+	"example" : [
+		   "SSL enable/disable",
+		   "SSL SSL1 enable/disable",
+		   "SSL SSL2 enable/disable",
+		   "SSL SSL1 SSL2 enable/disable",
+	            ],
+        ],
+
+	// only vsftpd
+	"TLS" : $[
+	"handler" : FTPdCMDTLS,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("vsftpd support connections via TLS (vsftpd only)"),
+	"example" : [
+		   "TLS enalbe",
+		   "TLS disable",
+	            ],
+        ],
+
+
+	// only pure-ftpd
+	"antiwarez" : $[
+	"handler" : FTPdCMDAntiwarez,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Disallow downloading of files that were uploaded but not validated by a local admin. (pure-ftpd only)"),
+	"example" : [
+		   "antiwarez enalbe",
+		   "antiwarez disable",
+	            ],
+        ],
+
+
+        // only pure-ftpd
+	"SSL_TLS" : $[
+	"handler" : FTPdCMDSSL_TLS,
+	// TRANSLATORS: CommandLine help
+	"help" 	  : _("Security settings for SSL and TLS protocol (pure-ftpd only)"),
+	"example" : [
+		   "SSL_TLS enalbe",
+		   "SSL_TLS disable",
+		   "SSL_TLS only",
+	            ],
+        ],
+
+
+
+
+
+
+
   ],
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   "options"	: $[
 	"atboot"  : $[
@@ -814,6 +1169,30 @@ map cmdline_description = $[
 		// TRANSLATORS: CommandLine help
 		"help" : _("Anonymous users can create directories"),
 	],
+	//only vsftd
+	"set_message": $[
+		"type" : "string",
+		// TRANSLATORS: CommandLine help
+		"help" : _("Welcome message is text to display when someone connects to the server"),
+	],
+
+	//only vsftd
+	"SSL2": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("SSL version 2"),
+	],
+
+	//only vsftd
+	"SSL3": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("SSL version 3"),
+	],
+
+	//only vsftd
+	"only": $[
+		// TRANSLATORS: CommandLine help
+		"help" : _("Refuse connections that don't use SSL/TLS security mechanisms"),
+	],
 
 
     ],
@@ -875,6 +1254,28 @@ map cmdline_description = $[
 
 	"anon_access" : [
 		"can_upload", "create_dirs",
+	],
+	//only vsftpd
+	"welcome_message" : [
+		"set_message",
+	],
+	//only vsftpd
+        "SSL" : [
+		"SSL2", "SSL3", "enable", "disable",
+	],
+	//only vsftpd
+	"TLS" : [
+		"enable", "disable",
+	],
+
+	//only pure-ftpd
+	"antiwarez" : [
+		"enable", "disable",
+	],
+
+	//only pure-ftpd
+	"SSL_TLS" : [
+		"enable", "disable", "only",
 	],
 
     ]
