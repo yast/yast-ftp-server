@@ -1,0 +1,13 @@
+{
+
+// testedfiles: FtpServer.ycp
+
+include "testsuite.ycp";
+TESTSUITE_INIT([], nil);
+
+import "FtpServer";
+
+DUMP("FtpServer::Modified");
+TEST(``(FtpServer::Modified()), [], nil);
+
+}

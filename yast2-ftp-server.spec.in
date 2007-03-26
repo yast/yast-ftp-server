@@ -1,8 +1,8 @@
 @HEADER-COMMENT@
 
 @HEADER@
-Requires:	yast2
-BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-testsuite
+Requires:	yast2 yast2-inetd
+BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-testsuite yast2-inetd
 
 BuildArchitectures:	noarch
 
