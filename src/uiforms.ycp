@@ -86,8 +86,8 @@ term FTPPerforSettings() {
     `VSpacing(1),   
     `Frame ( _("Rate Settings"),   		
       `HBox(`HSpacing(1),`VBox (
-	`Left(`HSquash(`MinWidth(20,`IntField(`id("LocalMaxRate"),_("&Local Max Rate [kb/s]"),0,10000000,0)))),
-	`Left(`HSquash(`MinWidth(20,`IntField(`id("AnonymMaxRate"),_("Anonymous Max &Rate [kb/s]"),0,10000000,0))))
+	`Left(`HSquash(`MinWidth(20,`IntField(`id("LocalMaxRate"),_("&Local Max Rate [KB/s]"),0,10000000,0)))),
+	`Left(`HSquash(`MinWidth(20,`IntField(`id("AnonMaxRate"),_("Anonymous Max &Rate [KB/s]"),0,10000000,0))))
       ), `HStretch ())
     ), //end of `Frame ( _("Rate Settings")
     `VStretch()
@@ -110,8 +110,8 @@ term FTPAnonSettings() {
     `VSpacing(1),   
     `Frame ( _("Anonymous Settings"),   			
       `HBox(`HSpacing(1),`VBox (
-	`Left(`CheckBox (`id("AnonyReadOnly"), _("Anon&ymous Can Upload"))),
-	`Left(`CheckBox (`id("AnonymCreatDirs"), _("Anonymou&s Can Create Directories")))		
+	`Left(`CheckBox (`id("AnonReadOnly"), _("Anon&ymous Can Upload"))),
+	`Left(`CheckBox (`id("AnonCreatDirs"), _("Anonymou&s Can Create Directories")))		
       ))					
     ), //end of `Frame ( _("Anonymous Settings")
     `VStretch()

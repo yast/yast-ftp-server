@@ -9,7 +9,7 @@
 
 {
 
-textdomain "ftpd";
+textdomain "ftp-server";
 
 import "CWM";
 import "CWMServiceStart";

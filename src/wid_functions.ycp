@@ -242,7 +242,7 @@ symbol HandleRBVsPure(string key, map event) {
 void InitPerSettings (string key) {
 
   foreach(string key, ["MaxIdleTime", "MaxClientsPerIP", "MaxClientsNumber", 
-		       "LocalMaxRate", "AnonymMaxRate"],{
+		       "LocalMaxRate", "AnonMaxRate"],{
       //UI::ChangeWidget(`id(key), `ValidChars, "0123456789");
       UI::ChangeWidget(`id(key), `Value, tointeger(FtpServer::ValueUIEdit(key)));
   });
@@ -254,7 +254,7 @@ void InitPerSettings (string key) {
  */
 void StorePerforSettings (string key, map event) {
   foreach(string key, ["MaxIdleTime", "MaxClientsPerIP", "MaxClientsNumber", 
-		       "LocalMaxRate", "AnonymMaxRate"],{
+		       "LocalMaxRate", "AnonMaxRate"],{
       FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
   });
 }
@@ -267,10 +267,10 @@ void InitAnonSettings(string key) {
   integer current = (integer) UI::QueryWidget(`id("AnonAuthen"), `CurrentButton);
   integer val = tointeger(FtpServer::ValueUIEdit("AnonAuthen"));
   UI::ChangeWidget(`id("AnonAuthen"), `CurrentButton, val);
-  UI::ChangeWidget(`id( "AnonyReadOnly" ), `Value, 
-      (FtpServer::ValueUIEdit("AnonyReadOnly") == "NO"));
-  UI::ChangeWidget(`id( "AnonymCreatDirs" ), `Value, 
-      (FtpServer::ValueUIEdit("AnonymCreatDirs") == "YES"));
+  UI::ChangeWidget(`id( "AnonReadOnly" ), `Value, 
+      (FtpServer::ValueUIEdit("AnonReadOnly") == "NO"));
+  UI::ChangeWidget(`id( "AnonCreatDirs" ), `Value, 
+      (FtpServer::ValueUIEdit("AnonCreatDirs") == "YES"));
 
 
 }
@@ -282,11 +282,11 @@ void InitAnonSettings(string key) {
  */
 void StoreAnonSettings (string key, map event) {
   FtpServer::WriteToEditMap("AnonAuthen", tostring(UI::QueryWidget(`id("AnonAuthen"), `CurrentButton)));
-  foreach(string key, ["AnonymCreatDirs"],{
+  foreach(string key, ["AnonCreatDirs"],{
      FtpServer::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
   });
 
-  FtpServer::WriteToEditMap("AnonyReadOnly", (((boolean) UI::QueryWidget(`id("AnonyReadOnly"), `Value) == true) ? "NO":"YES"));
+  FtpServer::WriteToEditMap("AnonReadOnly", (((boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value) == true) ? "NO":"YES"));
   
 }
 

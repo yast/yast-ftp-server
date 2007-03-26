@@ -6,7 +6,7 @@ X-KDE-ModuleType=Library
 X-KDE-RootOnly=true
 X-KDE-HasReadOnlyMode=true
 X-KDE-Library=yast2
-X-SuSE-YaST-Call=ftpd
+X-SuSE-YaST-Call=ftp-server
 
 X-SuSE-YaST-Group=Misc
 X-SuSE-YaST-Argument=
@@ -14,11 +14,11 @@ X-SuSE-YaST-RootOnly=true
 X-SuSE-YaST-AutoInst=
 X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
-X-SuSE-YaST-AutoInstResource=ftpd
+X-SuSE-YaST-AutoInstResource=ftp-server
 
-Icon=yast-ftpd
-Exec=/sbin/yast2 ftpd 
+Icon=yast-ftp-server
+Exec=/sbin/yast2 ftp-server 
 
-Name=Ftpd-DEMO
+Name=FtpServer-BETA
 GenericName=Module for configuration FTP daemon (vsftpd or pure-ftpd)
 X-KDE-SubstituteUID=true

@@ -133,7 +133,7 @@ global map <string, string > EDIT_SETTINGS = $[];
 //global map <string, string > VS_EDIT_SETTINGS = $[];
 
 
-include "ftpd/write_load.ycp";
+include "ftp-server/write_load.ycp";
 
 /**
  * Read current pure-ftpd configuration

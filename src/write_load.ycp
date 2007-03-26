@@ -246,7 +246,7 @@ global string ValueUI (string key, boolean write) {
 	} else {
 	   if (write) {
 	      if ((FtpServer::EDIT_SETTINGS["PasMinPort"]:nil != "") && 
-		 (FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil != "")) {		 
+		 (FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil != "0")) {		 
 	         ports = add(ports, FtpServer::EDIT_SETTINGS["PasMinPort"]:nil);
 	         ports = add(ports, FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil);
 	         if (size(ports) == 2) {
@@ -275,10 +275,12 @@ global string ValueUI (string key, boolean write) {
     case("PasMaxPort"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil != "")	       
+ 	      if (FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil != "0")	       
                  FtpServer::VS_SETTINGS["pasv_max_port"] = FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil;
-	      else
-		 FtpServer::VS_SETTINGS["pasv_max_port"] = nil; 	
+	      else {
+		 FtpServer::VS_SETTINGS["pasv_max_port"] = nil;
+		 FtpServer::VS_SETTINGS["pasv_min_port"] = nil; 
+              }	
   	
            } else {
 	      return ((haskey(FtpServer::VS_SETTINGS, "pasv_max_port") ? 
@@ -301,18 +303,27 @@ global string ValueUI (string key, boolean write) {
 
     case("MaxIdleTime"):
 	if (FtpServer::vsftpd_edit) {
+           integer min_sec = 0;
 	   if (write) { 
- 	      if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil != "")	       
-                 FtpServer::VS_SETTINGS["idle_session_timeout"] = FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil;
-	      else
+ 	      if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil != "0") {
+		 min_sec = tointeger(FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil);
+		 min_sec = min_sec*60;	       
+                 FtpServer::VS_SETTINGS["idle_session_timeout"] = tostring(min_sec);
+		 
+	      } else
 		 FtpServer::VS_SETTINGS["idle_session_timeout"] = nil; 		
            } else {
-	      return ((haskey(FtpServer::VS_SETTINGS, "idle_session_timeout") ? 
-		     toupper(FtpServer::VS_SETTINGS["idle_session_timeout"]:nil) : FtpServer::DEFAULT_CONFIG["MaxIdleTime"]:nil));
+              if (haskey(FtpServer::VS_SETTINGS, "idle_session_timeout")) {
+		 min_sec = tointeger(FtpServer::VS_SETTINGS["idle_session_timeout"]:nil);
+		 min_sec = min_sec/60;
+		 return (tostring(min_sec));
+	      } else {
+	         return FtpServer::DEFAULT_CONFIG["MaxIdleTime"]:nil;
+	      }
 	   } 
 	} else {
 	   if (write) {
-	      if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil!="") {
+	      if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil!="0") {
                  FtpServer::PURE_SETTINGS["MaxIdleTime"] = FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil;
 	      } else {
 		 FtpServer::PURE_SETTINGS["MaxIdleTime"] = nil;
@@ -327,7 +338,7 @@ global string ValueUI (string key, boolean write) {
    case("MaxClientsPerIP"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil != "")	       
+ 	      if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil != "0")	       
                  FtpServer::VS_SETTINGS["max_per_ip"] = FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil;
 	      else
 		 FtpServer::VS_SETTINGS["max_per_ip"] = nil; 			
@@ -338,7 +349,7 @@ global string ValueUI (string key, boolean write) {
 
 	} else {
 	   if (write) {
-	      if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="")
+	      if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="0")
                  FtpServer::PURE_SETTINGS["MaxClientsPerIP"] = FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil;
 	      else
 		FtpServer::PURE_SETTINGS["MaxClientsPerIP"] = nil; 
@@ -353,7 +364,7 @@ global string ValueUI (string key, boolean write) {
    case("MaxClientsNumber"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
- 	      if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil != "")	       
+ 	      if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil != "0")	       
                  FtpServer::VS_SETTINGS["max_clients"] = FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil;
 	      else
 		 FtpServer::VS_SETTINGS["max_clients"] = nil; 		
@@ -363,7 +374,7 @@ global string ValueUI (string key, boolean write) {
 	   } 
 	} else {
 	   if (write) {
-	      if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil!="")
+	      if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil!="0")
                  FtpServer::PURE_SETTINGS["MaxClientsNumber"] = FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil;
 	      else
 		FtpServer::PURE_SETTINGS["MaxClientsNumber"] = nil;
@@ -376,18 +387,25 @@ global string ValueUI (string key, boolean write) {
 
    case("LocalMaxRate"):
 	if (FtpServer::vsftpd_edit) {
+	   integer transfer = 0;
 	   if (write) { 
- 	      if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil != "")	       
-                 FtpServer::VS_SETTINGS["local_max_rate"] = FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil;
-	      else
-		 FtpServer::VS_SETTINGS["local_max_rate"] = nil; 		
+ 	      if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil != "0") {
+		 transfer = tointeger(FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil)*1024;	       
+                 FtpServer::VS_SETTINGS["local_max_rate"] = tostring(transfer);
+	      } else {
+		 FtpServer::VS_SETTINGS["local_max_rate"] = nil; 
+	      }		
            } else {
-	      return ((haskey(FtpServer::VS_SETTINGS, "local_max_rate") ? 
-		     toupper(FtpServer::VS_SETTINGS["local_max_rate"]:nil) : FtpServer::DEFAULT_CONFIG["LocalMaxRate"]:nil));
+	      if (haskey(FtpServer::VS_SETTINGS, "local_max_rate")) {
+		 transfer = tointeger(FtpServer::VS_SETTINGS["local_max_rate"]:nil)/1024;
+		 return (tostring(transfer));
+	      } else {
+	         return (FtpServer::DEFAULT_CONFIG["LocalMaxRate"]:nil);
+	      }
 	   } 
 	} else {
 	   if (write) {
-	      if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil!="")
+	      if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil!="0")
                  FtpServer::PURE_SETTINGS["UserBandwidth"] = FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil;
 	      else
 		FtpServer::PURE_SETTINGS["UserBandwidth"] = nil;
@@ -400,19 +418,27 @@ global string ValueUI (string key, boolean write) {
 
    case("AnonMaxRate"):
 	if (FtpServer::vsftpd_edit) {
+	   integer transfer = 0;
 	   if (write) { 
- 	      if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil != "")	       
-                 FtpServer::VS_SETTINGS["anon_max_rate"] = FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil;
-	      else
-		 FtpServer::VS_SETTINGS["anon_max_rate"] = nil; 		
+ 	      if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil != "0") {
+		 transfer = tointeger( FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil)*1024;     
+                 FtpServer::VS_SETTINGS["anon_max_rate"] = tostring(transfer);
+	      } else {
+		 FtpServer::VS_SETTINGS["anon_max_rate"] = nil;
+              } 		
            } else {
-	      return ((haskey(FtpServer::VS_SETTINGS, "anon_max_rate") ? 
-		     toupper(FtpServer::VS_SETTINGS["anon_max_rate"]:nil) : FtpServer::DEFAULT_CONFIG["AnonMaxRate"]:nil));
+
+	      if (haskey(FtpServer::VS_SETTINGS, "anon_max_rate")) {
+		 transfer = tointeger(FtpServer::VS_SETTINGS["anon_max_rate"]:nil)/1024;
+		 return (tostring(transfer));
+	      } else {
+	         return (FtpServer::DEFAULT_CONFIG["AnonMaxRate"]:nil);
+              }
 	   } 
 
 	} else {
 	   if (write) {
- 	      if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil!="")
+ 	      if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil!="0")
                  FtpServer::PURE_SETTINGS["AnonymousBandwidth"] = FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil;
 	      else
 		FtpServer::PURE_SETTINGS["AnonymousBandwidth"] = nil;
@@ -695,7 +721,7 @@ global string ValueUI (string key, boolean write) {
    case("SSL"):
 	if (FtpServer::vsftpd_edit) {
 	   if (!write)
- 	      return "";
+ 	      return FtpServer::DEFAULT_CONFIG["SSL"]:nil;
            else
               return "";
 	} else {
