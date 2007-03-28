@@ -26,6 +26,6 @@ Summary:	Configuration of ftpd
 @clientdir@/ftp-server.ycp
 @clientdir@/ftp-server_*.ycp
 @moduledir@/FtpServer.*
-@moduledir@/FtpServer2.*
 @desktopdir@/ftp-server.desktop
+@scrconfdir@/*
 %doc @docdir@
