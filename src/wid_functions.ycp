@@ -233,20 +233,21 @@ void InitRBVsPure (string key) {
   if ((FtpServer::vsftpd_installed) && (FtpServer::pureftpd_installed)) {
      if (FtpServer::vsftpd_edit) {
         UI::ChangeWidget(`id( "vs_item" ), `Value, true);
-        UI::ChangeWidget(`id("items"), `opt(`disabled), true);
      }else
         UI::ChangeWidget(`id( "pure_item" ), `Value, true);
-  } else UI::ChangeWidget(`id("items"), `Visible, false);
+  } else UI::ChangeWidget(`id("items"), `opt(`disabled), true);
 }
 
 
 
 symbol HandleRBVsPure(string key, map event) {
-  if ((FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("pure_item"), `Value))) {
+  if ((FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("pure_item"), `Value)) 
+     && FtpServer::vsftpd_installed) {
      FtpServer::vsftpd_edit = false;
      return `pureftpd;
   }
-  if ((!FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("vs_item"), `Value))) {
+  if ((!FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("vs_item"), `Value)) 
+     && FtpServer::pureftpd_installed) {
      FtpServer::vsftpd_edit = true;
      return `vsftpd;
   }
