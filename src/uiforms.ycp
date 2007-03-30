@@ -16,8 +16,9 @@ term FTPGenSettingsVsftpd() {
   term dialog = `VBox(
     `Frame ( _("General Settings"),
       `HBox(`HSpacing(1), `VBox (
+	`Left(`TextEntry(`id("Banner"),_("&Welcome message"))),
 	`Left(`CheckBox(`id("ChrootEnable"), _("&Chroot Everyone"))),	
-	`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),	
+	`Left(`CheckBox(`id("VerboseLogging"), _("Verbose Lo&gging"))),	
 	`Left(`HSquash( `HBox (`Left(`TextEntry(`id("UmaskAnon"), _("&Umask for Anonymous"))),
 	`Left(`TextEntry(`id("UmaskLocal"), _("Uma&sk for Authenticated Users"))))))    
       ))
@@ -39,14 +40,7 @@ term FTPGenSettingsVsftpd() {
 	))
       )) // end of `HBox(`HSpacing(1)`VBox (
     ), //end of `Frame ( _("FTP directories")
-    `VSpacing(1),   
-    `Frame ( _("Passiv Mode Settings"),   		
-      `HBox(`HSpacing(1), `Left(`HSquash(`HBox ( 
-	`Left(`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),0,65535,0)),			
-	`Left(`IntField(`id("PasMaxPort"),  _("Max Por&t for Pas. Mode"),0,65535,0)),
-	`HStretch()
-      ))))
-    ), //end of `Frame ( _("Passiv Mode Settings")    
+    
     `VStretch()
   );//end of term dialog =
   return dialog;
@@ -63,12 +57,16 @@ term FTPGenSettingsPureftpd() {
       ))
     ), //end of `Frame ( _("General Settings")
     `VSpacing(1),   
-    `Frame ( _("Passiv Mode Settings"),   		
-      `HBox(`HSpacing(1),`Left(`HSquash(`HBox (  
-	`Left(`IntField(`id("PasMinPort"), _("&Min Port for Pas. Mode"),0,65535,0)),			
-	`Left(`IntField(`id("PasMaxPort"), _("Max Por&t for Pas. Mode"),0,65535,0))
-      ))))
-    ), //end of `Frame ( _("Passiv Mode Settings")   
+    `Frame ( _("FTP directory"),
+      `HBox(`HSpacing(1), `VBox (
+	`Left(`HBox(
+	  `TextEntry(`id("FtpDirAnon"), _("Ftp Directory f&or Anonymous Users")),
+	  `VBox ( `Label(""),
+	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select director&y..."))
+	  )
+	)) // end of `Left(`HBox(
+      )) // end of `HBox(`HSpacing(1)`VBox (
+    ), //end of `Frame ( _("FTP directories")
     `VStretch()
   ); //end of term dialog = 
   return dialog;
@@ -121,14 +119,16 @@ term FTPAnonSettings() {
 
 
 term VSFTPDAddSettings() {
-  term dialog = `VBox (
-    `Frame ( _("Additional Settings"),
-      `HBox(`HSpacing(1),`VBox (				
-	`Left(`TextEntry(`id("Banner"),_("&Welcome message")))
-      ))
-    ), //end of `Frame ( _("Additional Settings")
+  term dialog = `VBox (   
+    `CheckBoxFrame ( `id("PassiveMode"), _("Pass&ive Mode"), true,  		
+      `HBox(`HSpacing(1), `Left(`HSquash(`HBox(
+	`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),0,65535,0),			
+	`IntField(`id("PasMaxPort"),  _("Max P&ort for Pas. Mode"),0,65535,0),
+	`HStretch()
+      ))))
+    ), //end of `Frame ( "Passiv Mode Settings"    
     `VSpacing(1),   
-    `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true,	
+    `CheckBoxFrame(`id("SSLEnable"), _("Sec&urity Settings"), true,	
       `HBox(`HSpacing(1),`VBox (
 	`Left(`ComboBox(`id("SSLVersion"), "S&elect Version of SSL",
 	        ["Enabled SSL v2","Disable SSL v2","Enabled SSL v3","Disable SSL v3",
@@ -143,6 +143,14 @@ term VSFTPDAddSettings() {
 
 term PUREFTPDSecSettings() {
   term dialog = `VBox (
+    `Frame (_("Pass&ive Mode"),  		
+      `HBox(`HSpacing(1), `Left(`HSquash(`HBox(
+	`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),0,65535,0),			
+	`IntField(`id("PasMaxPort"),  _("Max P&ort for Pas. Mode"),0,65535,0),
+	`HStretch()
+      ))))
+    ), //end of `Frame ( "Passiv Mode Settings"
+    `VSpacing(1),
     `Frame ( _("Additional Settings"),
       `HBox(`HSpacing(1),`VBox (				
 	`Left(`CheckBox(`id("AntiWarez"), _("Disable Downloading &Unvalidated Data")))

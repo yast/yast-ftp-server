@@ -168,6 +168,8 @@ map<string,any> VSFTPDSettings () {
   result = add(result, "widget", `custom);
   result = add(result, "custom_widget", `VBox());
   result = add(result, "init", InitVSFTPAddSettings);
+  result = add(result, "validate_type", `function);
+  result = add(result, "validate_function", ValidVSFTPAddPure);
   result = add(result, "store", StoreVSFTPDSettings);
   result = add(result, "help", DialogHelpText("vsftpd_settings"));
 
@@ -180,6 +182,8 @@ map<string,any> PUREFTPDAddSettings () {
   result = add(result, "widget", `custom);
   result = add(result, "custom_widget", `VBox());
   result = add(result, "init", InitPUREFTPTAddSettings);
+  result = add(result, "validate_type", `function);
+  result = add(result, "validate_function", ValidVSFTPAddPure);
   result = add(result, "store", StorePUREFTPDSettings);
   result = add(result, "help", DialogHelpText("pureftpd_settings"));
 
@@ -276,9 +280,9 @@ map<string,any> addit_settings () {
 	       VSFTPDAddSettings()
 	      ));
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption", _("FTP Additional Settings"));
+  result = add(result,"caption", _("FTP Expert Settings"));
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("Additional Settings"));
+  result = add(result, "tree_item_label", _("Expert Settings"));
   result = add(result, "widget_names", [ "DisBackButton", "VSFTPDAddSettings"]);
 
   return result;
@@ -292,9 +296,9 @@ map<string,any> addit_settings_pure () {
 	       PUREFTPDSecSettings()
 	      ));
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption", _("FTP Additional Settings"));
+  result = add(result,"caption", _("FTP Expert Settings"));
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("Additional Settings"));
+  result = add(result, "tree_item_label", _("Expert Settings"));
   result = add(result, "widget_names", [ "DisBackButton", "PUREFTPDAddSettings"]);
 
   return result;

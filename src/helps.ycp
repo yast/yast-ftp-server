@@ -47,7 +47,14 @@ An additional dialog informs whether it is safe to do so.
 </p>
 ")+
 
- /* general settings chroot dialog help 2/6 */
+/* general settings welcome message dialog help 2/6 */
+_("<p><b>Welcome message</b><br>
+This option is the name of a file containing 
+text to display when someone connects to the server.</p>
+")+
+
+
+ /* general settings chroot dialog help 3/6 */
 _("<p><b>Chroot:</b><br>
 When enabled, local users will be (by default) placed in a 
 chroot() jail in their home directory after login.
@@ -57,24 +64,19 @@ or shell access. Only enable if you know what you are doing.</p>
 ")+
 
 
- /* general settings logging dialog help 3/6 */
+ /* general settings logging dialog help 4/6 */
 _("<p><b>Verbose logging:</b><br>
 When enabled, all FTP requests and responses are logged.</p>
 ")+
 
- /* general settings umask dialog help 4/6 */
+ /* general settings umask dialog help 5/6 */
 _("<p><b>Umask:</b><br>
 File creation mask. e.g. 177:077</p>
 ")+
 
- /* general settings FTP dir dialog help 5/6 */
+ /* general settings FTP dir dialog help 6/6 */
 _("<p><b>FTP Direcotry:</b><br>
 FTP Directory is directory which is used for FTP users.</p>
-")+
-
-/* general settings ports dialog help 6/6 */
-_("<p><b>Ports for Passive Mode:</b><br>
-Port range for passive connection replies. - for firewalling </p>
 "),
 
      /* performance settings dialog help 1/6 */
@@ -144,25 +146,20 @@ _("<p><b>Anonymous Can Create Dirs</b><br>
 If enabled anonymous users can create directories.</p>
 "),
 
-     /* additional settings dialog help 1/5 */
+     /* expert settings dialog help 1/6 */
     "vsftpd_settings" : _("<p><b><big>Aditional settings</b><br>
      Aditional settings - security and other settings.</p>
 ")+
 
-/* additional settings welcome message dialog help 2/5 */
-_("<p><b>Welcome message</b><br>
-This option is the name of a file containing 
-text to display when someone connects to the server.</p>
-")+
 
 
-/* additional settings security settings dialog help 3/5 */
+/* expert settings security settings dialog help 3/6 */
 _("<p><b>Security settings</b><br>
 If enabled, and vsftpd was compiled against OpenSSL, 
 vsftpd will support secure connections via SSL.</p>
 ")+
 
-/* additional settings security settings dialog help 4/5 */
+/* expert settings security settings dialog help 4/6 */
 _("<p><b>Select version of SSL</b><br>
 <b>Enable SSL v2:</b> If enabled, this option will permit SSL v2 
 protocol connections.
@@ -172,10 +169,14 @@ protocol connections.
 SSL v2 and v3 protocol connections.
 </p>
 ")+
-/* additional settings security settings dialog help 5/5 */
+/* expert settings security settings dialog help 5/6 */
 _("<p><b>Enable TLS</b><br>
 If enabled, this option will permit TLS v1 protocol connections.
 </p>
+")+
+/* expert settings ports dialog help 6/6 */
+_("<p><b>Ports for Passive Mode:</b><br>
+Port range for passive connection replies. - for firewalling </p>
 "),
 
      /* additional settings dialog help 1/5 */

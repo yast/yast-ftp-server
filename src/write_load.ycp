@@ -157,7 +157,8 @@ global string ValueUI (string key, boolean write) {
     case("FtpDirAnon"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-	      if (FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != "")	       
+	      if ((FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != "") && 
+                 (FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != FtpServer::anon_homedir))	       
                  FtpServer::VS_SETTINGS["anon_root"] = FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil;
 	      else
 		 FtpServer::VS_SETTINGS["anon_root"] = nil;	
@@ -167,8 +168,16 @@ global string ValueUI (string key, boolean write) {
  	   }	
 	} else {	   
 	   if (!write)
- 	      return FtpServer::DEFAULT_CONFIG["FtpDirAnon"]:nil;
+	      /**
+		* initialization this part will be done 
+		* in function ReadSettings () in FtpServer.ycp
+              **/
+ 	      return "";
            else
+	      /**
+		* write option will be done 
+		* in function WriteSettings () in FtpServer.ycp
+              **/
               return "";
 	}
 	break;

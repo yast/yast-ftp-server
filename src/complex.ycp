@@ -148,7 +148,8 @@ boolean ReadFTPService () {
 
   // open dialog for choosing ftp daemon  
 
-  if (FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) {
+  if ((FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) && 
+     (FtpServer::pureftpd_installed) && (FtpServer::vsftpd_installed)) {
      UI::OpenDialog(
        `RadioButtonGroup(`id(`rb), `VBox(
 	 `Label("Choose daemon?"),
@@ -179,7 +180,12 @@ boolean ReadFTPService () {
      y2milestone("Terminating by the radiobutom ID '%1'", FtpServer::rad_but);
     
      UI::CloseDialog();
-  } //end of if (FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) {
+  } else { //end of if (FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) {
+    if ((FtpServer::pureftpd_installed) && (!FtpServer::vsftpd_installed))
+       FtpServer::vsftpd_edit = false;
+    if ((!FtpServer::pureftpd_installed) && (FtpServer::vsftpd_installed))
+       FtpServer::vsftpd_edit = true;
+  }
   return true;
 }
 

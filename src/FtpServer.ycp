@@ -25,6 +25,7 @@ import "String";
 import "Mode";
 import "Package";
 import "CommandLine";
+import "Users";
 
 
 
@@ -62,7 +63,13 @@ global integer pureftpd_xined_id = -1;
 
 global boolean start_xinetd = false;
 
+global string anon_homedir = "";
+
+global integer anon_uid = 0;
+
 integer sl = 1000;
+
+map userinfo = $[]; 
 
 /**
  * map of "common" FTP settings
@@ -177,13 +184,8 @@ boolean ReadVSFTPDSettings () {
 boolean InitEDIT_SETTINGS () {
    foreach (string key, UI_keys, {
        string val = ValueUI(key, false);
-       /*if (vsftpd_edit) {
-	  if (val != nil) VS_EDIT_SETTINGS[key] = val;
-       } else {
-	  if (val != nil) PURE_EDIT_SETTINGS[key] = val;
-       }*/
        if (val != nil) EDIT_SETTINGS[key] = val;
-       if (val == nil) Popup::Message(key);; 
+       //if (val == nil) Popup::Message(key);; 
    });
 
    y2milestone("-------------EDIT_SETTINGS-------------------");  
@@ -208,6 +210,21 @@ boolean ReadSettings () {
   }
   if (result) {
         result = InitEDIT_SETTINGS ();
+  }
+  //read info about anonymous user "ftp"
+  Users::SetGUI (false);
+  if (Users::Read () == "") { 
+     Users::SelectUserByName ("ftp");
+     userinfo = Users::GetCurrentUser ();
+     anon_homedir = (string) userinfo["homedirectory"]:nil;
+     anon_uid     = (integer) userinfo["uidnumber"]:nil;
+     y2milestone("-------------User info-------------------");  
+     y2milestone("Users :CurrentUser %1", userinfo);
+     y2milestone("---------------------------------------------");
+     if ((anon_homedir != "") && (anon_homedir != nil)) {
+        if (EDIT_SETTINGS["FtpDirAnon"]:nil == "")
+	   EDIT_SETTINGS["FtpDirAnon"] = anon_homedir;	
+     }
   }
   return result;
 }
@@ -295,6 +312,27 @@ boolean WriteSettings () {
      if (result) {
 	result = WritePUREFTPDSettings();
      }
+     // write homedirectory for anonymous user (ftp)
+     if (result) {
+	if ((EDIT_SETTINGS["FtpDirAnon"]:nil != anon_homedir) &&
+           (anon_homedir != "") && (anon_homedir != nil)) {
+           string error = Users::EditUser($["homedirectory":EDIT_SETTINGS["FtpDirAnon"]:nil]);
+           if ((error != nil) && (error != "")) {
+              result= false;
+              Popup::Error(error);
+	   }
+           if (result)
+	      if (Users::CommitUser ()) {
+		 Users::SetGUI (false);  
+		 error = Users::Write();
+                 if ((error != nil) && (error != "")) {
+		    Popup::Error(error);
+		    result = false;
+                 }
+              } 
+	}
+     }
+     
   }
   return result; 
 }
