@@ -25,22 +25,21 @@ include "ftp-server/uiforms.ycp";
 
 
 
-  void BackButton (string key) {
+/**
+ * Function for disable back button
+ * @param string key
+ */
+
+void BackButton (string key) {
      UI::ChangeWidget(`id(`back), `Enabled, false);
-  }
-
- 
- string HelpVsftp(string key) {
-    if (FtpServer::vsftpd_edit)
- 	return DialogHelpText("vsftpd_settings");
-    else return "";
 }
 
-string HelpPureftp(string key) {
-    if (!FtpServer::vsftpd_edit)
- 	return DialogHelpText("pureftpd_settings");
-    else return "";
-}
+/**
+ * Init function where are added UI hadle functions 
+ * Start widget (vsftpd)
+ *
+ * @return map<string,any> map for start-up widget
+ */
 
 
 map<string,any> StartMode () {
@@ -58,6 +57,12 @@ map<string,any> StartMode () {
   return result;
 }
 
+/**
+ * Init function where are added UI hadle functions 
+ * Perform Settings widget
+ *
+ * @return map<string,any> map for Perform Settings widget
+ */
 
 map<string,any> PerformSettings () {
   map<string,any> result = $[];
@@ -71,6 +76,13 @@ map<string,any> PerformSettings () {
   return result;
    
 }
+
+/**
+ * Init function where are added UI hadle functions 
+ * Start widget
+ *
+ * @return map<string,any> map for start-stop widget
+ */
 
 map<string,any> StartStop () {
   map<string,any> result = $[];
@@ -91,6 +103,13 @@ map<string,any> StartStop () {
   return result;
 }
 
+/**
+ * Init function where are added UI hadle functions 
+ * Start widget (pure-ftpd)
+ *
+ * @return map<string,any> map for start-stop widget
+ */
+
 map<string,any> StartStopPure () {
   map<string,any> result = $[];
   result = add(result, "service_id", "pure-ftpd");
@@ -109,6 +128,13 @@ map<string,any> StartStopPure () {
 
   return result;
 }
+/**
+ * Init function where are added UI hadle functions 
+ * special hack widget where is handlig disable back button
+ *
+ * @return map<string,any> map for start-stop widget
+ */
+
 map<string,any> DisBackButton () {
   map<string,any> result = $[];
 
@@ -119,6 +145,14 @@ map<string,any> DisBackButton () {
 
   return result;
 }
+
+
+/**
+ * Init function where are added UI hadle functions 
+ * General Settings widget
+ *
+ * @return map<string,any> map for General Settings widget
+ */
 
 map<string,any> GenSettings () {
   map<string,any> result = $[];
@@ -135,6 +169,13 @@ map<string,any> GenSettings () {
   return result;
 }
 
+/**
+ * Init function where are added UI hadle functions 
+ * Start widget radiobuttons for switching daemons
+ *
+ * @return map<string,any> map for start-stop widget
+ */
+
 map<string,any> RBVsftpdPureftpd () {
   map<string,any> result = $[];
   result = add(result, "label",   _("Change your daemon"));
@@ -150,6 +191,14 @@ map<string,any> RBVsftpdPureftpd () {
 
   return result;
 }
+
+/**
+ * Init function where are added UI hadle functions 
+ * Anonymous Settings widget
+ *
+ * @return map<string,any> map for Anonymous Settings widget
+ */
+
 map<string,any> AnonSettings () {
   map<string,any> result = $[];
 
@@ -161,6 +210,13 @@ map<string,any> AnonSettings () {
 
   return result;
 }
+
+/**
+ * Init function where are added UI hadle functions 
+ * Expert Settings widget (vsftpd)
+ *
+ * @return map<string,any> map for Expert Settings widget
+ */
 
 map<string,any> VSFTPDSettings () {
   map<string,any> result = $[];
@@ -175,6 +231,13 @@ map<string,any> VSFTPDSettings () {
 
   return result;
 }
+
+/**
+ * Init function where are added UI hadle functions 
+ * Expert Settings widget (pure-ftpd)
+ *
+ * @return map<string,any> map for Expert Settings widget
+ */
 
 map<string,any> PUREFTPDAddSettings () {
   map<string,any> result = $[];
@@ -191,7 +254,13 @@ map<string,any> PUREFTPDAddSettings () {
 }
 
 
-
+/**
+ * Init function where are added UI hadle functions 
+ * Start widget
+ * define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for start_up widget
+ */
 
 
 map<string,any> start_up () {
@@ -201,7 +270,7 @@ map<string,any> start_up () {
 	       "StartMode",
 	       `VSpacing(1),
 	       // disabling start/stop buttons when it doesn't make sense
-	       "StartStop",	       
+	       (Mode::normal() ? "StartStop":`Empty()),	       
 	       "RBVsPureFTPd",
 	       `VStretch ()
 	      ));
@@ -213,6 +282,14 @@ map<string,any> start_up () {
 
   return result;
 }
+
+/**
+ * Init function where are added UI hadle functions 
+ * General Settings widget (vsftpd)
+ * define for tabs_vsftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for General Settings widget
+ */
 
 map<string,any> gen_settings () {
   map<string,any> result = $[];
@@ -229,6 +306,14 @@ map<string,any> gen_settings () {
   return result;
 }
 
+/**
+ * Init function where are added UI hadle functions 
+ * General Settings widget (pure-ftpd)
+ * define for tabs_pureftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for General Settings widget
+ */
+
 map<string,any> gen_settings_pure () {
   map<string,any> result = $[];
 
@@ -243,6 +328,16 @@ map<string,any> gen_settings_pure () {
 
   return result;
 }
+
+/**
+ * Init function where are added UI hadle functions 
+ * Performance Settings widget
+ * define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for Performance Settings widget
+ */
+
+
 map<string,any> perfor_settings () {
   map<string,any> result = $[];
 
@@ -257,6 +352,14 @@ map<string,any> perfor_settings () {
 
   return result;
 }
+
+/**
+ * Init function where are added UI hadle functions 
+ * Anonymous Settings widget
+ * define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for Anonymous Settings widget
+ */
 
 map<string,any> anon_settings () {
   map<string,any> result = $[];
@@ -273,6 +376,14 @@ map<string,any> anon_settings () {
   return result;
 }
 
+/**
+ * Init function where are added UI hadle functions 
+ * Expert Settings widget (vsftpd)
+ * define for tabs_vsftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for Expert Settings widget
+ */
+
 map<string,any> addit_settings () {
   map<string,any> result = $[];
 
@@ -287,7 +398,13 @@ map<string,any> addit_settings () {
 
   return result;
 }
-
+/**
+ * Init function where are added UI hadle functions 
+ * Expert Settings widget (pure-ftpd)
+ * define for tabs_pureftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for Expert Settings widget
+ */
 
 map<string,any> addit_settings_pure () {
   map<string,any> result = $[];
@@ -305,7 +422,10 @@ map<string,any> addit_settings_pure () {
 }
 
 /**
- * Nodes for TreeDialogs
+ * map for description of widget later in CWNTree
+ * widget_descr (vsftpd)
+ *
+ * @return map<string,map<string,any> >
  */
 
   map<string,map<string,any> > wid_handling_vsftpd = $[
@@ -332,7 +452,12 @@ map<string,any> addit_settings_pure () {
   ];
 
 
-
+/**
+ * map for screens of widget later in CWNTree
+ * screens (vsftpd)
+ *
+ * @return map<string,map<string,any> >
+ */
 
   map<string, map<string,any> > tabs_vsftpd = $[
   
@@ -347,6 +472,16 @@ map<string,any> addit_settings_pure () {
     "addit_settings" : addit_settings (),
 
   ];
+
+
+/**
+ * function for running CWNTree
+ * vsftpd
+ *
+ * @return symbol return value of DialogTree::ShowAndRun
+ */
+
+
 
   symbol RunFTPDialogsVsftpd() {
     list<string> sim_dialogs = ["start_up", "gen_settings", "perfor_settings", "anon_settings", "addit_settings"];
@@ -363,6 +498,12 @@ map<string,any> addit_settings_pure () {
     ]);
   }
 
+/**
+ * map for description of widget later in CWNTree
+ * widget_descr (pure-ftpd)
+ *
+ * @return map<string,map<string,any> >
+ */
 
 map<string,map<string,any> > wid_handling_pureftpd = $[
     
@@ -384,7 +525,12 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
   ];
 
 
-
+/**
+ * map for screens of widget later in CWNTree
+ * screens (pure-ftpd)
+ *
+ * @return map<string,map<string,any> >
+ */
 
   map<string, map<string,any> > tabs_pureftpd = $[
   
@@ -399,6 +545,13 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
     "addit_settings" : addit_settings_pure (),
 
   ];
+
+/**
+ * function for running CWNTree
+ * vsftpd
+ *
+ * @return symbol return value of DialogTree::ShowAndRun
+ */
 
   symbol RunFTPDialogsPureftpd() {
     list<string> sim_dialogs = ["start_up", "gen_settings", "perfor_settings", "anon_settings", "addit_settings"];

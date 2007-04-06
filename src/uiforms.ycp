@@ -7,7 +7,7 @@
  * $Id: uiforms.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  */
 
-	
+textdomain "ftp-server";	
 
 /**
  * UI for TreeDialogs
@@ -33,7 +33,7 @@ term FTPGenSettingsVsftpd() {
 	  )
 	)),
 	`Left(`HBox(
-	  `TextEntry(`id("FtpDirLocal"), _("&Ftp Directory for Autheticated Users")),
+	  `TextEntry(`id("FtpDirLocal"), _("&Ftp Directory for Authenticated Users")),
 	  `VBox ( `Label(""),
 	    `PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Select d&irectory..."))
 	  )
@@ -100,8 +100,8 @@ term FTPAnonSettings() {
       `RadioButtonGroup(`id("AnonAuthen"), 
 	`HBox(`HSpacing(1),`VBox(
 	  `Left(`RadioButton(`id(0), "Anonymo&us Only")),
-	  `Left(`RadioButton(`id(1), "Aut&henticated Users Only" )),
-	  `Left(`RadioButton(`id(2), "&Both", true))
+	  `Left(`RadioButton(`id(1), "Aut&henticated Users Only", true)),
+	  `Left(`RadioButton(`id(2), "&Both"))
 	))
       ) //end of `HBox(`HSpacing(1),`RadioButtonGroup(`id("AnonAuthen")
     ), //end of `Frame ( _("Enable/Disable Anonymous and Local Users")

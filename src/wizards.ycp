@@ -1,6 +1,6 @@
 /**
- * File:	include/ftpd/wizards.ycp
- * Package:	Configuration of ftpd
+ * File:	include/ftp-server/wizards.ycp
+ * Package:	Configuration of ftp-server
  * Summary:	Wizards definitions
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
@@ -28,7 +28,7 @@ symbol RunDaemonSwitch() {
 }
 
 /**
- * Main workflow of the ftpd configuration
+ * Main workflow of the ftp-server configuration
  * @return sequence result
  */
 any MainSequence() {
@@ -63,7 +63,7 @@ any MainSequence() {
 
 
 /**
- * Whole configuration of ftpd
+ * Whole configuration of ftp-server
  * @return sequence result
  */
 any FtpdSequence() {
@@ -99,15 +99,36 @@ any FtpdSequence() {
 }
 
 /**
- * Whole configuration of ftpd but without reading and writing.
+ * Whole configuration of ftp-server but without reading and writing.
  * For use with autoinstallation.
  * @return sequence result
  */
-any FtpdAutoSequence() {
+any FtpServerAutoSequence() {
 
-    /* Initialization dialog caption */
-    string caption = _("Ftpd Configuration");
-    /* Initialization dialog contents */
+  map aliases = $[
+     "main"  	:   ``( MainSequence() ),
+     ];
+
+  map sequence = $[
+     "ws_start" : "main",
+     "main" : $[
+		`abort      : `abort,
+		`next       : `next
+	       ],
+     ];
+
+   Wizard::CreateDialog();
+
+
+   any ret = Sequencer::Run(aliases, sequence);
+
+   UI::CloseDialog();
+   return ret;
+
+
+    /*
+    string caption = _("ftp-server Configuration");
+    
     term contents = `Label(_("Initializing..."));
 
     Wizard::CreateDialog();
@@ -117,7 +138,7 @@ any FtpdAutoSequence() {
     any ret = MainSequence();
 
     UI::CloseDialog();
-    return ret;
+    return ret;*/
 }
 
 /* EOF */

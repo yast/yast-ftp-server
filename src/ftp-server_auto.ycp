@@ -1,11 +1,11 @@
 
 /**
- * File:	clients/ftpd_auto.ycp
- * Package:	Configuration of ftpd
+ * File:	clients/ftp-server_auto.ycp
+ * Package:	Configuration of ftp-server
  * Summary:	Client for autoinstallation
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: ftpd_auto.ycp 27914 2006-02-13 14:32:08Z locilka $
+ * $Id: ftp-server_auto.ycp 27914 2006-02-13 14:32:08Z locilka $
  *
  * This is a client for autoinstallation. It takes its arguments,
  * goes through the configuration and return the setting.
@@ -14,21 +14,21 @@
 
 /**
  * @param function to execute
- * @param map/list of ftpd settings
+ * @param map/list of ftp-server settings
  * @return map edited settings, Summary or boolean on success depending on called function
  * @example map mm = $[ "FAIL_DELAY" : "77" ];
- * @example map ret = WFM::CallFunction ("ftpd_auto", [ "Summary", mm ]);
+ * @example map ret = WFM::CallFunction ("ftp-server_auto", [ "Summary", mm ]);
  */
 
 {
 
-textdomain "ftpd";
+textdomain "ftp-server";
 
 y2milestone("----------------------------------------");
-y2milestone("Ftpd auto started");
+y2milestone("FtpServer auto started");
 
-import "Ftpd";
-include "ftpd/wizards.ycp";
+import "FtpServer";
+include "ftp-server/wizards.ycp";
 
 any ret = nil;
 string func = "";
@@ -45,42 +45,61 @@ y2debug("param=%1", param);
 
 /* Create a summary*/
 if(func == "Summary") {
-    ret = select(Ftpd::Summary(), 0, "");
+    ret = FtpServer::Summary();
+    //ret = select(FtpServer::Summary(), 0, "");
 }
 /* Reset configuration */
 else if (func == "Reset") {
-    Ftpd::Import($[]);
+    FtpServer::Import($[]);
     ret = $[];
 }
 /* Change configuration (run AutoSequence) */
 else if (func == "Change") {
-    ret = FtpdAutoSequence();
+    ret = FtpServerAutoSequence();
 }
 /* Import configuration */
 else if (func == "Import") {
-    ret = Ftpd::Import(param);
+    ret = FtpServer::Import(param);
 }
 /* Return actual state */
 else if (func == "Export") {
-    ret = Ftpd::Export();
+    ret = FtpServer::Export();
 }
 /* Return needed packages */
 else if (func == "Packages") {
-    ret = Ftpd::AutoPackages();
+    ret = FtpServer::AutoPackages();
 }
+
+/**
+ * Return if configuration  was changed
+ * return boolean
+ */
+else if (func == "GetModified") {
+    ret = FtpServer::modified;
+}
+/**
+ * Set modified flag
+ * return boolean
+ */
+else if (func == "SetModified") {
+    FtpServer::modified = true;
+    ret = true;
+}
+
 /* Read current state */
 else if (func == "Read") {
     import "Progress";
     boolean progress_orig = Progress::set (false);
-    ret = Ftpd::Read();
+    FtpServer::InitDaemon ();
+    ret = FtpServer::Read();
     Progress::set (progress_orig);
 }
 /* Write givven settings */
 else if (func == "Write") {
     import "Progress";
     boolean progress_orig = Progress::set (false);
-    Ftpd::write_only = true;
-    ret = Ftpd::Write();
+    FtpServer::write_only = true;
+    ret = FtpServer::Write();
     Progress::set (progress_orig);
 }
 /* Unknown function */
@@ -90,7 +109,7 @@ else {
 }
 
 y2debug("ret=%1", ret);
-y2milestone("Ftpd auto finished");
+y2milestone("FtpServer auto finished");
 y2milestone("----------------------------------------");
 
 return ret;

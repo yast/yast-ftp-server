@@ -1,12 +1,12 @@
 /**
- * File:	clients/ftpd.ycp
- * Package:	Configuration of ftpd
+ * File:	clients/ftp-server.ycp
+ * Package:	Configuration of ftp-server
  * Summary:	Main file
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
- * $Id: ftpd.ycp 27914 2006-02-13 14:32:08Z juhliarik $
+ * $Id: ftp-server.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  *
- * Main file for ftpd configuration. Uses all other files.
+ * Main file for ftp-server configuration. Uses all other files.
  */
 
 {
@@ -19,7 +19,7 @@ textdomain "ftp-server";
 
 /* The main () */
 y2milestone ("----------------------------------------");
-y2milestone ("Ftpd module started");
+y2milestone ("ftp-server module started");
 
 import "Progress";
 import "Report";
@@ -170,7 +170,7 @@ boolean FTPdCMDShow (map options) {
   }
 
   // general settings for access
-  CommandLine::PrintNoCR(_("Access Alowed for: "));
+  CommandLine::PrintNoCR(_("Access Allowed for: "));
   if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
      CommandLine::Print(_("Anonymous Users"));
   } else  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
@@ -397,7 +397,7 @@ boolean FTPdCMDAnonDir (map options) {
      }
   } else {
     // TRANSLATORS: CommandLine error message
-    CommandLine::Error(_("Options is not supported in pure-ftpd."));
+    CommandLine::Error(_("Options is not supported in pure-ftp-server."));
     CommandLine::Print("");
   }  
 }
@@ -427,7 +427,7 @@ boolean FTPdCMDAuthenDir(map options) {
      }
   } else {
     // TRANSLATORS: CommandLine error message
-    CommandLine::Error(_("Options is not supported in pure-ftpd."));
+    CommandLine::Error(_("Options is not supported in pure-ftp-server."));
     CommandLine::Print("");
   }  
 }
@@ -530,16 +530,16 @@ boolean FTPdCMDAccess (map options) {
   CommandLine::Print(String::UnderlinedHeader(_("Access (Anonymous/Authenticated):"), 0));
   CommandLine::Print("");
   if (size(options) == 1) {	
-     CommandLine::PrintNoCR(_("Access alowed for: "));	
+     CommandLine::PrintNoCR(_("Access allowed for: "));	
      if (options["anon_only"]:nil != nil) {
 	FtpServer::EDIT_SETTINGS["AnonAuthen"] = "0";
 	CommandLine::PrintNoCR(_("anonymous users"));
      } else if (options["authen_only"]:nil != nil) {
 	FtpServer::EDIT_SETTINGS["AnonAuthen"] = "1";
-	CommandLine::PrintNoCR(_("autheticated users"));
+	CommandLine::PrintNoCR(_("authenticated users"));
      } else if (options["anon_and_authen"]:nil != nil) {
 	FtpServer::EDIT_SETTINGS["AnonAuthen"] = "2";
-	CommandLine::PrintNoCR(_("anonymous and autheticated users"));
+	CommandLine::PrintNoCR(_("anonymous and authenticated users"));
      } else {
         // TRANSLATORS: CommandLine error message
         CommandLine::Error(_("Uknown option."));
@@ -775,7 +775,7 @@ boolean FTPdCMDAntiwarez (map options) {
   CommandLine::Print("");
   if (FtpServer::vsftpd_edit) {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("This option is allowed only in pure-ftpd."));
+     CommandLine::Error(_("This option is allowed only in pure-ftp-server."));
      CommandLine::Print("");
      return false;
   }
@@ -813,7 +813,7 @@ boolean  FTPdCMDSSL_TLS (map options) {
   CommandLine::Print("");
   if (FtpServer::vsftpd_edit) {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("This option is allowed only in pure-ftpd."));
+     CommandLine::Error(_("This option is allowed only in pure-ftp-server."));
      CommandLine::Print("");
      return false;
   }
@@ -850,9 +850,9 @@ boolean  FTPdCMDSSL_TLS (map options) {
 
 
 map cmdline_description = $[
-  "id" 	: "ftpd",
+  "id" 	: "ftp-server",
     /* Command line help text for the Xftpd module */
-  "help"	: _("Configuration of ftpd"),
+  "help"	: _("Configuration of ftp-server"),
   "guihandler"	: FtpdSequence,
   "initialize"	: FtpServer::Read,
   "finish"	: FtpServer::Write,
@@ -900,7 +900,7 @@ map cmdline_description = $[
 	"umask" : $[
 	"handler" : FTPdCMDUmask,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("Umask vsftpd: <local users>:<anonymous>, pure-ftpd: <files>:<dirs>"),
+	"help" 	  : _("Umask vsftpd: <local users>:<anonymous>, pure-ftp-server: <files>:<dirs>"),
 	"example" : [
 		   "umask set_umask=177:077",
 	            ],
@@ -918,7 +918,7 @@ map cmdline_description = $[
 	"authen_dir" : $[
 	"handler" : FTPdCMDAuthenDir,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("Enter the existing directory for authenticated users.(only pure-ftpd)"),
+	"help" 	  : _("Enter the existing directory for authenticated users.(only pure-ftp-server)"),
 	"example" : [
 		   "authen_dir set_authen_dir=/srv/ftp",
 	            ],
@@ -1035,11 +1035,11 @@ map cmdline_description = $[
         ],
 
 
-	// only pure-ftpd
+	// only pure-ftp-server
 	"antiwarez" : $[
 	"handler" : FTPdCMDAntiwarez,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("Disallow downloading of files that were uploaded but not validated by a local admin. (pure-ftpd only)"),
+	"help" 	  : _("Disallow downloading of files that were uploaded but not validated by a local admin. (pure-ftp-server only)"),
 	"example" : [
 		   "antiwarez enalbe",
 		   "antiwarez disable",
@@ -1047,11 +1047,11 @@ map cmdline_description = $[
         ],
 
 
-        // only pure-ftpd
+        // only pure-ftp-server
 	"SSL_TLS" : $[
 	"handler" : FTPdCMDSSL_TLS,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("Security settings for SSL and TLS protocol (pure-ftpd only)"),
+	"help" 	  : _("Security settings for SSL and TLS protocol (pure-ftp-server only)"),
 	"example" : [
 		   "SSL_TLS enalbe",
 		   "SSL_TLS disable",
@@ -1268,12 +1268,12 @@ map cmdline_description = $[
 		"enable", "disable",
 	],
 
-	//only pure-ftpd
+	//only pure-ftp-server
 	"antiwarez" : [
 		"enable", "disable",
 	],
 
-	//only pure-ftpd
+	//only pure-ftp-server
 	"SSL_TLS" : [
 		"enable", "disable", "only",
 	],
@@ -1295,7 +1295,7 @@ if(size(args) > 0) {
 any ret = nil;
 
 if (propose) {
-   ret = FtpdAutoSequence();
+   ret = FtpServerAutoSequence();
 } else { 
    ret = CommandLine::Run(cmdline_description);
 }
@@ -1303,7 +1303,7 @@ if (propose) {
 y2debug("ret=%1", ret);
 
 /* Finish */
-y2milestone("Ftpd module finished");
+y2milestone("ftp-server module finished");
 y2milestone("----------------------------------------");
 
 return ret;

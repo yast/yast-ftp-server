@@ -1,6 +1,6 @@
 /**
- * File:	include/ftpd/helps.ycp
- * Package:	Configuration of ftpd
+ * File:	include/ftp-server/helps.ycp
+ * Package:	Configuration of ftp-server
  * Summary:	Help texts of all the dialogs
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
@@ -9,7 +9,7 @@
 
 {
 
-textdomain "ftpd";
+textdomain "ftp-server";
 
 /**
  * All helps are here
@@ -17,7 +17,7 @@ textdomain "ftpd";
 map HELPS = $[
 
     /* Read dialog help 1/2 */
-    "read" : _("<p><b><big>Initializing ftpd Configuration</big></b><br>
+    "read" : _("<p><b><big>Initializing ftp-server Configuration</big></b><br>
 Please wait...<br></p>
 ") +
 
@@ -27,7 +27,7 @@ Safely abort the configuration utility by pressing <b>Abort</b> now.</p>
 "),
 
     /* Write dialog help 1/2 */
-    "write" : _("<p><b><big>Saving ftpd Configuration</big></b><br>
+    "write" : _("<p><b><big>Saving ftp-server Configuration</big></b><br>
 Please wait...<br></p>
 ") +
 
@@ -75,7 +75,7 @@ File creation mask. e.g. 177:077</p>
 ")+
 
  /* general settings FTP dir dialog help 6/6 */
-_("<p><b>FTP Direcotry:</b><br>
+_("<p><b>FTP Directory:</b><br>
 FTP Directory is directory which is used for FTP users.</p>
 "),
 
@@ -117,7 +117,7 @@ The maximum data transfer rate permitted for anonymous clients.</p>
      /* anonymous settings dialog help 1/6 */
     "anon_settings" : _("<p><b><big>Anonymous settings</b><br>
      Anonymous settings - there you can specify 
-settings for anonymous/autheticated users. </p>
+settings for anonymous/authenticated users. </p>
 ")+
 
 /* anonymous settings anonymous only dialog help 2/6 */
@@ -125,14 +125,14 @@ _("<p><b>Anonymous Only</b><br>
 If enabled only anonymous logins are permitted.</p>
 ")+
 
-/* anonymous settings autheticated users only dialog help 3/6 */
+/* anonymous settings authenticated users only dialog help 3/6 */
 _("<p><b>Authenticated Users Only</b><br>
-If enabled only autheticated users are permitted.</p>
+If enabled only authenticated users are permitted.</p>
 ")+
 
 /* anonymous settings both dialog help 4/6 */
 _("<p><b>Both</b><br>
-If enabled autheticated users and anonymous are permitted.</p>
+If enabled authenticated users and anonymous are permitted.</p>
 ")+
 
 
@@ -147,8 +147,8 @@ If enabled anonymous users can create directories.</p>
 "),
 
      /* expert settings dialog help 1/6 */
-    "vsftpd_settings" : _("<p><b><big>Aditional settings</b><br>
-     Aditional settings - security and other settings.</p>
+    "vsftpd_settings" : _("<p><b><big>Additional settings</b><br>
+     Additional settings - security and other settings.</p>
 ")+
 
 
@@ -180,8 +180,8 @@ Port range for passive connection replies. - for firewalling </p>
 "),
 
      /* additional settings dialog help 1/5 */
-    "pureftpd_settings" : _("<p><b><big>Aditional settings</b><br>
-     Aditional settings - security and other settings.</p>
+    "pureftpd_settings" : _("<p><b><big>Additional settings</b><br>
+     Additional settings - security and other settings.</p>
 ")+
 
 /* additional settings Disable Downloading 
@@ -209,14 +209,14 @@ mechanisms, including anonymous sessions.</p>
 "),
 
    /* Summary dialog help 1/3 */
-    "summary" : _("<p><b><big>Ftpd Configuration</big></b><br>
-Configure ftpd here.<br></p>
+    "summary" : _("<p><b><big>ftp-server Configuration</big></b><br>
+Configure ftp-server here.<br></p>
 ")+
 
     /* Summary dialog help 2/3 */
-    _("<p><b><big>Adding a ftpd:</big></b><br>
-Choose an ftpd from the list of detected ftpds.
-If your ftpd was not detected, use <b>Other (not detected)</b>.
+    _("<p><b><big>Adding a ftp-server:</big></b><br>
+Choose an ftp-server from the list of detected ftpds.
+If your ftp-server was not detected, use <b>Other (not detected)</b>.
 Then press <b>Configure</b>.</p>
 ") +
 
@@ -227,18 +227,18 @@ the configuration opens.</p>
 "),
 
     /* Ovreview dialog help 1/3 */
-    "overview" : _("<p><b><big>Ftpd Configuration Overview</big></b><br>
+    "overview" : _("<p><b><big>ftp-server Configuration Overview</big></b><br>
 Obtain an overview of installed ftpds. Additionally
 edit their configurations.<br></p>
 ") +
 
     /* Ovreview dialog help 2/3 */
-_("<p><b><big>Adding a ftpd:</big></b><br>
-Press <b>Add</b> to configure a ftpd.</p>") +
+_("<p><b><big>Adding a ftp-server:</big></b><br>
+Press <b>Add</b> to configure a ftp-server.</p>") +
 
     /* Ovreview dialog help 3/3 */
 _("<p><b><big>Editing or Deleting:</big></b><br>
-Choose a ftpd to change or remove.
+Choose a ftp-server to change or remove.
 Then press <b>Edit</b> or <b>Delete</b> as desired.</p>
 "),
 

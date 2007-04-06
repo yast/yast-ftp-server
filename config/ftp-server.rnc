@@ -1,0 +1,32 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+ftp-server =
+ element ftp-server {
+     element ChrootEnable { text }? &
+     element VerboseLogging { text }? &
+     element FtpDirLocal { text }? &
+     element FtpDirAnon { text }? &
+     element Umask { text }? &
+     element UmaskAnon { text }? &
+     element UmaskLocal { text }? &
+     element PasMinPort { text }? &
+     element PasMaxPort { text }? &
+     element MaxIdleTime { text }? &
+     element MaxClientsPerIP { text }? &
+     element MaxClientsNumber { text }? &
+     element LocalMaxRate { text }? &
+     element AnonMaxRate { text }? &
+     element AnonAuthen { text }? &
+     element AnonReadOnly { text }? &
+     element AnonCreatDirs { text }? &
+     element Banner { text }? &
+     element SSLEnable { text }? &
+     element SSLVersion { text }? &
+     element TLS { text }? &
+     element AntiWarez { text }? &
+     element SSL { text }? &
+     element StartXinetd { text }? &
+     element StartDaemon  { text }?
+}

@@ -1,6 +1,6 @@
 /**
- * File:	include/ftpd/wid_functions.ycp
- * Package:	Configuration of ftpd
+ * File:	include/ftp-server/wid_functions.ycp
+ * Package:	Configuration of ftp-server
  * Summary:	Wizards definitions
  * Authors:	Jozef Uhliarik <juhliarik@suse.cz>
  *
@@ -17,6 +17,7 @@ import "Inetd";
 import "Service";
 import "Mode";
 import "Users";
+import "Mode";
 
 
 include "ftp-server/uiforms.ycp";
@@ -40,8 +41,13 @@ global boolean GetEnableService () {
  * returning boolean value that says if the service will be started at boot.
  */
 global void SetEnableService (boolean enable_service) {  
+  if (size(FtpServer::EDIT_SETTINGS) == 0)
+     FtpServer::EDIT_SETTINGS = FtpServer::DEFAULT_CONFIG;
+
   if (enable_service)
      FtpServer::EDIT_SETTINGS["StartDaemon"] = "1";
+
+  
 }
 
 /**
@@ -169,7 +175,7 @@ boolean GenValid (string key, map event) {
      }
      string AnonHomeDir = (string)UI::QueryWidget (`id("FtpDirAnon"), `Value);
      //checking correct homedir for anonymous user
-     if ((AnonHomeDir != nil) && (AnonHomeDir != "")) {
+     if ((AnonHomeDir != nil) && (AnonHomeDir != "") && (Mode::normal())) {
         
         if (AnonHomeDir != FtpServer::anon_homedir) {
            string error = Users::EditUser($["homedirectory":AnonHomeDir]);
@@ -235,9 +241,29 @@ void InitRBVsPure (string key) {
         UI::ChangeWidget(`id( "vs_item" ), `Value, true);
      }else
         UI::ChangeWidget(`id( "pure_item" ), `Value, true);
-  } else UI::ChangeWidget(`id("items"), `opt(`disabled), true);
-}
+  } else if (FtpServer::vsftpd_installed && !FtpServer::pureftpd_installed) {
+     UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  } else if (!FtpServer::vsftpd_installed && FtpServer::pureftpd_installed) {
+     UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  } else {
+     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  }
 
+  if (!Mode::normal()) {
+     if (FtpServer::vsftpd_edit) {
+        UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+     } else {
+        UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+     }
+     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  }
+}
 
 
 symbol HandleRBVsPure(string key, map event) {
@@ -311,7 +337,7 @@ void StoreAnonSettings (string key, map event) {
 
 
 /**
- * Init function for pure-ftpd add settings
+ * Init function for pure-ftp-server add settings
  * change values a display correct widget
  */
 void InitPUREFTPTAddSettings (string key) {
@@ -323,7 +349,7 @@ void InitPUREFTPTAddSettings (string key) {
 }
 
 /**
- * Store function for pure-ftpd add settings
+ * Store function for pure-ftp-server add settings
  * save values to temporary structure
  */
 void StorePUREFTPDSettings (string key, map event) {
@@ -331,7 +357,7 @@ void StorePUREFTPDSettings (string key, map event) {
   FtpServer::WriteToEditMap("SSL", tostring(UI::QueryWidget(`id("SSL"), `CurrentButton)));
 
   //y2milestone("-------------PURE_EDIT_SETTINGS-------------------");  
-  //y2milestone("Pure-ftpd configuration has been read: %1", FtpServer::PURE_EDIT_SETTINGS);
+  //y2milestone("Pure-ftp-server configuration has been read: %1", FtpServer::PURE_EDIT_SETTINGS);
   //y2milestone("---------------------------------------------");
 }
 

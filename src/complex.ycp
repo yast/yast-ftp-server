@@ -39,27 +39,30 @@ boolean PollAbort() {
 
 
 /**
- * Init settings dialog
- * 
+ * Init settings dialog (select the daemon)
+ *
+ * @return boolean successfull
  */
 
 boolean ReadFTPService () {
 
 
   //Checking if ftp daemons are installed
-
+  integer rad_but = 0;
+  integer vsftpd_init_count = 0;
+  integer pureftpd_init_count = 0;
   any ret = nil;
   if (Package::Installed("vsftpd")) {
-     FtpServer::vsftpd_init_count = FtpServer::vsftpd_init_count + 1;
+     vsftpd_init_count = vsftpd_init_count + 1;
      FtpServer::vsftpd_installed = true;
   }
 
   if (Package::Installed("pure-ftpd")) {
-     FtpServer::pureftpd_init_count = FtpServer::pureftpd_init_count + 1;
+     pureftpd_init_count = pureftpd_init_count + 1;
      FtpServer::pureftpd_installed = true;
   }
 
-  if ((FtpServer::vsftpd_init_count == 0) && (FtpServer::pureftpd_init_count == 0)) {
+  if ((vsftpd_init_count == 0) && (pureftpd_init_count == 0)) {
      //Popup::Error("There isn't installed ftp daemon (vsftpd/pure-ftpd)!" );
      UI::OpenDialog(
        `RadioButtonGroup(`id("IntstallFTPd"), 
@@ -107,10 +110,13 @@ boolean ReadFTPService () {
            y2milestone("FTP module: Installation failed");
 	   return false;
 	}
-	if (daemon == "pure-ftpd")
+	if (daemon == "pure-ftpd") {
            FtpServer::pureftpd_installed = true;
-        else
+           pureftpd_init_count = pureftpd_init_count + 1;
+        } else {
 	   FtpServer::vsftpd_installed = true; 
+ 	   vsftpd_init_count = vsftpd_init_count + 1;
+        }
      } else if (result == false) {
 	Popup::Error("Package for ftp is not available");
 	y2milestone("FTP module: Package for ftp is not available");
@@ -120,35 +126,35 @@ boolean ReadFTPService () {
 	y2milestone("FTP module: Package was not found");
 	return false;
      } 	           
-  }; //end of if ((FtpServer::vsftpd_init_count == 0) && (FtpServer::pureftpd_init_count == 0)) {
+  }; //end of if ((vsftpd_init_count == 0) && (pureftpd_init_count == 0)) {
 
   //Checking Enabled services for ftp daemons
 
   if (Service::Enabled("pure-ftpd")) 
-     FtpServer::pureftpd_init_count = FtpServer::pureftpd_init_count + 1;
+     pureftpd_init_count = pureftpd_init_count + 1;
 
   if (Service::Enabled("vsftpd")) 
-     FtpServer::vsftpd_init_count = FtpServer::vsftpd_init_count + 1;
+     vsftpd_init_count = vsftpd_init_count + 1;
 
   //Checking status of ftp daemons
 
   if (Service::Status("vsftpd") == 0) {
      FtpServer::vsftpd_edit = true;
-     FtpServer::vsftpd_init_count = FtpServer::vsftpd_init_count + 1;
+     vsftpd_init_count = vsftpd_init_count + 1;
   } else {
      FtpServer::vsftpd_edit = false;
   }
 
   if (Service::Status("pure-ftpd") == 0) {
      FtpServer::vsftpd_edit = false;
-     FtpServer::pureftpd_init_count = FtpServer::pureftpd_init_count + 1;
+     pureftpd_init_count = pureftpd_init_count + 1;
   } else {
      FtpServer::vsftpd_edit = true;
   }
 
   // open dialog for choosing ftp daemon  
 
-  if ((FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) && 
+  if ((pureftpd_init_count == vsftpd_init_count) && 
      (FtpServer::pureftpd_installed) && (FtpServer::vsftpd_installed)) {
      UI::OpenDialog(
        `RadioButtonGroup(`id(`rb), `VBox(
@@ -165,22 +171,22 @@ boolean ReadFTPService () {
      while (true) {
        ret = UI::UserInput();
        if (ret == `close) {
-	  FtpServer::rad_but = (integer) UI::QueryWidget(`id(`rb), `CurrentButton);
+	  rad_but = (integer) UI::QueryWidget(`id(`rb), `CurrentButton);
 	  break;
        } else if (ret == `abort) {
          return false;
        }
      } //end of  while (true) {
     
-     if (FtpServer::rad_but == 0)
+     if (rad_but == 0)
 	FtpServer::vsftpd_edit = true;
      else
 	FtpServer::vsftpd_edit = false;
     
-     y2milestone("Terminating by the radiobutom ID '%1'", FtpServer::rad_but);
+     y2milestone("Terminating by the radiobutom ID '%1'", rad_but);
     
      UI::CloseDialog();
-  } else { //end of if (FtpServer::pureftpd_init_count == FtpServer::vsftpd_init_count) {
+  } else { //end of if (pureftpd_init_count == vsftpd_init_count) {
     if ((FtpServer::pureftpd_installed) && (!FtpServer::vsftpd_installed))
        FtpServer::vsftpd_edit = false;
     if ((!FtpServer::pureftpd_installed) && (FtpServer::vsftpd_installed))
@@ -222,127 +228,6 @@ symbol WriteDialog() {
 }
 
 
-
-/**
- * Summary dialog
- * @return dialog result
- */
-any SummaryDialog() {
-
-    /* Ftpd summary dialog caption */
-    string caption = _("Ftpd Configuration");
-
-    /* FIXME */
-    list summary = FtpServer::Summary();
-    list unconfigured = summary[1]:[];
-    string configured = summary[0]:"";
-
-    /* Frame label */
-    term contents = Wizard_hw::DetectedContent(_("Ftpd to Configure"),
-	    unconfigured, false, configured);
-
-    Wizard::SetContentsButtons(caption, contents, HELPS["summary"]:"",
-	    Label::BackButton(), Label::FinishButton());
-
-    any ret = nil;
-    while(true) {
-
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort || ret == `cancel || ret == `back) {
-	    if(ReallyAbort()) break;
-	    else continue;
-	}
-        /* overview dialog */
-        else if(ret == `edit_button) {
-            ret = `overview;
-            break;
-        }
-        /* configure the selected device */
-        else if(ret == `configure_button) {
-	    // TODO FIXME: check for change of the configuration
-            any selected = UI::QueryWidget(`id(`detected_selbox), `CurrentItem);
-            if(selected == `other) {
-                ret = `other;
-            }
-            else {
-                ret = `configure;
-            }
-            break;
-        }
-        else if(ret == `next) {
-            break;
-        }
-        else {
-            y2error("unexpected retcode: %1", ret);
-            continue;
-        }
-    }
-
-    return ret;
-}
-
-/**
- * Overview dialog
- * @return dialog result
- */
-any OverviewDialog() {
-
-    /* Ftpd overview dialog caption */
-    string caption = _("Ftpd Overview");
-
-    list overview = FtpServer::Overview();
-
-    /* FIXME table header */
-    term contents = Wizard_hw::ConfiguredContent(
-	/* Table header */
-	`header(_("Number"), _("Ftpd")),
-	overview, nil, nil, nil, nil );
-
-    contents = Wizard_hw::SpacingAround(contents, 1.5, 1.5, 1.0, 1.0);
-
-    Wizard::SetContentsButtons(caption, contents, HELPS["overview"]:"",
-	    Label::BackButton(), Label::FinishButton());
-
-    any ret = nil;
-    while(true) {
-
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort || ret == `cancel) {
-	    if(ReallyAbort()) break;
-	    else continue;
-	}
-        /* add */
-        else if(ret == `add_button) {
-	    /* FIXME */
-            ret = `add;
-            break;
-        }
-        /* edit */
-        else if(ret == `edit_button) {
-	    /* FIXME */
-            ret = `edit;
-            break;
-        }
-        /* delete */
-        else if(ret == `delete_button) {
-	    /* FIXME */
-            continue;
-        }
-        else if(ret == `next || ret == `back) {
-            break;
-        }
-        else {
-            y2error("unexpected retcode: %1", ret);
-            continue;
-        }
-    }
-
-    return ret;
-}
 
 /* EOF */
 }
