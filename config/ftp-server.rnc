@@ -28,5 +28,6 @@ ftp-server =
      element AntiWarez { text }? &
      element SSL { text }? &
      element StartXinetd { text }? &
-     element StartDaemon  { text }?
+     element StartDaemon  { text }? &
+     element PassiveMode  { text }?
 }

@@ -24,18 +24,18 @@ term FTPGenSettingsVsftpd() {
       ))
     ),// end of `Frame ( _("General Settings")
     `VSpacing(1),
-    `Frame ( _("FTP directories"),
+    `Frame ( _("FTP Directories"),
       `HBox(`HSpacing(1), `VBox (
 	`Left(`HBox(
 	  `TextEntry(`id("FtpDirAnon"), _("Ftp Directory f&or Anonymous Users")),
 	  `VBox ( `Label(""),
-	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select director&y..."))
+	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select Director&y..."))
 	  )
 	)),
 	`Left(`HBox(
 	  `TextEntry(`id("FtpDirLocal"), _("&Ftp Directory for Authenticated Users")),
 	  `VBox ( `Label(""),
-	    `PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Select d&irectory..."))
+	    `PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Select D&irectory..."))
 	  )
 	))
       )) // end of `HBox(`HSpacing(1)`VBox (
@@ -120,10 +120,10 @@ term FTPAnonSettings() {
 
 term VSFTPDAddSettings() {
   term dialog = `VBox (   
-    `CheckBoxFrame ( `id("PassiveMode"), _("Pass&ive Mode"), true,  		
+    `CheckBoxFrame ( `id("PassiveMode"), _("Pass&ive Mode"), true,		
       `HBox(`HSpacing(1), `Left(`HSquash(`HBox(
-	`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),0,65535,0),			
-	`IntField(`id("PasMaxPort"),  _("Max P&ort for Pas. Mode"),0,65535,0),
+	`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),1024,65535,0),			
+	`IntField(`id("PasMaxPort"),  _("Max P&ort for Pas. Mode"),1024,65535,0),
 	`HStretch()
       ))))
     ), //end of `Frame ( "Passiv Mode Settings"    
@@ -131,12 +131,12 @@ term VSFTPDAddSettings() {
     `CheckBoxFrame(`id("SSLEnable"), _("Sec&urity Settings"), true,	
       `HBox(`HSpacing(1),`VBox (
 	`Left(`ComboBox(`id("SSLVersion"), "S&elect Version of SSL",
-	        ["Enabled SSL v2","Disable SSL v2","Enabled SSL v3","Disable SSL v3",
-		 "Enabled SSL v2 & v3", "Disable SSL v2 & v3" ] )),
+	        ["Enable SSL v2","Disable SSL v2","Enable SSL v3","Disable SSL v3",
+		 "Enable SSL v2 & v3", "Disable SSL v2 & v3" ] )),
 	`Left(`CheckBox(`id("TLS"), _("Enable &TLS")))
       ))
-    ), //end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true
-    `VStretch()
+    ) //end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true
+    //`VStretch()
   );
   return dialog;
 }
@@ -145,8 +145,8 @@ term PUREFTPDSecSettings() {
   term dialog = `VBox (
     `Frame (_("Pass&ive Mode"),  		
       `HBox(`HSpacing(1), `Left(`HSquash(`HBox(
-	`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),0,65535,0),			
-	`IntField(`id("PasMaxPort"),  _("Max P&ort for Pas. Mode"),0,65535,0),
+	`IntField(`id("PasMinPort"),  _("&Min Port for Pas. Mode"),1024,65535,0),			
+	`IntField(`id("PasMaxPort"),  _("Max P&ort for Pas. Mode"),1024,65535,0),
 	`HStretch()
       ))))
     ), //end of `Frame ( "Passiv Mode Settings"
@@ -165,8 +165,8 @@ term PUREFTPDSecSettings() {
 	  `Left(`RadioButton(`id(2), "&Refuse Conections Without SSL/TLS"))
 	))
       ) //end of `RadioButtonGroup(`id("SSL")
-    ), //end of `Frame ( _("Security Settings")
-    `VStretch()
+    ) //end of `Frame ( _("Security Settings")
+    //`VStretch()
   );
   return dialog;
 }

@@ -26,8 +26,9 @@ import "Mode";
 import "Package";
 import "CommandLine";
 import "Users";
-
-
+import "SuSEFirewall";
+import "SuSEFirewallServices";
+import "PortAliases";
 
 /**
  * Prototypes
@@ -169,6 +170,7 @@ global map <string, string > DEFAULT_CONFIG = $[
      "SSL"			 : "1",
      "StartXinetd"		 : "NO",
      "StartDaemon"		 : "0", //0 = start manually, 1 = start via inetd, 2 = start via xinetd
+     "PassiveMode"		 : "YES",
 ];
 
 /**
@@ -286,6 +288,11 @@ boolean ReadSettings () {
 	   EDIT_SETTINGS["FtpDirAnon"] = anon_homedir;	
      }
   }
+
+  //read firewall settings
+  boolean progress_orig = Progress::set (false);
+  SuSEFirewall::Read ();
+  Progress::set (progress_orig);
   return result;
 }
 
@@ -349,7 +356,39 @@ boolean WriteToSETTINGS () {
    return true;
 }
 
+/**
+ * Write firewall configuration
+ *
+ * @return boolean successfull
+*/
 
+boolean WriteFirewallSettings() {
+
+string port_range = "";
+string active_port = "";
+
+if (SuSEFirewall::IsStarted()) {
+   if (EDIT_SETTINGS["PassiveMode"]:nil == "YES") {
+      port_range = EDIT_SETTINGS["PasMinPort"]:nil +":" + EDIT_SETTINGS["PasMaxPort"]:nil;
+   } else {
+      active_port = (PortAliases::IsKnownPortName("ftp-data") ? "ftp-data" : "20");
+   }
+
+   map <string, list<string> > suse_config = $[
+     "tcp_ports" : [ 
+        (PortAliases::IsKnownPortName("ftp") ? "ftp":"21"), 
+        ((active_port != "")? active_port : port_range )],
+     ];
+
+   if (vsftpd_edit)
+      return SuSEFirewallServices::SetNeededPortsAndProtocols("service:vsftpd", suse_config);
+   else
+      return SuSEFirewallServices::SetNeededPortsAndProtocols("service:pure-ftpd", suse_config);
+} else {
+   return true;
+}
+
+}
 
 /**
  * Write value from UI 
@@ -405,6 +444,17 @@ boolean WriteSettings () {
 	}
      }
      
+  }
+
+  if (result) {
+     result = WriteFirewallSettings();
+
+  }
+  if (result) {
+     // write configuration to the firewall
+     boolean progress_orig = Progress::set (false);
+     result = SuSEFirewall::Write ();
+     Progress::set (progress_orig);
   }
   return result; 
 }

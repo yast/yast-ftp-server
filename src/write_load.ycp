@@ -625,7 +625,25 @@ global string ValueUI (string key, boolean write) {
         }
 	break;
 
-
+    //only vsftpd
+    case("PassiveMode"):
+	if (FtpServer::vsftpd_edit) {
+	   if (write) { 
+ 	      if (FtpServer::EDIT_SETTINGS["PassiveMode"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["pasv_enable"] = FtpServer::EDIT_SETTINGS["PassiveMode"]:nil;
+	      else
+		 FtpServer::VS_SETTINGS["pasv_enable"] = "NO";	
+           } else {
+	      return ((haskey(FtpServer::VS_SETTINGS, "pasv_enable") ? 
+		     toupper(FtpServer::VS_SETTINGS["pasv_enable"]:nil) : FtpServer::DEFAULT_CONFIG["PassiveMode"]:nil));
+	   } 
+	} else {
+           if (!write)
+ 	      return FtpServer::DEFAULT_CONFIG["PassiveMode"]:nil;
+           else
+              return "";
+        }
+	break;
 
 
    //only vsftpd
@@ -751,6 +769,9 @@ global string ValueUI (string key, boolean write) {
                  Service::Disable("vsftpd");
               if (Service::Enabled("pure-ftpd"))
                  Service::Disable("pure-ftpd");
+	      if (FtpServer::vsftpd_edit) {
+		    FtpServer::VS_SETTINGS["listen"]=nil;
+		 }
            } else {           
               if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "1") {
                  if (FtpServer::vsftpd_edit) {
@@ -761,9 +782,15 @@ global string ValueUI (string key, boolean write) {
                     Service::Disable("vsftpd");
 		    Service::Enable("pure-ftpd");
                  }
+                 if (FtpServer::vsftpd_edit) {
+		    FtpServer::VS_SETTINGS["listen"]=nil;
+		 }
               } else {
                  Service::Disable("vsftpd");
 		 Service::Disable("pure-ftpd");
+		 if (FtpServer::vsftpd_edit) {
+		    FtpServer::VS_SETTINGS["listen"]="YES";
+		 }
 	      }
               FtpServer::start_xinetd = false;
            }	   

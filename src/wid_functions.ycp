@@ -242,12 +242,12 @@ void InitRBVsPure (string key) {
      }else
         UI::ChangeWidget(`id( "pure_item" ), `Value, true);
   } else if (FtpServer::vsftpd_installed && !FtpServer::pureftpd_installed) {
-     UI::ChangeWidget(`id( "pure_item" ), `Value, true);
-     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+     UI::ChangeWidget(`id( "pure_item" ), `Enabled, false);
      UI::ChangeWidget(`id("vs_item"), `Enabled, false);
   } else if (!FtpServer::vsftpd_installed && FtpServer::pureftpd_installed) {
-     UI::ChangeWidget(`id( "vs_item" ), `Value, true);
-     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+     UI::ChangeWidget(`id( "pure_item" ), `Enabled, false);
      UI::ChangeWidget(`id("vs_item"), `Enabled, false);
   } else {
      UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
@@ -345,7 +345,9 @@ void InitPUREFTPTAddSettings (string key) {
      (FtpServer::ValueUIEdit("AntiWarez") == "YES"));
   integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
   UI::ChangeWidget(`id("SSL"), `CurrentButton, tointeger(FtpServer::ValueUIEdit("SSL")));
-
+  foreach(string key, ["PasMinPort", "PasMaxPort"],{
+    UI::ChangeWidget(`id(key), `Value, tointeger(FtpServer::ValueUIEdit(key)));
+  });
 }
 
 /**
@@ -356,6 +358,9 @@ void StorePUREFTPDSettings (string key, map event) {
   FtpServer::WriteToEditMap("AntiWarez", (((boolean) UI::QueryWidget(`id("AntiWarez"), `Value) == true) ? "YES":"NO"));
   FtpServer::WriteToEditMap("SSL", tostring(UI::QueryWidget(`id("SSL"), `CurrentButton)));
 
+  foreach(string key, ["PasMinPort", "PasMaxPort"],{
+     FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
+  });
   //y2milestone("-------------PURE_EDIT_SETTINGS-------------------");  
   //y2milestone("Pure-ftp-server configuration has been read: %1", FtpServer::PURE_EDIT_SETTINGS);
   //y2milestone("---------------------------------------------");
@@ -369,8 +374,24 @@ void StorePUREFTPDSettings (string key, map event) {
 void InitVSFTPAddSettings (string key) {
   UI::ChangeWidget(`id( "SSLEnable" ), `Value, (FtpServer::ValueUIEdit("SSLEnable") == "YES"));
   UI::ChangeWidget(`id( "TLS" ), `Value, (FtpServer::ValueUIEdit("TLS") == "YES"));
-  foreach(string key, ["PasMinPort", "PasMaxPort", "SSLVersion"],{
-    UI::ChangeWidget(`id(key), `CurrentButton, tointeger(FtpServer::ValueUIEdit(key)));
+  UI::ChangeWidget(`id( "PassiveMode" ), `Value, (FtpServer::ValueUIEdit("PassiveMode") == "YES"));
+  string val ="";
+  string UIval = FtpServer::ValueUIEdit("SSLVersion");
+  if (UIval == "0")
+     val = "Enable SSL v2";
+  else if (UIval == "1")
+     val = "Disable SSL v2";
+  else if (UIval == "2")
+     val = "Enable SSL v3";
+  else if (UIval == "3")
+     val = "Disable SSL v3";
+  else if (UIval == "4")
+     val = "Enable SSL v2 & v3";
+  else
+     val = "Disable SSL v2 & v3";
+  UI::ChangeWidget(`id("SSLVersion"), `Value, val);
+  foreach(string key, ["PasMinPort", "PasMaxPort" ],{
+    UI::ChangeWidget(`id(key), `Value, tointeger(FtpServer::ValueUIEdit(key)));
   });
   
 }
@@ -400,21 +421,22 @@ void InitVSFTPAddSettings (string key) {
 void StoreVSFTPDSettings (string key, map event) {
   integer val = 4;
   string UIval = tostring(UI::QueryWidget(`id("SSLVersion"), `Value));
-  if (UIval == "Enabled SSL v2")
+  if (UIval == "Enable SSL v2")
      val = 0;
-  else if (UIval == "Disabled SSL v2")
+  else if (UIval == "Disable SSL v2")
      val = 1;
-  else if (UIval == "Enabled SSL v3")
+  else if (UIval == "Enable SSL v3")
      val = 2;
-  else if (UIval == "Disabled SSL v3")
+  else if (UIval == "Disable SSL v3")
      val = 3;
-  else if (UIval == "Enabled SSL v2 & v3")
+  else if (UIval == "Enable SSL v2 & v3")
      val = 4;
   else
      val = 5;
   FtpServer::WriteToEditMap("SSLVersion", tostring(val));
   FtpServer::WriteToEditMap("TLS", (((boolean) UI::QueryWidget(`id("TLS"), `Value) == true) ? "YES":"NO"));
   FtpServer::WriteToEditMap("SSLEnable", (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));
+  FtpServer::WriteToEditMap("PassiveMode", (((boolean) UI::QueryWidget(`id("PassiveMode"), `Value) == true) ? "YES":"NO"));
   //FtpServer::WriteToEditMap("Banner", (string) UI::QueryWidget(`id("Banner"), `Value));
   foreach(string key, ["PasMinPort", "PasMaxPort"],{
      FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));

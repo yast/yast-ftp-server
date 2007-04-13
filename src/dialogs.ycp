@@ -18,6 +18,7 @@ import "Label";
 import "Wizard";
 import "FtpServer";
 import "Popup";
+import "CWMFirewallInterfaces";
 
 include "ftp-server/helps.ycp";
 include "ftp-server/wid_functions.ycp";
@@ -178,7 +179,7 @@ map<string,any> GenSettings () {
 
 map<string,any> RBVsftpdPureftpd () {
   map<string,any> result = $[];
-  result = add(result, "label",   _("Change your daemon"));
+  result = add(result, "label",   _("Selected Service"));
   result = add(result, "widget", `radio_buttons);
   result = add(result, "items", [
             [ "vs_item", _("&vsftpd") ],
@@ -270,7 +271,8 @@ map<string,any> start_up () {
 	       "StartMode",
 	       `VSpacing(1),
 	       // disabling start/stop buttons when it doesn't make sense
-	       (Mode::normal() ? "StartStop":`Empty()),	       
+	       (Mode::normal() ? "StartStop":`Empty()),
+	       `VSpacing(1),
 	       "RBVsPureFTPd",
 	       `VStretch ()
 	      ));
@@ -353,6 +355,40 @@ map<string,any> perfor_settings () {
   return result;
 }
 
+
+/**
+ * Init function where are added firewall
+ *
+ * @return map<string,any> map for firewall settings
+ */
+
+
+map<string,any> FirewallSettingsPure () {
+  map<string,any> result = $[];
+
+  result = add(result, "services", [ "dns-server" ]);
+  result = add(result, "display_details", true);
+
+  return result;
+}
+
+/**
+ * Init function where are added firewall
+ *
+ * @return map<string,any> map for firewall settings
+ */
+
+
+map<string,any> FirewallSettingsVs () {
+  map<string,any> result = $[];
+
+  result = add(result, "services", [ "service:vsftpd" ]);
+  result = add(result, "display_details", true);
+
+  return result;
+}
+
+
 /**
  * Init function where are added UI hadle functions 
  * Anonymous Settings widget
@@ -388,13 +424,19 @@ map<string,any> addit_settings () {
   map<string,any> result = $[];
 
   result = add(result,"contents", `VBox (		
-	       VSFTPDAddSettings()
+	       VSFTPDAddSettings(),
+	       `VSpacing(1),
+	       `Frame ( _("SUSEfirewall Settings"),
+                 `HBox(`HSpacing(1),
+	           "Firewall"
+               )),
+               `VStretch()
 	      ));
   // TRANSLATORS: part of dialog caption
   result = add(result,"caption", _("FTP Expert Settings"));
   // TRANSLATORS: tree menu item
   result = add(result, "tree_item_label", _("Expert Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "VSFTPDAddSettings"]);
+  result = add(result, "widget_names", [ "DisBackButton", "VSFTPDAddSettings", "Firewall"]);
 
   return result;
 }
@@ -410,16 +452,26 @@ map<string,any> addit_settings_pure () {
   map<string,any> result = $[];
 
   result = add(result,"contents", `VBox (		
-	       PUREFTPDSecSettings()
+	       PUREFTPDSecSettings(),
+	       `VSpacing(1),
+	       `Frame ( _("SUSEfirewall Settings"),
+                 `HBox(`HSpacing(1),
+	           "Firewall"
+               )),
+               `VStretch()
 	      ));
   // TRANSLATORS: part of dialog caption
   result = add(result,"caption", _("FTP Expert Settings"));
   // TRANSLATORS: tree menu item
   result = add(result, "tree_item_label", _("Expert Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "PUREFTPDAddSettings"]);
+  result = add(result, "widget_names", [ "DisBackButton", "PUREFTPDAddSettings", "Firewall"]);
 
   return result;
 }
+
+
+
+
 
 /**
  * map for description of widget later in CWNTree
@@ -448,6 +500,7 @@ map<string,any> addit_settings_pure () {
 
     "RBVsPureFTPd" : RBVsftpdPureftpd (),
 
+    "Firewall" : CWMFirewallInterfaces::CreateOpenFirewallWidget (FirewallSettingsVs()),
 
   ];
 
@@ -522,6 +575,8 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
     "PUREFTPDAddSettings": PUREFTPDAddSettings (),
 
     "RBVsPureFTPd" : RBVsftpdPureftpd (),
+
+    "Firewall" : CWMFirewallInterfaces::CreateOpenFirewallWidget (FirewallSettingsPure()),
   ];
 
 
