@@ -86,7 +86,7 @@ boolean ReadFTPService () {
 	  break;
        } else if (ret == `cancel) {
           UI::CloseDialog();
-	  y2milestone("FTP module: Installation was aborted");
+	  y2milestone("[ftp-server] Installation was aborted");
           return false;
        }
 
@@ -107,7 +107,7 @@ boolean ReadFTPService () {
         result = Package::DoInstall(daemon_list);
         if (result == false) {
   	   Popup::Error("Installation failed!");
-           y2milestone("FTP module: Installation failed");
+           y2milestone("[ftp-server] Installation failed");
 	   return false;
 	}
 	if (daemon == "pure-ftpd") {
@@ -119,11 +119,11 @@ boolean ReadFTPService () {
         }
      } else if (result == false) {
 	Popup::Error("Package for ftp is not available");
-	y2milestone("FTP module: Package for ftp is not available");
+	y2milestone("[ftp-server] Package for ftp is not available");
 	return false;
      } else if (result == nil) {
         Popup::Error("Package was not found");
-	y2milestone("FTP module: Package was not found");
+	y2milestone("[ftp-server] Package was not found");
 	return false;
      } 	           
   }; //end of if ((vsftpd_init_count == 0) && (pureftpd_init_count == 0)) {
@@ -183,7 +183,7 @@ boolean ReadFTPService () {
      else
 	FtpServer::vsftpd_edit = false;
     
-     y2milestone("Terminating by the radiobutom ID '%1'", rad_but);
+     y2milestone("[ftp-server] Terminating by the radiobutom ID '%1'", rad_but);
     
      UI::CloseDialog();
   } else { //end of if (pureftpd_init_count == vsftpd_init_count) {

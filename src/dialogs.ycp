@@ -35,6 +35,22 @@ void BackButton (string key) {
      UI::ChangeWidget(`id(`back), `Enabled, false);
 }
 
+
+
+
+/**
+ * Returns whether user confirmed aborting the configuration.
+ *
+ * @return boolean result
+ */
+define boolean AbortDialog () {
+  return Popup::YesNoHeadline(
+    // TRANSLATORS: popup headline
+    _("Aborting FTP Configuration"),
+    // TRANSLATORS: popup message
+    _("All changes would be lost.Really abort configuration?"));
+}
+
 /**
  * Init function where are added UI hadle functions 
  * Start widget (vsftpd)
@@ -45,16 +61,16 @@ void BackButton (string key) {
 
 map<string,any> StartMode () {
   map<string,any> result = $[];
-  result = add(result, "get_service_auto_start", GetEnableService);
-  result = add(result, "set_service_auto_start", SetEnableService);
-  result = add(result, "get_service_start_via_xinetd", GetStartedViaXinetd);
-  result = add(result, "set_service_start_via_xinetd", SetStartedViaXinetd);
+  result["get_service_auto_start"] = GetEnableService;
+  result["set_service_auto_start"] = SetEnableService;
+  result["get_service_start_via_xinetd"] = GetStartedViaXinetd;
+  result["set_service_start_via_xinetd"] = SetStartedViaXinetd;
   //TRANSLATORS: Radio selection
-  result = add(result, "start_auto_button", _("&When booting"));
-  result = add(result, "start_manual_button",  _("&Manually"));
-  result = add(result, "start_xinetd_button",  _("Via &xinetd"));
-  result = add(result, "help", sformat (CWMServiceStart::AutoStartHelpXinetdTemplate (),
-              _("When Booting"), _("Manually"), _("Via xinetd")));
+  result["start_auto_button"] = _("&When booting");
+  result["start_manual_button"] =  _("&Manually");
+  result["start_xinetd_button"] = _("Via &xinetd");
+  result["help"] = sformat (CWMServiceStart::AutoStartHelpXinetdTemplate (),
+              _("When Booting"), _("Manually"), _("Via xinetd"));
   return result;
 }
 
@@ -68,11 +84,11 @@ map<string,any> StartMode () {
 map<string,any> PerformSettings () {
   map<string,any> result = $[];
 
-  result = add(result, "widget", `custom);
-  result = add(result, "custom_widget",`VBox());
-  result = add(result, "init", InitPerSettings);
-  result = add(result, "store", StorePerforSettings);
-  result = add(result, "help", DialogHelpText("per_settings"));
+  result["widget"] = `custom;
+  result["custom_widget"] =`VBox();
+  result["init"] = InitPerSettings;
+  result["store"] = StorePerforSettings;
+  result["help"] = DialogHelpText("per_settings");
   
   return result;
    
@@ -87,19 +103,19 @@ map<string,any> PerformSettings () {
 
 map<string,any> StartStop () {
   map<string,any> result = $[];
-  result = add(result, "service_id", "vsftpd");
-  result = add(result, "service_running_label", _("FTP is running"));
-  result = add(result, "service_not_running_label", _("FTP is not running"));
-  result = add(result, "start_now_button", _("&Start FTP Now"));
-  result = add(result, "stop_now_button", _("S&top FTP Now"));
-  result = add(result, "save_now_button", _("Sa&ve Settings and Restart FTP Now"));
-  result = add(result, "help", sformat (CWMServiceStart::StartStopHelpTemplate (true),
+  result["service_id"] = "vsftpd";
+  result["service_running_label"] = _("FTP is running");
+  result["service_not_running_label"] = _("FTP is not running");
+  result["start_now_button"] = _("&Start FTP Now");
+  result["stop_now_button"] = _("S&top FTP Now");
+  result["save_now_button"] = _("Sa&ve Settings and Restart FTP Now");
+  result["help"] = sformat (CWMServiceStart::StartStopHelpTemplate (true),
 	    // part of help text - push button label, NO SHORTCUT!!!
 	    _("Start FTP daemon Now"),
 	    // part of help text - push button label, NO SHORTCUT!!!
 	    _("Stop FTP daemon Now"),
 	    // part of help text - push button label, NO SHORTCUT!!!
-	    _("Save Settings and Restart FTP daemon Now")));
+	    _("Save Settings and Restart FTP daemon Now"));
 
   return result;
 }
@@ -113,19 +129,19 @@ map<string,any> StartStop () {
 
 map<string,any> StartStopPure () {
   map<string,any> result = $[];
-  result = add(result, "service_id", "pure-ftpd");
-  result = add(result, "service_running_label", _("FTP is running"));
-  result = add(result, "service_not_running_label", _("FTP is not running"));
-  result = add(result, "start_now_button", _("&Start FTP Now"));
-  result = add(result, "stop_now_button", _("S&top FTP Now"));
-  result = add(result, "save_now_button", _("Sa&ve Settings and Restart FTP Now"));
-  result = add(result, "help", sformat (CWMServiceStart::StartStopHelpTemplate (true),
+  result["service_id"] = "pure-ftpd";
+  result["service_running_label"] = _("FTP is running");
+  result["service_not_running_label"] = _("FTP is not running");
+  result["start_now_button"] = _("&Start FTP Now");
+  result["stop_now_button"] = _("S&top FTP Now");
+  result["save_now_button"] = _("Sa&ve Settings and Restart FTP Now");
+  result["help"] = sformat (CWMServiceStart::StartStopHelpTemplate (true),
 	    // part of help text - push button label, NO SHORTCUT!!!
 	    _("Start FTP daemon Now"),
 	    // part of help text - push button label, NO SHORTCUT!!!
 	    _("Stop FTP daemon Now"),
 	    // part of help text - push button label, NO SHORTCUT!!!
-	    _("Save Settings and Restart FTP daemon Now")));
+	    _("Save Settings and Restart FTP daemon Now"));
 
   return result;
 }
@@ -139,10 +155,10 @@ map<string,any> StartStopPure () {
 map<string,any> DisBackButton () {
   map<string,any> result = $[];
 
-  result = add(result, "widget", `custom);
-  result = add(result, "custom_widget", `Empty());
-  result = add(result, "init", BackButton);
-  result = add(result, "help", " ");
+  result["widget"] = `custom;
+  result["custom_widget"] =`Empty();
+  result["init"] = BackButton;
+  result["help"] = " ";
 
   return result;
 }
@@ -158,14 +174,14 @@ map<string,any> DisBackButton () {
 map<string,any> GenSettings () {
   map<string,any> result = $[];
 
-  result = add(result, "widget", `custom);
-  result = add(result, "custom_widget", `VBox());
-  result = add(result, "init", InitGenSettings);
-  result = add(result, "handle", HandleGenSettings);
-  result = add(result, "store", StoreGenSettings);
-  result = add(result, "validate_type", `function);
-  result = add(result, "validate_function", GenValid);
-  result = add(result, "help", DialogHelpText("gen_settings"));
+  result["widget"] = `custom;
+  result["custom_widget"] = `VBox();
+  result["init"] = InitGenSettings;
+  result["handle"] = HandleGenSettings;
+  result["store"] = StoreGenSettings;
+  result["validate_type"] = `function;
+  result["validate_function"] = GenValid;
+  result["help"] = DialogHelpText("gen_settings");
 
   return result;
 }
@@ -179,16 +195,15 @@ map<string,any> GenSettings () {
 
 map<string,any> RBVsftpdPureftpd () {
   map<string,any> result = $[];
-  result = add(result, "label",   _("Selected Service"));
-  result = add(result, "widget", `radio_buttons);
-  result = add(result, "items", [
+  result["label"] = _("Selected Service");
+  result["widget"] = `radio_buttons;
+  result["items"] = [
             [ "vs_item", _("&vsftpd") ],
             [ "pure_item", _("p&ure-ftpd") ]
-	    ]
-  );
-  result = add(result, "init", InitRBVsPure);
-  result = add(result, "handle", HandleRBVsPure);
-  result = add(result, "help", _("Switch the daemon"));
+	    ];
+  result["init"] = InitRBVsPure;
+  result["handle"] = HandleRBVsPure;
+  result["help"] = DialogHelpText("selected_services");
 
   return result;
 }
@@ -203,11 +218,11 @@ map<string,any> RBVsftpdPureftpd () {
 map<string,any> AnonSettings () {
   map<string,any> result = $[];
 
-  result = add(result, "widget", `custom);
-  result = add(result, "custom_widget", `VBox());
-  result = add(result, "init", InitAnonSettings);
-  result = add(result, "store", StoreAnonSettings);
-  result = add(result, "help", DialogHelpText("anon_settings"));
+  result["widget"] = `custom;
+  result["custom_widget"] = `VBox();
+  result["init"] = InitAnonSettings;
+  result["store"] = StoreAnonSettings;
+  result["help"] = DialogHelpText("anon_settings");
 
   return result;
 }
@@ -222,13 +237,14 @@ map<string,any> AnonSettings () {
 map<string,any> VSFTPDSettings () {
   map<string,any> result = $[];
 
-  result = add(result, "widget", `custom);
-  result = add(result, "custom_widget", `VBox());
-  result = add(result, "init", InitVSFTPAddSettings);
-  result = add(result, "validate_type", `function);
-  result = add(result, "validate_function", ValidVSFTPAddPure);
-  result = add(result, "store", StoreVSFTPDSettings);
-  result = add(result, "help", DialogHelpText("vsftpd_settings"));
+  result["widget"] = `custom;
+  result["custom_widget"] = `VBox();
+  result["init"] = InitVSFTPAddSettings;
+  result["validate_type"] = `function;
+  result["validate_function"] = ValidVSFTPExpSettings;
+  result["store"] = StoreVSFTPDSettings;
+  result["handle"] = HandleVSFTPExpertSettings;
+  result["help"] = DialogHelpText("vsftpd_settings");
 
   return result;
 }
@@ -243,13 +259,13 @@ map<string,any> VSFTPDSettings () {
 map<string,any> PUREFTPDAddSettings () {
   map<string,any> result = $[];
 
-  result = add(result, "widget", `custom);
-  result = add(result, "custom_widget", `VBox());
-  result = add(result, "init", InitPUREFTPTAddSettings);
-  result = add(result, "validate_type", `function);
-  result = add(result, "validate_function", ValidVSFTPAddPure);
-  result = add(result, "store", StorePUREFTPDSettings);
-  result = add(result, "help", DialogHelpText("pureftpd_settings"));
+  result["widget"] = `custom;
+  result["custom_widget"] = `VBox();
+  result["init"] = InitPUREFTPTAddSettings;
+  result["validate_type"] = `function;
+  result["validate_function"] = ValidPUREFTPExpSettings;
+  result["store"] = StorePUREFTPDSettings;
+  result["help"] = DialogHelpText("pureftpd_settings");
 
   return result;
 }
@@ -267,7 +283,7 @@ map<string,any> PUREFTPDAddSettings () {
 map<string,any> start_up () {
   map<string,any> result = $[];
 
-  result = add(result,"contents", `VBox (		
+  result["contents"] = `VBox (		
 	       "StartMode",
 	       `VSpacing(1),
 	       // disabling start/stop buttons when it doesn't make sense
@@ -275,12 +291,12 @@ map<string,any> start_up () {
 	       `VSpacing(1),
 	       "RBVsPureFTPd",
 	       `VStretch ()
-	      ));
+	      );
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption",  _("FTP Start-Up"));
+  result["caption"] =  _("FTP Start-Up");
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("Start-Up"));
-  result = add(result, "widget_names", [ "DisBackButton", "StartMode", "StartStop", "RBVsPureFTPd"]);
+  result["tree_item_label"] = _("Start-Up");
+  result["widget_names"] = [ "DisBackButton", "StartMode", "StartStop", "RBVsPureFTPd"];
 
   return result;
 }
@@ -296,14 +312,14 @@ map<string,any> start_up () {
 map<string,any> gen_settings () {
   map<string,any> result = $[];
 
-  result = add(result,"contents", `VBox (		
+  result["contents"] = `VBox (		
 	       FTPGenSettingsVsftpd()
-	      ));
+	      );
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption",  _("FTP General Settings"));
+  result["caption"] =  _("FTP General Settings");
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("General Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "GenSettings"]);
+  result["tree_item_label"] = _("General Settings");
+  result["widget_names"] = [ "DisBackButton", "GenSettings"];
 
   return result;
 }
@@ -319,14 +335,14 @@ map<string,any> gen_settings () {
 map<string,any> gen_settings_pure () {
   map<string,any> result = $[];
 
-  result = add(result,"contents", `VBox (		
+  result["contents"] = `VBox (		
 	       FTPGenSettingsPureftpd()
-	      ));
+	      );
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption",  _("FTP General Settings"));
+  result["caption"] =  _("FTP General Settings");
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("General Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "GenSettings"]);
+  result["tree_item_label"] = _("General Settings");
+  result["widget_names"] = [ "DisBackButton", "GenSettings"];
 
   return result;
 }
@@ -343,14 +359,14 @@ map<string,any> gen_settings_pure () {
 map<string,any> perfor_settings () {
   map<string,any> result = $[];
 
-  result = add(result,"contents", `VBox (		
+  result["contents"] = `VBox (		
 	       FTPPerforSettings()
-	      ));
+	      );
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption", _("FTP Performance Settings"));
+  result["caption"] = _("FTP Performance Settings");
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("Performance Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "PerforSettings"]);
+  result["tree_item_label"] = _("Performance Settings");
+  result["widget_names"] = [ "DisBackButton", "PerforSettings"];
 
   return result;
 }
@@ -366,8 +382,8 @@ map<string,any> perfor_settings () {
 map<string,any> FirewallSettingsPure () {
   map<string,any> result = $[];
 
-  result = add(result, "services", [ "dns-server" ]);
-  result = add(result, "display_details", true);
+  result["services"] = [ "dns-server" ];
+  result["display_details"] = true;
 
   return result;
 }
@@ -382,8 +398,8 @@ map<string,any> FirewallSettingsPure () {
 map<string,any> FirewallSettingsVs () {
   map<string,any> result = $[];
 
-  result = add(result, "services", [ "service:vsftpd" ]);
-  result = add(result, "display_details", true);
+  result["services"] = [ "service:vsftpd" ];
+  result["display_details"] = true;
 
   return result;
 }
@@ -400,14 +416,14 @@ map<string,any> FirewallSettingsVs () {
 map<string,any> anon_settings () {
   map<string,any> result = $[];
 
-  result = add(result,"contents", `VBox (		
+  result["contents"] = `VBox (		
 	       FTPAnonSettings()
-	      ));
+	      );
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption", _("FTP Anonymous Settings"));
+  result["caption"] = _("FTP Anonymous Settings");
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("Anonymous Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "AnonSettings"]);
+  result["tree_item_label"] = _("Anonymous Settings");
+  result["widget_names"] = [ "DisBackButton", "AnonSettings"];
 
   return result;
 }
@@ -423,7 +439,7 @@ map<string,any> anon_settings () {
 map<string,any> addit_settings () {
   map<string,any> result = $[];
 
-  result = add(result,"contents", `VBox (		
+  result["contents"] = `VBox (		
 	       VSFTPDAddSettings(),
 	       `VSpacing(1),
 	       `Frame ( _("SUSEfirewall Settings"),
@@ -431,12 +447,12 @@ map<string,any> addit_settings () {
 	           "Firewall"
                )),
                `VStretch()
-	      ));
+	      );
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption", _("FTP Expert Settings"));
+  result["caption"] = _("FTP Expert Settings");
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("Expert Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "VSFTPDAddSettings", "Firewall"]);
+  result["tree_item_label"] = _("Expert Settings");
+  result["widget_names"] = [ "DisBackButton", "VSFTPDAddSettings", "Firewall"];
 
   return result;
 }
@@ -451,7 +467,7 @@ map<string,any> addit_settings () {
 map<string,any> addit_settings_pure () {
   map<string,any> result = $[];
 
-  result = add(result,"contents", `VBox (		
+  result["contents"] = `VBox (		
 	       PUREFTPDSecSettings(),
 	       `VSpacing(1),
 	       `Frame ( _("SUSEfirewall Settings"),
@@ -459,12 +475,12 @@ map<string,any> addit_settings_pure () {
 	           "Firewall"
                )),
                `VStretch()
-	      ));
+	      );
   // TRANSLATORS: part of dialog caption
-  result = add(result,"caption", _("FTP Expert Settings"));
+  result["caption"] = _("FTP Expert Settings");
   // TRANSLATORS: tree menu item
-  result = add(result, "tree_item_label", _("Expert Settings"));
-  result = add(result, "widget_names", [ "DisBackButton", "PUREFTPDAddSettings", "Firewall"]);
+  result["tree_item_label"] = _("Expert Settings");
+  result["widget_names"] = [ "DisBackButton", "PUREFTPDAddSettings", "Firewall"];
 
   return result;
 }
@@ -526,6 +542,16 @@ map<string,any> addit_settings_pure () {
 
   ];
 
+/**
+ * function for running CWNTree
+ * 
+ * abort functions for confirm abort
+ * 
+ */
+map<symbol,any> functions = $[
+   `abort : AbortDialog,
+];
+
 
 /**
  * function for running CWNTree
@@ -547,7 +573,7 @@ map<string,any> addit_settings_pure () {
 	"back_button"	: Label::BackButton(),
 	"abort_button"	: Label::AbortButton(),
 	"next_button"	: Label::AcceptButton(),
-	//"functions"	: " ",
+	"functions"	: functions,
     ]);
   }
 
@@ -619,7 +645,7 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
 	"back_button"	: Label::BackButton(),
 	"abort_button"	: Label::AbortButton(),
 	"next_button"	: Label::AcceptButton(),
-	//"functions"	: " ",
+	"functions"	: functions,
     ]);
   }
 

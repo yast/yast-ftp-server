@@ -136,7 +136,8 @@ map userinfo = $[];
 global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","FtpDirAnon", "Umask", 
 "UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
 "MaxClientsNumber", "LocalMaxRate", "AnonMaxRate", "AnonAuthen", "AnonReadOnly",
-"AnonCreatDirs", "Banner", "SSLEnable", "SSLVersion", "TLS", "AntiWarez", "SSL", "StartXinetd"];
+"AnonCreatDirs", "Banner", "SSLEnable", "TLS", "AntiWarez", "SSL", "StartXinetd", 
+"PassiveMode", "CertFile", "SSLv2", "SSLv3"];
 
 /**
  * map of deafult values for options in UI
@@ -147,8 +148,8 @@ global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","F
 global map <string, string > DEFAULT_CONFIG = $[
      "ChrootEnable"              : "NO",
      "VerboseLogging"        	 : "NO",
-     "FtpDirLocal"             	 : "", //if empty doesn't write this options via SCR
-     "FtpDirAnon"             	 : "", //if empty doesn't write this options via SCR
+     "FtpDirLocal"             	 : "",  //if empty doesn't write this options via SCR
+     "FtpDirAnon"             	 : "",  //if empty doesn't write this options via SCR
      "Umask"               	 : "",
      "UmaskAnon"                 : "",
      "UmaskLocal"           	 : "",
@@ -159,18 +160,23 @@ global map <string, string > DEFAULT_CONFIG = $[
      "MaxClientsNumber"      	 : "8",
      "LocalMaxRate"		 : "0",
      "AnonMaxRate"		 : "0",
-     "AnonAuthen"		 : "1", // 0 => anonymous only, 1 => authenticated only, 2=> both
+     "AnonAuthen"		 : "1",  // 0 => anonymous only, 1 => authenticated only, 2=> both
      "AnonReadOnly"		 : "YES",
      "AnonCreatDirs"		 : "NO",
      "Banner"			 : "Welcome message",
      "SSLEnable"		 : "NO",
-     "SSLVersion"		 : "2",
+     "SSLv2"			 : "NO", //enable/disable SSL version 2 (vsftpd only)
+     "SSLv3"			 : "NO", //enable/disable SSL version 3 (vsftpd only)
+     //"SSLVersion"		 : "2",
      "TLS"			 : "YES",
      "AntiWarez"		 : "YES",
      "SSL"			 : "1",
      "StartXinetd"		 : "NO",
-     "StartDaemon"		 : "0", //0 = start manually, 1 = start via inetd, 2 = start via xinetd
+     "StartDaemon"		 : "0",  //0 = start manually, 1 = start via inetd, 2 = start via xinetd
      "PassiveMode"		 : "YES",
+     "CertFile"			 : "",   //cert file for SSL connections
+     //"PromisMode"		 : "NO", enable ftp client connect via passive and active mode (vsftpd)
+     
 ];
 
 /**
@@ -280,9 +286,9 @@ boolean ReadSettings () {
      userinfo = Users::GetCurrentUser ();
      anon_homedir = (string) userinfo["homedirectory"]:nil;
      anon_uid     = (integer) userinfo["uidnumber"]:nil;
-     y2milestone("-------------User info-------------------");  
-     y2milestone("Users :CurrentUser %1", userinfo);
-     y2milestone("---------------------------------------------");
+     //y2milestone("-------------User info-------------------");  
+     //y2milestone("Users :CurrentUser %1", userinfo);
+     //y2milestone("---------------------------------------------");
      if ((anon_homedir != "") && (anon_homedir != nil)) {
         if (EDIT_SETTINGS["FtpDirAnon"]:nil == "")
 	   EDIT_SETTINGS["FtpDirAnon"] = anon_homedir;	
@@ -347,11 +353,11 @@ boolean WriteToSETTINGS () {
    });
 
    y2milestone("-------------PURE_SETTINGS-------------------");  
-   y2milestone("pure-ftpd configuration : %1", PURE_SETTINGS);
+   y2milestone("pure-ftpd writing configuration : %1", PURE_SETTINGS);
    y2milestone("---------------------------------------------");
 
    y2milestone("-------------VS_SETTINGS-------------------");  
-   y2milestone("Vsftpd configuration : %1", VS_SETTINGS);
+   y2milestone("Vsftpd writing configuration : %1", VS_SETTINGS);
    y2milestone("---------------------------------------------");
    return true;
 }
@@ -369,7 +375,7 @@ string active_port = "";
 
 if (SuSEFirewall::IsStarted()) {
    if (EDIT_SETTINGS["PassiveMode"]:nil == "YES") {
-      port_range = EDIT_SETTINGS["PasMinPort"]:nil +":" + EDIT_SETTINGS["PasMaxPort"]:nil;
+      port_range = EDIT_SETTINGS["PasMinPort"]:nil +":"+ EDIT_SETTINGS["PasMaxPort"]:nil;
    } else {
       active_port = (PortAliases::IsKnownPortName("ftp-data") ? "ftp-data" : "20");
    }
@@ -502,17 +508,51 @@ global boolean write_only = false;
  */
 global boolean() AbortFunction = Modified;
 
-/**
+/*
  * Abort function
  * @return boolean return true if abort
- */
+ *
 global define boolean Abort() ``{
     if(AbortFunction != nil)
     {
 	return AbortFunction () == true;
     }
     return false;
+}*/
+
+/**
+ * Returns whether the configuration has been modified.
+ *
+ * @return boolean modified
+ */
+global boolean GetModified() {
+    return modified;
 }
+
+
+/**
+ * Returns a confirmation popup dialog whether user wants to really abort.
+ *
+ * @return boolean result of Popup::ReallyAbort(GetModified()
+ */
+global boolean Abort() {
+    return Popup::ReallyAbort(GetModified());
+}
+
+/**
+ * Checks whether an Abort button has been pressed.
+ * If so, calls function to confirm the abort call.
+ *
+ * @return boolean true if abort confirmed
+ */
+global boolean PollAbort() {
+    if (UI::PollInput() == `abort)
+	return Abort();
+
+    return false;
+}
+
+
 
 /**
  * Data was modified?
@@ -576,18 +616,18 @@ global boolean Read() {
   ); //end of Progress::New( caption, " "
 
   // read settings
-  if (Abort()) return false;
+  if (PollAbort()) return false;
   Progress::NextStage();
   // calling read function for reading settings form config file
   if (!ReadSettings()) Report::Error(_("Cannot Read Current Settings."));
   sleep(sl); 
 
-  if (Abort()) return false;
+  if (PollAbort()) return false;
   /* Progress finished */
   Progress::NextStage();
   sleep(sl);
 
-  if (Abort()) return false;
+  if (PollAbort()) return false;
   modified = false;
   return true;
 }
@@ -618,24 +658,24 @@ global boolean Write() {
   ); //end of Progress::New(caption, " "
 
   // write settings
-  if (Abort()) return false;
+  if (PollAbort()) return false;
   Progress::NextStage();
   // write options to the config file
   if(!WriteSettings ()) Report::Error (_("Cannot write settings!"));
   sleep(sl);
 
-  if (Abort()) return false;
+  if (PollAbort()) return false;
   Progress::NextStage ();
   // write settings for starting daemon
   if (!WriteXinetd ()) Report::Error (_("Cannot write settings for xinetd!"));
   sleep(sl);
 
-  if(Abort()) return false;
+  if(PollAbort()) return false;
   /* Progress finished */
   Progress::NextStage();
   sleep(sl);
 
-  if(Abort()) return false;
+  if(PollAbort()) return false;
   return true;
 }
 

@@ -164,7 +164,7 @@ global string ValueUI (string key, boolean write) {
 		 FtpServer::VS_SETTINGS["anon_root"] = nil;	
            } else {
 	      return ((haskey(FtpServer::VS_SETTINGS, "anon_root") ? 
-		     toupper(FtpServer::VS_SETTINGS["anon_root"]:nil) : FtpServer::DEFAULT_CONFIG["FtpDirAnon"]:nil));
+		     FtpServer::VS_SETTINGS["anon_root"]:nil : FtpServer::DEFAULT_CONFIG["FtpDirAnon"]:nil));
  	   }	
 	} else {	   
 	   if (!write)
@@ -626,6 +626,26 @@ global string ValueUI (string key, boolean write) {
 	break;
 
     //only vsftpd
+    case("CertFile"):
+	if (FtpServer::vsftpd_edit) {
+	   if (write) { 
+ 	      if (FtpServer::EDIT_SETTINGS["CertFile"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["dsa_cert_file"] = FtpServer::EDIT_SETTINGS["CertFile"]:nil;
+	      else
+		 FtpServer::VS_SETTINGS["dsa_cert_file"] = nil;	
+           } else {
+	      return ((haskey(FtpServer::VS_SETTINGS, "dsa_cert_file") ? 
+		     toupper(FtpServer::VS_SETTINGS["dsa_cert_file"]:nil) : FtpServer::DEFAULT_CONFIG["CertFile"]:nil));
+	   } 
+	} else {
+           if (!write)
+ 	      return FtpServer::DEFAULT_CONFIG["CertFile"]:nil;
+           else
+              return "";
+        }
+	break;
+
+    //only vsftpd
     case("PassiveMode"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
@@ -645,71 +665,7 @@ global string ValueUI (string key, boolean write) {
         }
 	break;
 
-
-   //only vsftpd
-   case("SSLVersion"):
-	integer ssl_vsftpd = 0;
-	if (FtpServer::vsftpd_edit) {
-	   if (haskey(FtpServer::EDIT_SETTINGS, "SSLEnable"))
-	      yes_no = toupper(FtpServer::EDIT_SETTINGS["SSLEnable"]:nil);
-	   else 
-	      yes_no = "NO";
-	   if (write) {
-	      FtpServer::VS_SETTINGS["ssl_enable"] = FtpServer::EDIT_SETTINGS["SSLEnable"]:nil;
-	      if (yes_no == "YES") {
-		 if (haskey(FtpServer::EDIT_SETTINGS, "SSLVersion")) {
-		    ssl_vsftpd = tointeger(FtpServer::EDIT_SETTINGS["SSLVersion"]:nil);
-		    if (ssl_vsftpd == 0) {
-		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "YES";
-		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "NO";
-		    } else if (ssl_vsftpd == 1) {
-		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "NO";
-		    } else if (ssl_vsftpd == 2) {
-		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "NO";
-		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "YES";
-		    } else if (ssl_vsftpd == 3) {
-		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "NO";
-		    } else if (ssl_vsftpd == 4) {
- 		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "YES";
-		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "YES";
-		    } else {
-		       FtpServer::VS_SETTINGS["ssl_sslv2"] = "NO";
-		       FtpServer::VS_SETTINGS["ssl_sslv3"] = "NO";
-		    }		    
-		 }
-	      }
-           } else {	      
-	      if (yes_no == "YES") {
-		 if (haskey(FtpServer::VS_SETTINGS, "ssl_sslv2"))
-		    yes_no =  toupper(FtpServer::VS_SETTINGS["ssl_sslv2"]:nil);
-		 if (yes_no == "YES")
-		    ssl_vsftpd = 0;
-		 else
-		    ssl_vsftpd = 1;
-		 if (haskey(FtpServer::VS_SETTINGS, "ssl_sslv3"))
-		    yes_no =  toupper(FtpServer::VS_SETTINGS["ssl_sslv3"]:nil);
-		 if (yes_no == "YES") {
-		    if (ssl_vsftpd == 0)
-		        ssl_vsftpd = 4;
-		    else if (ssl_vsftpd == 1)
-			ssl_vsftpd = 2;
-		 } else {
-		    if (ssl_vsftpd == 0)
-		        ssl_vsftpd = 5;
-		 }
-		 return tostring(ssl_vsftpd);
-	      
-	      } else return "5"; //it means that ssl is not permited
-
-	   } 
-	} else {
-           if (!write)
- 	      return FtpServer::DEFAULT_CONFIG["SSLVersion"]:nil;
-           else
-              return "";
-        }
-	break;
-
+  
    //only vsftpd
    case("TLS"):
 	if (FtpServer::vsftpd_edit) {
@@ -726,6 +682,41 @@ global string ValueUI (string key, boolean write) {
               return "";
         }
 	break;
+
+   //only vsftpd
+   case("SSLv2"):
+	if (FtpServer::vsftpd_edit) {
+	   if (write) { 
+              FtpServer::VS_SETTINGS["ssl_sslv2"] = EDIT_SETTINGS["SSLv2"]:nil;
+           } else {
+	      return ((haskey(FtpServer::VS_SETTINGS, "ssl_sslv2") ? 
+		     toupper(FtpServer::VS_SETTINGS["ssl_sslv2"]:nil) : FtpServer::DEFAULT_CONFIG["SSLv2"]:nil));
+	   } 
+	} else {
+           if (!write)
+ 	      return FtpServer::DEFAULT_CONFIG["SSLv2"]:nil;
+           else
+              return "";
+        }
+	break;
+
+   //only vsftpd
+   case("SSLv3"):
+	if (FtpServer::vsftpd_edit) {
+	   if (write) { 
+              FtpServer::VS_SETTINGS["ssl_sslv3"] = EDIT_SETTINGS["SSLv3"]:nil;
+           } else {
+	      return ((haskey(FtpServer::VS_SETTINGS, "ssl_sslv3") ? 
+		     toupper(FtpServer::VS_SETTINGS["ssl_sslv3"]:nil) : FtpServer::DEFAULT_CONFIG["SSLv3"]:nil));
+	   } 
+	} else {
+           if (!write)
+ 	      return FtpServer::DEFAULT_CONFIG["SSLv3"]:nil;
+           else
+              return "";
+        }
+	break;
+
 
    //only pure-ftpd
    case("AntiWarez"):
@@ -813,7 +804,7 @@ global string ValueUI (string key, boolean write) {
 
   
     default:
-	y2milestone ("ValueUI(string key): unknown parameter %1", key);
+	y2milestone ("[ftp-server] ValueUI(string key): unknown parameter %1", key);
 	return "";
 	break;
     

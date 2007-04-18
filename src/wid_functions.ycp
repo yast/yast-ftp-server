@@ -18,6 +18,7 @@ import "Service";
 import "Mode";
 import "Users";
 import "Mode";
+import "FileUtils";
 
 
 include "ftp-server/uiforms.ycp";
@@ -174,9 +175,8 @@ boolean GenValid (string key, map event) {
       
      }
      string AnonHomeDir = (string)UI::QueryWidget (`id("FtpDirAnon"), `Value);
-     //checking correct homedir for anonymous user
-     if ((AnonHomeDir != nil) && (AnonHomeDir != "") && (Mode::normal())) {
-        
+     //checking correct homedir for anonymous user 
+     if ((AnonHomeDir != "") && (Mode::normal())) {
         if (AnonHomeDir != FtpServer::anon_homedir) {
            string error = Users::EditUser($["homedirectory":AnonHomeDir]);
            if ((error != nil) && (error != "")) {
@@ -351,6 +351,33 @@ void InitPUREFTPTAddSettings (string key) {
 }
 
 /**
+ * Validate function for Expert settings (pure-ftpd)
+ * 
+ */
+
+ boolean ValidPUREFTPExpSettings(string key, map event) {
+  integer min_port = tointeger(UI::QueryWidget (`id("PasMinPort"), `Value));
+  integer max_port = tointeger(UI::QueryWidget (`id("PasMaxPort"), `Value));
+    
+  if (min_port > max_port) {
+     Popup::Message ("Condition for ports is max port > min port.");
+     UI::SetFocus(`id("PasMinPort"));
+     return false;
+  }
+  
+  integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
+
+  if ((!FileUtils::Exists("/etc/ssl/private/pure-ftpd.pem")) && (current > 0)) {
+     Popup::Error("Certificate /etc/ssl/private/pure-ftpd.pem for SSL connection is missing.");
+     return false;
+  }
+
+  return true;
+
+}
+
+
+/**
  * Store function for pure-ftp-server add settings
  * save values to temporary structure
  */
@@ -358,11 +385,12 @@ void StorePUREFTPDSettings (string key, map event) {
   FtpServer::WriteToEditMap("AntiWarez", (((boolean) UI::QueryWidget(`id("AntiWarez"), `Value) == true) ? "YES":"NO"));
   FtpServer::WriteToEditMap("SSL", tostring(UI::QueryWidget(`id("SSL"), `CurrentButton)));
 
+  //FtpServer::WriteToEditMap("CertFile", tostring(UI::QueryWidget(`id("CertFile"), `Value)));
   foreach(string key, ["PasMinPort", "PasMaxPort"],{
      FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
   });
-  //y2milestone("-------------PURE_EDIT_SETTINGS-------------------");  
-  //y2milestone("Pure-ftp-server configuration has been read: %1", FtpServer::PURE_EDIT_SETTINGS);
+  //y2milestone("-------------EDIT_SETTINGS-------------------");  
+  //y2milestone("Pure-ftpd configuration has been read: %1", FtpServer::EDIT_SETTINGS);
   //y2milestone("---------------------------------------------");
 }
 
@@ -372,36 +400,23 @@ void StorePUREFTPDSettings (string key, map event) {
  * change values a display correct widget
  */
 void InitVSFTPAddSettings (string key) {
-  UI::ChangeWidget(`id( "SSLEnable" ), `Value, (FtpServer::ValueUIEdit("SSLEnable") == "YES"));
-  UI::ChangeWidget(`id( "TLS" ), `Value, (FtpServer::ValueUIEdit("TLS") == "YES"));
-  UI::ChangeWidget(`id( "PassiveMode" ), `Value, (FtpServer::ValueUIEdit("PassiveMode") == "YES"));
-  string val ="";
-  string UIval = FtpServer::ValueUIEdit("SSLVersion");
-  if (UIval == "0")
-     val = "Enable SSL v2";
-  else if (UIval == "1")
-     val = "Disable SSL v2";
-  else if (UIval == "2")
-     val = "Enable SSL v3";
-  else if (UIval == "3")
-     val = "Disable SSL v3";
-  else if (UIval == "4")
-     val = "Enable SSL v2 & v3";
-  else
-     val = "Disable SSL v2 & v3";
-  UI::ChangeWidget(`id("SSLVersion"), `Value, val);
+
+  foreach(string key, ["SSLEnable", "TLS", "SSLv2", "SSLv3", "PassiveMode"],{
+    UI::ChangeWidget(`id(key), `Value, (FtpServer::ValueUIEdit(key) == "YES"));
+  });
   foreach(string key, ["PasMinPort", "PasMaxPort" ],{
     UI::ChangeWidget(`id(key), `Value, tointeger(FtpServer::ValueUIEdit(key)));
   });
   
+  UI::ChangeWidget(`id( "CertFile" ), `Value, FtpServer::ValueUIEdit("CertFile"));
 }
 
 /**
- * Handle function for general settings
- * handling started via Xinetd
+ * Validate function for Expert settings (vsftpd)
+ * 
  */
 
- boolean ValidVSFTPAddPure(string key, map event) {
+ boolean ValidVSFTPExpSettings(string key, map event) {
   integer min_port = tointeger(UI::QueryWidget (`id("PasMinPort"), `Value));
   integer max_port = tointeger(UI::QueryWidget (`id("PasMaxPort"), `Value));
     
@@ -410,40 +425,55 @@ void InitVSFTPAddSettings (string key) {
      UI::SetFocus(`id("PasMinPort"));
      return false;
   }
+
+  string rsa_cert = tostring(UI::QueryWidget(`id("CertFile"), `Value));
+  boolean ssl_enable = (boolean) UI::QueryWidget(`id("SSLEnable"), `Value);
+
+  if (((rsa_cert == "")||(rsa_cert ==nil)) && (ssl_enable)) {
+     Popup::Error("DSA certificate is missing.");
+     UI::SetFocus(`id("CertFile"));
+     return false;
+  }
+
   return true;
 
 }
+
+
+
+/**
+ * Handle function for general settings
+ * handling started via Xinetd
+ */
+
+symbol HandleVSFTPExpertSettings(string key, map event) {
+   any button = event["ID"]:nil;
+   if (FtpServer::vsftpd_edit)  {      
+      if (button == "SelectCertFile") {
+          string val = UI::AskForExistingFile  ("/","*.*","Please Select File");
+          UI::ChangeWidget(`id( "CertFile" ), `Value, val);
+      }
+   } // end of if (FtpServer::vsftpd_edit)
+} // end of symbol HandleGenSettings(string key, map event) {
+
 /**
  * Store function for vsftpd add settings
  * save values to temporary structure
  */
 
 void StoreVSFTPDSettings (string key, map event) {
-  integer val = 4;
-  string UIval = tostring(UI::QueryWidget(`id("SSLVersion"), `Value));
-  if (UIval == "Enable SSL v2")
-     val = 0;
-  else if (UIval == "Disable SSL v2")
-     val = 1;
-  else if (UIval == "Enable SSL v3")
-     val = 2;
-  else if (UIval == "Disable SSL v3")
-     val = 3;
-  else if (UIval == "Enable SSL v2 & v3")
-     val = 4;
-  else
-     val = 5;
-  FtpServer::WriteToEditMap("SSLVersion", tostring(val));
-  FtpServer::WriteToEditMap("TLS", (((boolean) UI::QueryWidget(`id("TLS"), `Value) == true) ? "YES":"NO"));
-  FtpServer::WriteToEditMap("SSLEnable", (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));
-  FtpServer::WriteToEditMap("PassiveMode", (((boolean) UI::QueryWidget(`id("PassiveMode"), `Value) == true) ? "YES":"NO"));
-  //FtpServer::WriteToEditMap("Banner", (string) UI::QueryWidget(`id("Banner"), `Value));
-  foreach(string key, ["PasMinPort", "PasMaxPort"],{
+  
+  foreach(string key, ["SSLEnable", "TLS", "SSLv2", "SSLv3", "PassiveMode"],{
+    FtpServer::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
+  });
+  
+  foreach(string key, ["PasMinPort", "PasMaxPort", "CertFile"],{
      FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
   });
-  y2milestone("-------------EDIT_SETTINGS-------------------");  
-  y2milestone("vsftpd configuration has been read: %1", FtpServer::EDIT_SETTINGS);
-  y2milestone("---------------------------------------------");
+
+  //y2milestone("-------------EDIT_SETTINGS-------------------");  
+  //y2milestone("vsftpd configuration has been read: %1", FtpServer::EDIT_SETTINGS);
+  //y2milestone("---------------------------------------------");
   
 }
 
