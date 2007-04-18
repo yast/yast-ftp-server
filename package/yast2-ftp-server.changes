@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Apr 18 10:25:57 CEST 2007 - juhliarik@suse.cz
+
+- add checking certificate (SSL)
+- corrections for UI selection version of SSL
+- update commandline
+- 2.15.1
+
+-------------------------------------------------------------------
 Fri Apr  6 14:54:55 CEST 2007 - juhliarik@suse.cz
 
 - initial version
