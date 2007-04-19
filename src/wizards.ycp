@@ -91,7 +91,7 @@ any FtpdSequence() {
     ];
 
     Wizard::CreateDialog();
-
+    Wizard::SetTitleIcon("yast-ftp-server");
     any ret = Sequencer::Run(aliases, sequence);
 
     UI::CloseDialog();
@@ -118,27 +118,13 @@ any FtpServerAutoSequence() {
      ];
 
    Wizard::CreateDialog();
-
+   Wizard::SetTitleIcon("yast-ftp-server");
 
    any ret = Sequencer::Run(aliases, sequence);
 
    UI::CloseDialog();
    return ret;
 
-
-    /*
-    string caption = _("ftp-server Configuration");
-    
-    term contents = `Label(_("Initializing..."));
-
-    Wizard::CreateDialog();
-    Wizard::SetContentsButtons(caption, contents, "",
-	    Label::BackButton(), Label::NextButton());
-
-    any ret = MainSequence();
-
-    UI::CloseDialog();
-    return ret;*/
 }
 
 /* EOF */

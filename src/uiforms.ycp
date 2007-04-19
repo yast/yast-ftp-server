@@ -136,7 +136,7 @@ term VSFTPDAddSettings() {
 	`Left(`HBox(
 	  `TextEntry(`id("CertFile"), _("D&SA Certificate to Use for SSL Encrypted Connections")),
 	  `VBox ( `Label(""),
-	    `PushButton ( `id ( "SelectCertFile" ), `opt ( `hstretch ),  _("Selec&t File..."))
+	    `PushButton ( `id ( "SelectCertFile" ), `opt ( `hstretch ),  _("Select F&ile..."))
 	  )
 	)) // end of `Left(`HBox(
       ))

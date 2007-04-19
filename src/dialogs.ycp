@@ -32,6 +32,7 @@ include "ftp-server/uiforms.ycp";
  */
 
 void BackButton (string key) {
+     Wizard::SetTitleIcon("yast-ftp-server");
      UI::ChangeWidget(`id(`back), `Enabled, false);
 }
 
