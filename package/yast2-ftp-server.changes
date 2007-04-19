@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Apr 19 17:23:08 CEST 2007 - juhliarik@suse.cz
+
+- added ftp-server icon
+- added correct name (FTP Server)
+- changed destop file
+- V 2.15.2
+
+-------------------------------------------------------------------
 Wed Apr 18 10:25:57 CEST 2007 - juhliarik@suse.cz
 
 - add checking certificate (SSL)
