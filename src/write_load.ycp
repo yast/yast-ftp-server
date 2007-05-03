@@ -6,12 +6,19 @@
  *
  * $Id: write_load.ycp 27914 2006-02-13 14:32:08Z juhliarik $
  */
+
+{
+
+textdomain "ftp-server";
+
 import "Service";
 import "Popup";
 import "Inetd";
 
 
-boolean IdFTPXined () {
+
+
+boolean IdFTPXinetd () {
   boolean old_progress = Progress::set (false);
   boolean ret = Inetd::Read();     
   Progress::set (old_progress);
@@ -25,17 +32,166 @@ boolean IdFTPXined () {
 	  FtpServer::vsftpd_xined_id = i;
        else if (regexpmatch(ids, "pure-ftpd"))
           FtpServer::pureftpd_xined_id = i;		
-       i=i+1;	  			
+       i=i+1;
+       	  			
      } // while (size(Inetd::netd_conf) > i) {
+     if (FtpServer::pureftpd_xined_id > -1) {
+        string server_args = (string) Inetd::netd_conf[FtpServer::pureftpd_xined_id,"server_args"]:nil;
+	FtpServer::pure_ftpd_xinet_conf = splitstring(server_args, " ");
+        y2milestone("-------------PURE_SETTINGS_XINETD-------------------");  
+        y2milestone("pure-ftpd configuration has been read from xinetd: %1", pure_ftpd_xinet_conf);
+        y2milestone("----------------------------------------------------");        
+     }
      return true;
   } else
      return false;
 
 }
 
+boolean SettingsXinetdPure (list <string> server_args) {
+  string option = "";
+  y2milestone("---------------boolean SettingsXinetdPure (list <string> server_args)-----------------");  
+  y2milestone("----------------------------------------------------"); 
+  
+  //ChrootEnable
+  option = find(string opt, pure_ftpd_xinet_conf, ``(opt == "-A"));
+  if (option != nil)
+     FtpServer::EDIT_SETTINGS["ChrootEnable"] = (("-A" == option)? "YES": "NO");
+  else
+     FtpServer::EDIT_SETTINGS["ChrootEnable"] = "NO";
+
+  //VerboseLogging
+  option = find(string opt, pure_ftpd_xinet_conf, ``(opt == "-d"));
+  if (option != nil)
+     FtpServer::EDIT_SETTINGS["VerboseLogging"] = (("-d" == option)? "YES": "NO");
+  else
+     FtpServer::EDIT_SETTINGS["VerboseLogging"] = "NO";
+
+  //AnonReadOnly
+  option = find(string opt, pure_ftpd_xinet_conf, ``(opt == "-i"));
+  if (option != nil)
+     FtpServer::EDIT_SETTINGS["AnonReadOnly"] = (("-i" == option)? "YES": "NO");
+  else
+    FtpServer::EDIT_SETTINGS["AnonReadOnly"] = "YES"; 
+
+  //AnonCreatDirs
+  option = find(string opt, pure_ftpd_xinet_conf, ``(opt == "-M"));
+  if (option != nil)
+     FtpServer::EDIT_SETTINGS["AnonCreatDirs"] = (("-M" == option)? "YES": "NO");
+  else
+     FtpServer::EDIT_SETTINGS["AnonCreatDirs"] = "NO";
+
+  //AntiWarez
+  option = find(string opt, pure_ftpd_xinet_conf, ``(opt == "-s"));
+  if (option != nil)
+     FtpServer::EDIT_SETTINGS["AntiWarez"] = (("-s" == option)? "YES": "NO");
+  else
+     FtpServer::EDIT_SETTINGS["AntiWarez"] = "NO";
+  //AnonAuthen
+  string yes_no ="";
+  integer authen = 0;  
+  yes_no = (((nil != find(string opt, pure_ftpd_xinet_conf, ``(opt == "-e"))))? "YES": "NO");
+  if (yes_no == "YES")
+     authen = 0;
+  else
+     authen = 1;
+  yes_no = "";  
+  yes_no = (((nil != find(string opt, pure_ftpd_xinet_conf, ``(opt == "-E"))))? "YES": "NO");
+  if (yes_no == "YES")
+     authen = authen + 2;
+  if (authen == 0)
+     FtpServer::EDIT_SETTINGS["AnonAuthen"] = "0";
+  else
+     FtpServer::EDIT_SETTINGS["AnonAuthen"] = (authen == 3 ? "2":"1");
+  //numeric and string options
+  
+  
+  //Umask
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-U")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  FtpServer::EDIT_SETTINGS["Umask"] = ((option != nil) ? option:"");
+     
+  //SSL
+  
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-Y")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  FtpServer::EDIT_SETTINGS["SSL"] = ((option != nil) ? option:"1");
+    
+  //AnonMaxRate
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-t")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  FtpServer::EDIT_SETTINGS["AnonMaxRate"] = ((option != nil) ? option:"0");
+    
+  //LocalMaxRate
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-T")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  FtpServer::EDIT_SETTINGS["LocalMaxRate"] = ((option != nil) ? option:"0");
+    
+  //MaxClientsNumber
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-c")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  FtpServer::EDIT_SETTINGS["MaxClientsNumber"] = ((option != nil) ? option:"10");
+
+  //MaxClientsPerIP
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-C")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  FtpServer::EDIT_SETTINGS["MaxClientsPerIP"] = ((option != nil) ? option:"3");
+
+  //MaxIdleTime  
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-I")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  FtpServer::EDIT_SETTINGS["MaxIdleTime"] = ((option != nil) ? option:"15");
+
+  //PasMinPort and PasMaxPort
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-p")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  if (option != nil) {
+     list <string> ports = [];
+     ports = splitstring(option," ");
+     if (size(ports)==2) {
+        FtpServer::EDIT_SETTINGS["PasMinPort"] = ports[0]:"";
+        FtpServer::EDIT_SETTINGS["PasMaxPort"] = ports[1]:""; 
+     } else {
+        FtpServer::EDIT_SETTINGS["PasMinPort"] = FtpServer::DEFAULT_CONFIG["PasMinPort"]:nil;
+        FtpServer::EDIT_SETTINGS["PasMaxPort"] = FtpServer::DEFAULT_CONFIG["PasMaxPort"]:nil;
+     }
+  } else {
+     FtpServer::EDIT_SETTINGS["PasMinPort"] = FtpServer::DEFAULT_CONFIG["PasMinPort"]:nil;
+     FtpServer::EDIT_SETTINGS["PasMaxPort"] = FtpServer::DEFAULT_CONFIG["PasMaxPort"]:nil;    
+  }
+
+  
+  //VirtualUser
+  option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-l")));
+  if (option != nil)
+     option = substring(tostring(option),2);
+  if (option != nil) {
+     if (-1 != find(option, "puredb"))
+        FtpServer::EDIT_SETTINGS["VirtualUser"] = "YES";    
+  } else {
+     FtpServer::EDIT_SETTINGS["VirtualUser"] = "NO";  
+  }
+
+
+  return true;
+
+
+}
+
+
+
+
 
 boolean InitStartViaXinetd () {
-  if (IdFTPXined ()) {
+  if (IdFTPXinetd ()) {
      if (FtpServer::vsftpd_edit) {		 
         if (Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"]:nil == true)
            FtpServer::EDIT_SETTINGS["StartDaemon"] = "2"; 
@@ -143,7 +299,7 @@ global string ValueUI (string key, boolean write) {
 		 FtpServer::VS_SETTINGS["local_root"] = nil;	
            } else {
 	      return ((haskey(FtpServer::VS_SETTINGS, "local_root") ? 
-		     toupper(FtpServer::VS_SETTINGS["local_root"]:nil) : FtpServer::DEFAULT_CONFIG["FtpDirLocal"]:nil));
+		     FtpServer::VS_SETTINGS["local_root"]:nil : FtpServer::DEFAULT_CONFIG["FtpDirLocal"]:nil));
  	   }	
 	} else {	   
 	   if (!write)
@@ -717,7 +873,48 @@ global string ValueUI (string key, boolean write) {
         }
 	break;
 
+   //only vsftpd
+   case("FTPUser"):
+	if (FtpServer::vsftpd_edit) {
+	   if (write) { 
+              return "";
+           } else {
+	      return ((haskey(FtpServer::VS_SETTINGS, "ftp_username") ? 
+		     FtpServer::VS_SETTINGS["ftp_username"]:nil : FtpServer::DEFAULT_CONFIG["FTPUser"]:nil));
+	   } 
+	} else {
+           if (!write)
+ 	      return FtpServer::DEFAULT_CONFIG["FTPUser"]:nil;
+           else
+              return "";
+        }
+	break;
 
+   //only vsftpd
+   case("GuestUser"):
+	if (FtpServer::vsftpd_edit) {
+	   if (write) { 
+              return "";
+           } else {
+	      if ((haskey(FtpServer::VS_SETTINGS, "guest_username")) && 
+                 (haskey(FtpServer::VS_SETTINGS, "guest_enable"))) {
+		 yes_no = toupper(FtpServer::VS_SETTINGS["guest_enable"]:nil);
+		     if (yes_no == "YES")
+		        return FtpServer::VS_SETTINGS["guest_username"]:nil;
+                     else
+			return FtpServer::DEFAULT_CONFIG["GuestUser"]:nil;
+
+              } else {
+		 return FtpServer::DEFAULT_CONFIG["GuestUser"]:nil;
+              }
+	   } 
+	} else {
+           if (!write)
+ 	      return FtpServer::DEFAULT_CONFIG["GuestUser"]:nil;
+           else
+              return "";
+        }
+	break;
    //only pure-ftpd
    case("AntiWarez"):
 	if (FtpServer::vsftpd_edit) {
@@ -751,6 +948,23 @@ global string ValueUI (string key, boolean write) {
 	}
 	break;
 
+   //only pure-ftpd
+   case("VirtualUser"):
+	if (FtpServer::vsftpd_edit) {
+	   if (!write)				
+ 	      return FtpServer::DEFAULT_CONFIG["VirtualUser"]:nil;
+           else
+              return "";
+	} else {
+	   if (!write)
+              if (haskey(FtpServer::PURE_SETTINGS, "PureDB")) {
+                 return "YES";
+              } else {
+	         return FtpServer::DEFAULT_CONFIG["VirtualUser"]:nil;	 
+              }  	   
+	}
+        break; 
+      
     case("StartXinetd"):
         boolean result = false;	
 	 if (write) {
@@ -785,7 +999,7 @@ global string ValueUI (string key, boolean write) {
 	      }
               FtpServer::start_xinetd = false;
            }	   
-           FtpServer::EDIT_SETTINGS = remove(FtpServer::EDIT_SETTINGS, "StartXinetd");           
+           //FtpServer::EDIT_SETTINGS = remove(FtpServer::EDIT_SETTINGS, "StartXinetd");           
         } else {
            FtpServer::EDIT_SETTINGS["StartDaemon"] = "0";	   
            result = InitStartViaXinetd ();
@@ -795,10 +1009,11 @@ global string ValueUI (string key, boolean write) {
   	      if ((Service::Enabled("pure-ftpd")) && (!FtpServer::vsftpd_edit))
                  FtpServer::EDIT_SETTINGS["StartDaemon"] = "1";
            }
-           if (result && (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2"))
-              return "YES";
-           else
-              return "NO";
+           if (result && (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2")) {
+              if (Service::Status("xinetd") == 0)
+                 SettingsXinetdPure (FtpServer::pure_ftpd_xinet_conf);
+           }
+	   return ((Service::Status("xinetd") == 0) ? "YES":"NO");
 	}  	   	
 	break; 
 
@@ -811,5 +1026,7 @@ global string ValueUI (string key, boolean write) {
     
   }
 
+
+}
 
 }

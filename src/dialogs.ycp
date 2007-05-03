@@ -22,7 +22,7 @@ import "CWMFirewallInterfaces";
 
 include "ftp-server/helps.ycp";
 include "ftp-server/wid_functions.ycp";
-include "ftp-server/uiforms.ycp";
+//include "ftp-server/uiforms.ycp";
 
 
 
@@ -319,7 +319,7 @@ map<string,any> gen_settings () {
   // TRANSLATORS: part of dialog caption
   result["caption"] =  _("FTP General Settings");
   // TRANSLATORS: tree menu item
-  result["tree_item_label"] = _("General Settings");
+  result["tree_item_label"] = _("General");
   result["widget_names"] = [ "DisBackButton", "GenSettings"];
 
   return result;
@@ -342,7 +342,7 @@ map<string,any> gen_settings_pure () {
   // TRANSLATORS: part of dialog caption
   result["caption"] =  _("FTP General Settings");
   // TRANSLATORS: tree menu item
-  result["tree_item_label"] = _("General Settings");
+  result["tree_item_label"] = _("General");
   result["widget_names"] = [ "DisBackButton", "GenSettings"];
 
   return result;
@@ -366,7 +366,7 @@ map<string,any> perfor_settings () {
   // TRANSLATORS: part of dialog caption
   result["caption"] = _("FTP Performance Settings");
   // TRANSLATORS: tree menu item
-  result["tree_item_label"] = _("Performance Settings");
+  result["tree_item_label"] = _("Performance");
   result["widget_names"] = [ "DisBackButton", "PerforSettings"];
 
   return result;
@@ -423,7 +423,7 @@ map<string,any> anon_settings () {
   // TRANSLATORS: part of dialog caption
   result["caption"] = _("FTP Anonymous Settings");
   // TRANSLATORS: tree menu item
-  result["tree_item_label"] = _("Anonymous Settings");
+  result["tree_item_label"] = _("Authentication");
   result["widget_names"] = [ "DisBackButton", "AnonSettings"];
 
   return result;

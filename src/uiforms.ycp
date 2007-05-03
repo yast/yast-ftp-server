@@ -18,7 +18,7 @@ term FTPGenSettingsVsftpd() {
       `HBox(`HSpacing(1), `VBox (
 	`Left(`TextEntry(`id("Banner"),_("&Welcome message"))),
 	`Left(`CheckBox(`id("ChrootEnable"), _("&Chroot Everyone"))),	
-	`Left(`CheckBox(`id("VerboseLogging"), _("Verbose Lo&gging"))),	
+	`Left(`CheckBox(`id("VerboseLogging"), _("&Verbose Logging"))),	
 	`Left(`HSquash( `HBox (`Left(`TextEntry(`id("UmaskAnon"), _("&Umask for Anonymous"))),
 	`Left(`TextEntry(`id("UmaskLocal"), _("Uma&sk for Authenticated Users"))))))    
       ))
@@ -27,15 +27,15 @@ term FTPGenSettingsVsftpd() {
     `Frame ( _("FTP Directories"),
       `HBox(`HSpacing(1), `VBox (
 	`Left(`HBox(
-	  `TextEntry(`id("FtpDirAnon"), _("Ftp Directory f&or Anonymous Users")),
+	  `TextEntry(`id("FtpDirAnon"), _("Ftp Directory for Anon&ymous Users")),
 	  `VBox ( `Label(""),
-	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select Director&y..."))
+	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("B&rowse"))
 	  )
 	)),
 	`Left(`HBox(
 	  `TextEntry(`id("FtpDirLocal"), _("&Ftp Directory for Authenticated Users")),
 	  `VBox ( `Label(""),
-	    `PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Select D&irectory..."))
+	    `PushButton ( `id ( "SelectDirLocal" ), `opt ( `hstretch ),  _("Br&owse"))
 	  )
 	))
       )) // end of `HBox(`HSpacing(1)`VBox (
@@ -62,7 +62,7 @@ term FTPGenSettingsPureftpd() {
 	`Left(`HBox(
 	  `TextEntry(`id("FtpDirAnon"), _("Ftp Directory f&or Anonymous Users")),
 	  `VBox ( `Label(""),
-	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Select Director&y..."))
+	    `PushButton ( `id ( "SelectDirAnon" ), `opt ( `hstretch ),  _("Bro&wse"))
 	  )
 	)) // end of `Left(`HBox(
       )) // end of `HBox(`HSpacing(1)`VBox (
@@ -136,7 +136,7 @@ term VSFTPDAddSettings() {
 	`Left(`HBox(
 	  `TextEntry(`id("CertFile"), _("D&SA Certificate to Use for SSL Encrypted Connections")),
 	  `VBox ( `Label(""),
-	    `PushButton ( `id ( "SelectCertFile" ), `opt ( `hstretch ),  _("Select F&ile..."))
+	    `PushButton ( `id ( "SelectCertFile" ), `opt ( `hstretch ),  _("Bro&wse"))
 	  )
 	)) // end of `Left(`HBox(
       ))

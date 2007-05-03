@@ -9,6 +9,8 @@
 
 {
 
+textdomain "ftp-server";
+
 import "Popup";
 import "Wizard";
 import "Report";
@@ -27,7 +29,7 @@ include "ftp-server/uiforms.ycp";
  * CWMServiceStart function with no parameter returning boolean value 
  * that says if the service is started.
  */
-global boolean GetEnableService () {
+boolean GetEnableService () {
   boolean result = false;
   if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "1")
      result = true;
@@ -41,13 +43,14 @@ global boolean GetEnableService () {
  * CWMServiceStart function with one boolean parameter  
  * returning boolean value that says if the service will be started at boot.
  */
-global void SetEnableService (boolean enable_service) {  
+void SetEnableService (boolean enable_service) {  
   if (size(FtpServer::EDIT_SETTINGS) == 0)
      FtpServer::EDIT_SETTINGS = FtpServer::DEFAULT_CONFIG;
 
-  if (enable_service)
+  if (enable_service) {
      FtpServer::EDIT_SETTINGS["StartDaemon"] = "1";
-
+     FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
+  }
   
 }
 
@@ -55,7 +58,7 @@ global void SetEnableService (boolean enable_service) {
  * CWMServiceStart function with no parameter returning boolean value 
  * that says if the service is started.
  */
-global boolean GetStartedViaXinetd () {
+boolean GetStartedViaXinetd () {
   boolean result = false;
   if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2")
      result = true;
@@ -69,39 +72,38 @@ global boolean GetStartedViaXinetd () {
  * CWMServiceStart function with one boolean parameter  
  * returning boolean value that says if the service will be started at boot.
  */
-global void SetStartedViaXinetd (boolean enable_service) {
+void SetStartedViaXinetd (boolean enable_service) {
   boolean result = true;
-  if ((Service::Status("xinetd") != 0) && (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO") 
-     && (enable_service)) {
-     //Popup::Message("xinetd is not started");
-     if (Mode::normal()) {
-        UI::OpenDialog(       
-          `VBox(
-	    `Label("Xinetd is not started!"),
-	    `Label("Do you want to start it?"),
-	    `HBox(
-	      `PushButton(`id(`accept), "&Start"),
-	      `PushButton(`id(`cancel), "Canc&el")
-            )
-          ) // end of `VBox(
-        ); // end of UI::OpenDialog(
-        while (true) {
-          any ret = UI::UserInput();
-          if ( ret == `accept ) {
-             //FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
-             result = true;
-	     break;
-          } else if (ret == `cancel) {
-             //FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
-             result = false;
-	     break;
-          }
-        };
-        UI::CloseDialog();
-     } 
-  } //end of if (Service::Status("xinetd") != 0)
   if (enable_service) {
      FtpServer::EDIT_SETTINGS["StartDaemon"] = "2";
+     if ((Service::Status("xinetd") != 0) && 
+        (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
+        if (Mode::normal()) {
+           UI::OpenDialog(       
+             `VBox(
+	       `Label("Xinetd is not started!"),
+	       `Label("Do you want to start it?"),
+	       `HBox(
+	         `PushButton(`id(`accept), "&Start"),
+	         `PushButton(`id(`cancel), "Canc&el")
+               )
+             ) // end of `VBox(
+           ); // end of UI::OpenDialog(
+           while (true) {
+             any ret = UI::UserInput();
+             if ( ret == `accept ) {
+                //FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
+                result = true;
+	        break;
+             } else if (ret == `cancel) {
+                //FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
+                result = false;
+	        break;
+             }
+           };
+           UI::CloseDialog();
+        } // end of if (Mode::normal()) {
+     } // end of if ((Service::Status("xinetd") != 0)...
      if (result)
         FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
      else
@@ -119,7 +121,11 @@ global void SetStartedViaXinetd (boolean enable_service) {
 void InitGenSettings(string key) {
   if (!FtpServer::vsftpd_edit)  {
      UI::ChangeWidget(`id( "Umask" ), `ValidChars, "01234567:");   
-     UI::ChangeWidget(`id( "Umask" ), `Value,  FtpServer::ValueUIEdit("Umask"));	
+     UI::ChangeWidget(`id( "Umask" ), `Value,  FtpServer::ValueUIEdit("Umask"));
+     if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "YES") {
+        UI::ChangeWidget(`id( "FtpDirAnon" ), `Enabled, false);
+        UI::ChangeWidget(`id ( "SelectDirAnon" ),`Enabled, false);
+     }	
   } else {     
      UI::ChangeWidget(`id( "UmaskAnon" ), `ValidChars, "01234567");
      UI::ChangeWidget(`id( "UmaskLocal" ),`ValidChars, "01234567");
@@ -128,8 +134,9 @@ void InitGenSettings(string key) {
      UI::ChangeWidget(`id( "UmaskLocal" ), `Value,  FtpServer::ValueUIEdit("UmaskLocal"));
      UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, FtpServer::ValueUIEdit("FtpDirLocal"));
      
-  }  
-  UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, FtpServer::ValueUIEdit("FtpDirAnon"));
+  } 
+  if  (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO")
+      UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, FtpServer::ValueUIEdit("FtpDirAnon"));
   UI::ChangeWidget(`id( "ChrootEnable" ), `Value, (FtpServer::ValueUIEdit("ChrootEnable") == "YES"));	
   UI::ChangeWidget(`id( "VerboseLogging" ), `Value, (FtpServer::ValueUIEdit("VerboseLogging") == "YES"));
   
@@ -174,39 +181,34 @@ boolean GenValid (string key, map event) {
          }
       
      }
-     string AnonHomeDir = (string)UI::QueryWidget (`id("FtpDirAnon"), `Value);
-     //checking correct homedir for anonymous user 
-     if ((AnonHomeDir != "") && (Mode::normal())) {
-        if (AnonHomeDir != FtpServer::anon_homedir) {
-           string error = Users::EditUser($["homedirectory":AnonHomeDir]);
-           if ((error != nil) && (error != "")) {
-              Popup::Error(error);
-	      UI::SetFocus(`id("FtpDirAnon"));
-	      return false;
-	   }
-           integer uid = FtpServer::anon_uid;
-           boolean failed = false;
-	   map<string,integer> ui_map = $[];
-           map error_map = $[];
-	   do {
-	     error_map = Users::CheckHomeUI (uid, AnonHomeDir, ui_map);
-	     if (error_map != $[]) {
-		if (!Popup::YesNo (error_map ["question"]:""))
-		   failed = true;
-		else
-		   ui_map[ error_map["question_id"]:"" ] = 1;
-	     }
-	   } while (error_map != $[] && !failed);
-           /*
-           error = Users::CheckHomeUI();
-           if ((error != nil) && (error != "")) {
-              Popup::Error(error);
-	      UI::SetFocus(`id("FtpDirAnon"));
-	      return false;
-	   }*/
-	}   
-     }
-  }  
+     if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO") {
+        string AnonHomeDir = (string)UI::QueryWidget (`id("FtpDirAnon"), `Value);
+        //checking correct homedir for anonymous user 
+        if ((AnonHomeDir != "") && (Mode::normal())) {
+           if (AnonHomeDir != FtpServer::anon_homedir) {
+              string error = Users::EditUser($["homedirectory":AnonHomeDir]);
+              if ((error != nil) && (error != "")) {
+                 Popup::Error(error);
+	         UI::SetFocus(`id("FtpDirAnon"));
+	         return false;
+	      }
+              integer uid = FtpServer::anon_uid;
+              boolean failed = false;
+	      map<string,integer> ui_map = $[];
+              map error_map = $[];
+	      do {
+	         error_map = Users::CheckHomeUI (uid, AnonHomeDir, ui_map);
+	         if (error_map != $[]) {
+		    if (!Popup::YesNo (error_map ["question"]:""))
+		       failed = true;
+		    else
+		       ui_map[ error_map["question_id"]:"" ] = 1;
+	         }
+	      } while (error_map != $[] && !failed);
+	   } //end of if (AnonHomeDir != FtpServer::anon_homedir) {
+        } //end of if ((AnonHomeDir != "") && (Mode::normal())) {
+     } //end of if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil != "NO") {
+  } //end of if (!FtpServer::vsftpd_edit) {
   return true;
 }
 
@@ -219,7 +221,8 @@ void StoreGenSettings (string key, map event) {
   foreach(string key, ["ChrootEnable", "VerboseLogging"],{
      FtpServer::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
   });
-  FtpServer::WriteToEditMap("FtpDirAnon", (string) UI::QueryWidget(`id("FtpDirAnon"), `Value));
+  if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO")
+     FtpServer::WriteToEditMap("FtpDirAnon", (string) UI::QueryWidget(`id("FtpDirAnon"), `Value));
   if (!FtpServer::vsftpd_edit) {
      FtpServer::WriteToEditMap("Umask", (string) UI::QueryWidget(`id("Umask"), `Value));
   } else {

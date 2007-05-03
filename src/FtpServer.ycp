@@ -128,6 +128,15 @@ integer sl = 500;
 map userinfo = $[]; 
 
 /**
+ * list includes xinetd server_args for pure-ftpd
+ * 
+ * global lis <string> variable
+ */
+
+global list <string> pure_ftpd_xinet_conf =[];
+
+
+/**
  * list of keys from map DEFAULT_CONFIG
  *  
  * global list <string>
@@ -137,7 +146,7 @@ global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","F
 "UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
 "MaxClientsNumber", "LocalMaxRate", "AnonMaxRate", "AnonAuthen", "AnonReadOnly",
 "AnonCreatDirs", "Banner", "SSLEnable", "TLS", "AntiWarez", "SSL", "StartXinetd", 
-"PassiveMode", "CertFile", "SSLv2", "SSLv3"];
+"PassiveMode", "CertFile", "SSLv2", "SSLv3", "VirtualUser", "FTPUser", "GuestUser"];
 
 /**
  * map of deafult values for options in UI
@@ -156,8 +165,8 @@ global map <string, string > DEFAULT_CONFIG = $[
      "PasMinPort"      		 : "0",
      "PasMaxPort"                : "0",
      "MaxIdleTime"    		 : "15",
-     "MaxClientsPerIP"           : "10",
-     "MaxClientsNumber"      	 : "8",
+     "MaxClientsPerIP"           : "3",
+     "MaxClientsNumber"      	 : "10",
      "LocalMaxRate"		 : "0",
      "AnonMaxRate"		 : "0",
      "AnonAuthen"		 : "1",  // 0 => anonymous only, 1 => authenticated only, 2=> both
@@ -167,7 +176,6 @@ global map <string, string > DEFAULT_CONFIG = $[
      "SSLEnable"		 : "NO",
      "SSLv2"			 : "NO", //enable/disable SSL version 2 (vsftpd only)
      "SSLv3"			 : "NO", //enable/disable SSL version 3 (vsftpd only)
-     //"SSLVersion"		 : "2",
      "TLS"			 : "YES",
      "AntiWarez"		 : "YES",
      "SSL"			 : "1",
@@ -175,7 +183,9 @@ global map <string, string > DEFAULT_CONFIG = $[
      "StartDaemon"		 : "0",  //0 = start manually, 1 = start via inetd, 2 = start via xinetd
      "PassiveMode"		 : "YES",
      "CertFile"			 : "",   //cert file for SSL connections
-     //"PromisMode"		 : "NO", enable ftp client connect via passive and active mode (vsftpd)
+     "VirtualUser"		 : "NO",
+     "FTPUser"			 : "ftp",
+     "GuestUser"		 : "",
      
 ];
 
@@ -281,8 +291,18 @@ boolean ReadSettings () {
   }
   //read info about anonymous user "ftp"
   Users::SetGUI (false);
-  if (Users::Read () == "") { 
-     Users::SelectUserByName ("ftp");
+  if ((Users::Read () == "") && (EDIT_SETTINGS["VirtualUser"]:nil == "NO")) {
+     if ((vsftpd_edit) && (EDIT_SETTINGS["GuestUser"]:nil != "") 
+        && (EDIT_SETTINGS["FtpDirLocal"]:nil == "")) {
+        Popup::Message("if ((vsftpd_edit) && (EDIT_SETTINGS");
+        Users::SelectUserByName (EDIT_SETTINGS["GuestUser"]:nil);
+        userinfo = Users::GetCurrentUser ();
+        string guest_home_dir = (string) userinfo["homedirectory"]:nil;
+        if ((guest_home_dir != "") && (guest_home_dir != nil) 
+           && (EDIT_SETTINGS["FtpDirLocal"]:nil == ""))
+	   EDIT_SETTINGS["FtpDirLocal"] = guest_home_dir;
+     }
+     Users::SelectUserByName (EDIT_SETTINGS["FTPUser"]:nil);
      userinfo = Users::GetCurrentUser ();
      anon_homedir = (string) userinfo["homedirectory"]:nil;
      anon_uid     = (integer) userinfo["uidnumber"]:nil;
@@ -294,7 +314,6 @@ boolean ReadSettings () {
 	   EDIT_SETTINGS["FtpDirAnon"] = anon_homedir;	
      }
   }
-
   //read firewall settings
   boolean progress_orig = Progress::set (false);
   SuSEFirewall::Read ();
@@ -429,28 +448,32 @@ boolean WriteSettings () {
      if (result) {
 	result = WritePUREFTPDSettings();
      }
-     // write homedirectory for anonymous user (ftp)
-     if (result) {
-	if ((EDIT_SETTINGS["FtpDirAnon"]:nil != anon_homedir) &&
-           (anon_homedir != "") && (anon_homedir != nil)) {
-           string error = Users::EditUser($["homedirectory":EDIT_SETTINGS["FtpDirAnon"]:nil]);
-           if ((error != nil) && (error != "")) {
-              result= false;
-              Popup::Error(error);
-	   }
-           if (result)
-	      if (Users::CommitUser ()) {
-		 Users::SetGUI (false);  
-		 error = Users::Write();
-                 if ((error != nil) && (error != "")) {
-		    Popup::Error(error);
-		    result = false;
-                 }
-              } 
-	}
-     }
+     // write homedirectory for anonymous user (ftp) 
+     // fto user will be change only for pure-ftpd
+     // vsftpd change option anon_root 
+     if ((EDIT_SETTINGS["VirtualUser"]:nil == "NO") && (!vsftpd_edit)) {
+        if (result) {
+	   if ((EDIT_SETTINGS["FtpDirAnon"]:nil != anon_homedir) &&
+              (anon_homedir != "") && (anon_homedir != nil)) {
+              string error = Users::EditUser($["homedirectory":EDIT_SETTINGS["FtpDirAnon"]:nil]);
+              if ((error != nil) && (error != "")) {
+                 result= false;
+                 Popup::Error(error);
+	      }
+              if (result)
+	         if (Users::CommitUser ()) {
+		    Users::SetGUI (false);  
+		    error = Users::Write();
+                    if ((error != nil) && (error != "")) {
+		       Popup::Error(error);
+		       result = false;
+                    }
+                 } //end of if (Users::CommitUser ()) {
+	   } //end of if ((EDIT_SETTINGS["FtpDirAnon"]:nil != anon_homedir) &&
+        } //end of if (result) {
+     } //end of if (EDIT_SETTINGS["VirtualUser"]:nil == "NO") {
      
-  }
+  } // end of } else {
 
   if (result) {
      result = WriteFirewallSettings();
