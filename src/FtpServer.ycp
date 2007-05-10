@@ -315,11 +315,9 @@ boolean ReadSettings () {
      }
   }
   //read firewall settings
-
-     //Popup::Message("SuSEFirewall Installed!");
-     boolean progress_orig = Progress::set (false);
-     SuSEFirewall::Read ();
-     Progress::set (progress_orig);
+  boolean progress_orig = Progress::set (false);
+  SuSEFirewall::Read ();
+  Progress::set (progress_orig);
 
 
    
