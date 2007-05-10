@@ -31,5 +31,9 @@ ftp-server =
      element StartDaemon  { text }? &
      element SSLv2  { text }? &
      element SSLv3  { text }? &
-     element PassiveMode { text }?
+     element PassiveMode { text }? &
+     element CertFile { text }? &
+     element VirtualUser { text }? &
+     element FTPUser { text }? &
+     element GuestUser { text }?
 }

@@ -180,7 +180,7 @@ global map <string, string > DEFAULT_CONFIG = $[
      "AntiWarez"		 : "YES",
      "SSL"			 : "1",
      "StartXinetd"		 : "NO",
-     "StartDaemon"		 : "0",  //0 = start manually, 1 = start via inetd, 2 = start via xinetd
+     "StartDaemon"		 : "0",  //0 = start manually, 1 = start when booting, 2 = start via xinetd
      "PassiveMode"		 : "YES",
      "CertFile"			 : "",   //cert file for SSL connections
      "VirtualUser"		 : "NO",
@@ -315,9 +315,14 @@ boolean ReadSettings () {
      }
   }
   //read firewall settings
-  boolean progress_orig = Progress::set (false);
-  SuSEFirewall::Read ();
-  Progress::set (progress_orig);
+
+     //Popup::Message("SuSEFirewall Installed!");
+     boolean progress_orig = Progress::set (false);
+     SuSEFirewall::Read ();
+     Progress::set (progress_orig);
+
+
+   
   return result;
 }
 

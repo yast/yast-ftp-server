@@ -67,12 +67,13 @@ boolean ReadFTPService () {
      UI::OpenDialog(
        `RadioButtonGroup(`id("IntstallFTPd"), 
 	 `VBox(
-	   `Label("There isn't installed ftp daemon (vsftpd/pure-ftpd)!"),
-	   `Label("Choose daemon for installation?"),
+           `Heading ("No server package installed"),
+	   `Left(`Label("Choose ftp daemon please.")),
+	   `Left(`Label("If you want to cancel configuration of ftp you can push Cancel button.")),
 	   `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", true)),
 	   `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd")),
 	   `HBox(
-	     `PushButton(`id(`accept), "&Accept"),
+	     `PushButton(`id(`accept), "&Install"),
 	     `PushButton(`id(`cancel), "&Cancel")
            )
 	 ) // end of `VBox(

@@ -193,13 +193,17 @@ boolean SettingsXinetdPure (list <string> server_args) {
 boolean InitStartViaXinetd () {
   if (IdFTPXinetd ()) {
      if (FtpServer::vsftpd_edit) {		 
-        if (Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"]:nil == true)
+        if (Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"]:nil == true) {
            FtpServer::EDIT_SETTINGS["StartDaemon"] = "2"; 
+           return true;
+        }
      } else {
-        if (Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"]:nil == true)
+        if (Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"]:nil == true) {
            FtpServer::EDIT_SETTINGS["StartDaemon"] = "2";
+           return true;
+        }
      }
-     return true;
+     
   } else //end of if (IdFTPXined ())]
      return false;
 }
@@ -988,7 +992,7 @@ global string ValueUI (string key, boolean write) {
 		    Service::Enable("pure-ftpd");
                  }
                  if (FtpServer::vsftpd_edit) {
-		    FtpServer::VS_SETTINGS["listen"]=nil;
+		    FtpServer::VS_SETTINGS["listen"]="YES";
 		 }
               } else {
                  Service::Disable("vsftpd");

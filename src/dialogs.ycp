@@ -383,7 +383,7 @@ map<string,any> perfor_settings () {
 map<string,any> FirewallSettingsPure () {
   map<string,any> result = $[];
 
-  result["services"] = [ "dns-server" ];
+  result["services"] = [ "service:pure-ftpd" ];
   result["display_details"] = true;
 
   return result;

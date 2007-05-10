@@ -213,17 +213,17 @@ but not validated by a local admin.</p>
 ")+
 
 
-/* additional settings Disable SLL/TLS dialog help 3/5 */
-_("<p><b>Disable SLL/TLS</b><br>
+/* additional settings Disable SSL/TLS dialog help 3/5 */
+_("<p><b>Disable SSL/TLS</b><br>
 Disable SSL/TLS encryption layer (default)</p>
 ")+
 
-/* additional settings Accept SLL and TLS dialog help 4/5 */
-_("<p><b>Accept SLL and TLS</b><br>
+/* additional settings Accept SSL and TLS dialog help 4/5 */
+_("<p><b>Accept SSL and TLS</b><br>
 Accept both traditional and encrypted sessions.</p>
 ")+
 
-/* additional settings refuse without SLL and TLS dialog help 4/5 */
+/* additional settings refuse without SSL and TLS dialog help 4/5 */
 _("<p><b>Refuse Connection without SSL/TLS</b><br>
 Refuse connections that don't use SSL/TLS security 
 mechanisms, including anonymous sessions.</p>
