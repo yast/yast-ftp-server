@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu May 10 13:51:53 CEST 2007 - juhliarik@suse.cz
+
+- added corrections for starting daemon via "when booting"
+- added corrections for help text
+- changed UI for installing package (if missing)
+- V 2.15.4
+
+-------------------------------------------------------------------
 Thu May  3 15:19:45 CEST 2007 - juhliarik@suse.cz
 
 - added parsing of options from xinetd for pure-ftpd
