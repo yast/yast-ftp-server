@@ -307,7 +307,7 @@ void StorePerforSettings (string key, map event) {
 }
 
 /**
- * Init function for performance settings
+ * Init function for anon settings
  * change ValidChars from textentry
  */
 void InitAnonSettings(string key) {
@@ -318,13 +318,19 @@ void InitAnonSettings(string key) {
       (FtpServer::ValueUIEdit("AnonReadOnly") == "NO"));
   UI::ChangeWidget(`id( "AnonCreatDirs" ), `Value, 
       (FtpServer::ValueUIEdit("AnonCreatDirs") == "YES"));
-
-
+  if (FtpServer::vsftpd_edit) {
+     UI::ChangeWidget(`id( "EnableUpload" ), `Value, 
+         (FtpServer::ValueUIEdit("EnableUpload") == "YES"));
+     if (!((boolean) UI::QueryWidget(`id("EnableUpload"), `Value))) {
+	UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, false);
+	UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, false);
+     }
+  }
 }
 
 
 /**
- * Store function for performance settings
+ * Store function for anon settings
  * save values to temporary structure
  */
 void StoreAnonSettings (string key, map event) {
@@ -334,8 +340,32 @@ void StoreAnonSettings (string key, map event) {
   });
 
   FtpServer::WriteToEditMap("AnonReadOnly", (((boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value) == true) ? "NO":"YES"));
-  
+  if (FtpServer::vsftpd_edit)
+     FtpServer::WriteToEditMap("EnableUpload", (((boolean) UI::QueryWidget(`id("EnableUpload"), `Value) == true) ? "YES":"NO"));
 }
+
+/**
+ * Handle function for anon settings
+ * save values to temporary structure
+ */
+
+symbol HandleAnonSettings(string key, map event) {
+  if (FtpServer::vsftpd_edit) {
+     any button = event["ID"]:nil;
+     if (button == "EnableUpload") {
+        boolean check_upload = (boolean) UI::QueryWidget(`id("EnableUpload"), `Value);
+        if (check_upload) {
+           UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, true);
+           UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, true); 
+        } else {
+	   UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, false);
+	   UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, false);
+        }
+     } // end of if (button == "EnableUpload") {
+  } // end of if (FtpServer::vsftpd_edit) {
+}
+
+
 
 
 

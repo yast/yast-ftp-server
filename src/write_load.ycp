@@ -703,10 +703,13 @@ global string ValueUI (string key, boolean write) {
 	if (FtpServer::vsftpd_edit) {
 	   if (write) {
 	      yes_no = FtpServer::EDIT_SETTINGS["AnonReadOnly"]:nil;
-	      if (yes_no == "YES") 
+	      if (yes_no == "YES") {
                  FtpServer::VS_SETTINGS["anon_upload_enable"] = "NO";
-	      else
+                 FtpServer::VS_SETTINGS["write_enable"] = "NO";
+              } else { 
 		 FtpServer::VS_SETTINGS["anon_upload_enable"] = "YES";	
+                 FtpServer::VS_SETTINGS["write_enable"] = "YES";
+              }
            } else {
               if (haskey(FtpServer::VS_SETTINGS, "anon_upload_enable")) {
 		  yes_no = toupper(FtpServer::VS_SETTINGS["anon_upload_enable"]:nil);
@@ -728,7 +731,9 @@ global string ValueUI (string key, boolean write) {
      case("AnonCreatDirs"):
 	if (vsftpd_edit) {
 	   if (write) { 
-              FtpServer::VS_SETTINGS["anon_mkdir_write_enable"] = EDIT_SETTINGS["AnonCreatDirs"]:nil;	      	
+              FtpServer::VS_SETTINGS["anon_mkdir_write_enable"] = FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil;
+              if (FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES")
+                 FtpServer::VS_SETTINGS["write_enable"] = "YES";	      	
            } else {
 	      return ((haskey(FtpServer::VS_SETTINGS, "anon_mkdir_write_enable") ? 
 		     toupper(FtpServer::VS_SETTINGS["anon_mkdir_write_enable"]:nil) : FtpServer::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
@@ -742,6 +747,25 @@ global string ValueUI (string key, boolean write) {
 	      return ((haskey(FtpServer::PURE_SETTINGS, "AnonymousCanCreateDirs") ?
 		     toupper(FtpServer::PURE_SETTINGS["AnonymousCanCreateDirs"]:nil):FtpServer::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
 	}
+	break;
+    //only vsftpd
+    case("EnableUpload"):
+	if (FtpServer::vsftpd_edit) {
+	   if (write) { 
+ 	      if (FtpServer::EDIT_SETTINGS["EnableUpload"]:nil != "")	       
+                 FtpServer::VS_SETTINGS["write_enable"] = FtpServer::EDIT_SETTINGS["EnableUpload"]:nil;
+	      else
+		 FtpServer::VS_SETTINGS["write_enable"] = nil;	
+           } else {
+	      return ((haskey(FtpServer::VS_SETTINGS, "write_enable") ? 
+		     FtpServer::VS_SETTINGS["write_enable"]:nil : FtpServer::DEFAULT_CONFIG["EnableUpload"]:nil));
+	   } 
+	} else {
+           if (!write)
+ 	      return FtpServer::DEFAULT_CONFIG["EnableUpload"]:nil;
+           else
+              return "";
+        }
 	break;
 
     //only vsftpd

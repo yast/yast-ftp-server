@@ -146,7 +146,7 @@ global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","F
 "UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
 "MaxClientsNumber", "LocalMaxRate", "AnonMaxRate", "AnonAuthen", "AnonReadOnly",
 "AnonCreatDirs", "Banner", "SSLEnable", "TLS", "AntiWarez", "SSL", "StartXinetd", 
-"PassiveMode", "CertFile", "SSLv2", "SSLv3", "VirtualUser", "FTPUser", "GuestUser"];
+"PassiveMode", "CertFile", "SSLv2", "SSLv3", "VirtualUser", "FTPUser", "GuestUser", "EnableUpload"];
 
 /**
  * map of deafult values for options in UI
@@ -186,6 +186,7 @@ global map <string, string > DEFAULT_CONFIG = $[
      "VirtualUser"		 : "NO",
      "FTPUser"			 : "ftp",
      "GuestUser"		 : "",
+     "EnableUpload"		 : "NO",
      
 ];
 

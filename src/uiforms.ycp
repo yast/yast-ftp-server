@@ -94,6 +94,49 @@ term FTPPerforSettings() {
 }
 
 
+
+
+
+
+
+
+term VsftpdAnonSettings() {
+  term dialog = `VBox (		
+    `Frame ( _("Enable/Disable Anonymous and Local Users"),  	
+      `RadioButtonGroup(`id("AnonAuthen"), 
+	`HBox(`HSpacing(1),`VBox(
+	  `Left(`RadioButton(`id(0), "Anonymo&us Only")),
+	  `Left(`RadioButton(`id(1), "Aut&henticated Users Only", true)),
+	  `Left(`RadioButton(`id(2), "&Both"))
+	))
+      ) //end of `HBox(`HSpacing(1),`RadioButtonGroup(`id("AnonAuthen")
+    ), //end of `Frame ( _("Enable/Disable Anonymous and Local Users")
+    `VSpacing(1),   
+    `Frame ( _("Uploading"),   			
+      `HBox(`HSpacing(1),`VBox (
+        `Left(`CheckBox (`id("EnableUpload"), `opt(`notify), _("&Enable Upload"))),
+	`HBox(`HSpacing(2),`VBox(
+          `Left(`CheckBox (`id("AnonReadOnly"), _("Anon&ymous Can Upload"))),
+	  `Left(`CheckBox (`id("AnonCreatDirs"), _("Anonymou&s Can Create Directories")))
+        ))		
+      ))					
+    ), //end of `Frame ( _("Anonymous Settings")
+    `VStretch()
+  );
+  return dialog;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 term FTPAnonSettings() {
   term dialog = `VBox (		
     `Frame ( _("Enable/Disable Anonymous and Local Users"),  	
@@ -116,6 +159,11 @@ term FTPAnonSettings() {
   );
   return dialog;
 }
+
+
+
+
+
 
 
 term VSFTPDAddSettings() {

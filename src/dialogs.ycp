@@ -223,10 +223,12 @@ map<string,any> AnonSettings () {
   result["custom_widget"] = `VBox();
   result["init"] = InitAnonSettings;
   result["store"] = StoreAnonSettings;
+  result["handle"] = HandleAnonSettings;
   result["help"] = DialogHelpText("anon_settings");
 
   return result;
 }
+
 
 /**
  * Init function where are added UI hadle functions 
@@ -431,6 +433,28 @@ map<string,any> anon_settings () {
 
 /**
  * Init function where are added UI hadle functions 
+ * Anonymous Settings widget
+ * define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+ *
+ * @return map<string,any> map for Anonymous Settings widget
+ */
+
+map<string,any> vsftpd_anon_settings () {
+  map<string,any> result = $[];
+
+  result["contents"] = `VBox (		
+	       VsftpdAnonSettings()
+	      );
+  // TRANSLATORS: part of dialog caption
+  result["caption"] = _("FTP Anonymous Settings");
+  // TRANSLATORS: tree menu item
+  result["tree_item_label"] = _("Authentication");
+  result["widget_names"] = [ "DisBackButton", "AnonSettings"];
+
+  return result;
+}
+/**
+ * Init function where are added UI hadle functions 
  * Expert Settings widget (vsftpd)
  * define for tabs_vsftpd necessary later in screens (CWNTree)
  *
@@ -513,7 +537,7 @@ map<string,any> addit_settings_pure () {
 
     "VSFTPDAddSettings": VSFTPDSettings(),
 
-    "PUREFTPDAddSettings": PUREFTPDAddSettings (),
+    //"PUREFTPDAddSettings": PUREFTPDAddSettings (),
 
     "RBVsPureFTPd" : RBVsftpdPureftpd (),
 
@@ -537,7 +561,7 @@ map<string,any> addit_settings_pure () {
 
     "perfor_settings" :perfor_settings (),
 
-    "anon_settings" : anon_settings (),
+    "anon_settings" : vsftpd_anon_settings (),
 
     "addit_settings" : addit_settings (),
 

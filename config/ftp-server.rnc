@@ -35,5 +35,7 @@ ftp-server =
      element CertFile { text }? &
      element VirtualUser { text }? &
      element FTPUser { text }? &
-     element GuestUser { text }?
+     element GuestUser { text }? &
+     element EnableUpload { text }?
+
 }
