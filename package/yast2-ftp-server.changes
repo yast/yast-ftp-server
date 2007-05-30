@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 30 17:31:06 CEST 2007 - juhliarik@suse.cz
+
+- added patch for uploading anonymous users via vsftpd
+- added creation "upload" subdirectory with writing permission
+- V 2.15.5 
+
+-------------------------------------------------------------------
 Thu May 10 13:51:53 CEST 2007 - juhliarik@suse.cz
 
 - added corrections for starting daemon via "when booting"
