@@ -705,10 +705,8 @@ global string ValueUI (string key, boolean write) {
 	      yes_no = FtpServer::EDIT_SETTINGS["AnonReadOnly"]:nil;
 	      if (yes_no == "YES") {
                  FtpServer::VS_SETTINGS["anon_upload_enable"] = "NO";
-                 FtpServer::VS_SETTINGS["write_enable"] = "NO";
               } else { 
 		 FtpServer::VS_SETTINGS["anon_upload_enable"] = "YES";	
-                 FtpServer::VS_SETTINGS["write_enable"] = "YES";
               }
            } else {
               if (haskey(FtpServer::VS_SETTINGS, "anon_upload_enable")) {
@@ -731,15 +729,11 @@ global string ValueUI (string key, boolean write) {
      case("AnonCreatDirs"):
 	if (vsftpd_edit) {
 	   if (write) { 
-              FtpServer::VS_SETTINGS["anon_mkdir_write_enable"] = FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil;
-              if (FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES")
-                 FtpServer::VS_SETTINGS["write_enable"] = "YES";	      	
+              FtpServer::VS_SETTINGS["anon_mkdir_write_enable"] = FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil;	      	
            } else {
 	      return ((haskey(FtpServer::VS_SETTINGS, "anon_mkdir_write_enable") ? 
 		     toupper(FtpServer::VS_SETTINGS["anon_mkdir_write_enable"]:nil) : FtpServer::DEFAULT_CONFIG["AnonCreatDirs"]:nil));
 	   } 
-
-
 	} else {
 	   if (write)
               FtpServer::PURE_SETTINGS["AnonymousCanCreateDirs"] = FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil;

@@ -96,6 +96,24 @@ global integer pureftpd_xined_id = -1;
 global boolean start_xinetd = false;
 
 /**
+ * variable signifies if it is create upload dir
+ * only for vsftpd and anonymous connections with allowed upload
+ *
+ * global boolean variable
+ */
+
+global boolean create_upload_dir = false;
+
+/**
+ * variable signifies if upload dir has good permissions
+ * only for vsftpd and anonymous connections with allowed upload
+ *
+ * global boolean variable
+ */
+
+global boolean upload_good_permission = false;
+
+/**
  * variable signifies home dir for anonymous user
  * 
  * global string variable
@@ -252,6 +270,48 @@ boolean ReadVSFTPDSettings () {
     return true;
 }
 
+
+/**
+ * Read vsftpd configuration
+ * existing upload file and permissions
+ *
+ *  @return boolean successfull
+ */
+
+
+boolean ReadVSFTPDUpload () {
+  boolean result = false;
+  string command = "";
+  if (anon_homedir !="")
+     command = "ls -l "+anon_homedir+ " | grep upload";
+  if (command != "") {
+     map options = (map)SCR::Execute (.target.bash_output, command);
+     y2milestone("[ftp-server] (ReadVSFTPDUpload) command for existing upload dir:  %1  output: %2",command, options);       
+     if (options["exit"]:nil ==  0)
+        result = true;
+     else
+        result = false;
+     if (result) {
+        //Popup::Message("Work ReadVSFTPDUpload");
+        create_upload_dir = true;
+        string permissions =  substring (tostring(options["stdout"]:nil),0,10);
+        string w = filterchars (permissions, "w");
+        string r = filterchars (permissions, "r");
+        if ((size(w) <3) || (size(r) <3)) {
+           upload_good_permission = false;
+           //Popup::Message("good permissions");
+        } else {
+           upload_good_permission = true;
+           //Popup::Message("wrong permissions");
+        }
+     } 
+  }
+  return result;
+}
+
+
+
+
 /**
  * Remap current pure -FtpServer configuration
  * to temporary structure
@@ -295,7 +355,7 @@ boolean ReadSettings () {
   if ((Users::Read () == "") && (EDIT_SETTINGS["VirtualUser"]:nil == "NO")) {
      if ((vsftpd_edit) && (EDIT_SETTINGS["GuestUser"]:nil != "") 
         && (EDIT_SETTINGS["FtpDirLocal"]:nil == "")) {
-        Popup::Message("if ((vsftpd_edit) && (EDIT_SETTINGS");
+        //Popup::Message("if ((vsftpd_edit) && (EDIT_SETTINGS");
         Users::SelectUserByName (EDIT_SETTINGS["GuestUser"]:nil);
         userinfo = Users::GetCurrentUser ();
         string guest_home_dir = (string) userinfo["homedirectory"]:nil;
@@ -319,9 +379,10 @@ boolean ReadSettings () {
   boolean progress_orig = Progress::set (false);
   SuSEFirewall::Read ();
   Progress::set (progress_orig);
-
-
-   
+  //read existing upload directory for vsftpd
+  if (vsftpd_edit) {
+     result = ReadVSFTPDUpload ();
+  } 
   return result;
 }
 
@@ -505,7 +566,49 @@ boolean WriteXinetd () {
   return result; 
 }
 
+/**
+ * Ask for creation upload directory
+ * It is necessary if user want to allow uploading for anonymous
+ * @return boolean result of function (true/false)
+ */
+boolean WriteUpload () {
+  boolean result = true;
+  string command ="";
+  integer authentication = tointeger(EDIT_SETTINGS["AnonAuthen"]:nil);
+  if ((vsftpd_edit) && (authentication == 0) && (create_upload_dir) && (upload_good_permission)) {
+     boolean write_enable = ((EDIT_SETTINGS["EnableUpload"]:nil == "YES") ? true:false);
+     boolean anon_upload = ((EDIT_SETTINGS["AnonReadOnly"]:nil == "NO") ? true:false);
+     boolean anon_create_dirs = ((EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES") ? true:false);
+     if ((write_enable) && ((anon_upload) || (anon_create_dirs)))
+        command = "dir=`ls ";
+        command = command + anon_homedir;
+        command = command + " | grep upload`; if [ -z $dir ]; then mkdir ";
+        command = command + anon_homedir +"upload; chown ";
+        
+        if (EDIT_SETTINGS["GuestUser"]:nil !="")
+           command = command + EDIT_SETTINGS["GuestUser"]:nil +":"+EDIT_SETTINGS["GuestUser"]:nil;
+        else if (EDIT_SETTINGS["FTPUser"]:nil !="")
+           command = command + EDIT_SETTINGS["FTPUser"]:nil +":"+EDIT_SETTINGS["FTPUser"]:nil; 
+        command = command + " " + anon_homedir +"upload; chmod 766 ";
+        command = command + anon_homedir +"upload; else chmod 766 " + anon_homedir +"upload; fi";
+/*        
+"dir=`ls /srv/ftp/ | grep upload`; if [ -z $dir ]; then echo $dir; mkdir /srv/ftp/upload; 
+ chown ftp:ftp /srv/ftp/upload/; chmod 755 /srv/ftp/upload; else chmod 766 /srv/ftp/upload/; fi"
+*/
+        y2milestone("[ftp-server] (WriteUpload) bash command for creating upload dir : %1", command);
+        map options = (map)SCR::Execute (.target.bash_output, command);        
+	if (options["exit"]:nil ==  0)
+           result = true;
+        else
+           result = false; 
 
+        //Popup::Message(command);
+
+  } else {
+    result = true;
+  }
+  return result;
+}
 /**
  * read value from  PURE_EDIT_SETTINGS
  * 
@@ -667,7 +770,7 @@ global boolean Write() {
 
   /* FtpServer read dialog caption */
   string caption = _("Saving FTP Configuration");
-  integer steps = 2;
+  integer steps = 3;
 
   // We do not set help text here, because it was set outside
   Progress::New(caption, " ", 
@@ -696,6 +799,13 @@ global boolean Write() {
   // write settings for starting daemon
   if (!WriteXinetd ()) Report::Error (_("Cannot write settings for xinetd!"));
   sleep(sl);
+
+  if (PollAbort()) return false;
+  Progress::NextStage ();
+  // write settings for starting daemon
+  if (!WriteUpload ()) Report::Error (_("Cannot create upload direcotry for anonymous connections!"));
+  sleep(sl);
+  
 
   if(PollAbort()) return false;
   /* Progress finished */
@@ -858,7 +968,6 @@ global define string Summary() {
  * @return table items
  */
 global list Overview() {
-    // TODO FIXME: your code here...
     return [];
 }
 

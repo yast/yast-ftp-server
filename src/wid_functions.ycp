@@ -25,6 +25,15 @@ import "FileUtils";
 
 include "ftp-server/uiforms.ycp";
 
+
+/**
+ *  variable signifies repeat asking about upload file
+ *  only for vsftpd
+ *
+ * internal boolean variable
+ */
+boolean ask_again = true; 
+
 /**
  * CWMServiceStart function with no parameter returning boolean value 
  * that says if the service is started.
@@ -342,6 +351,7 @@ void StoreAnonSettings (string key, map event) {
   FtpServer::WriteToEditMap("AnonReadOnly", (((boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value) == true) ? "NO":"YES"));
   if (FtpServer::vsftpd_edit)
      FtpServer::WriteToEditMap("EnableUpload", (((boolean) UI::QueryWidget(`id("EnableUpload"), `Value) == true) ? "YES":"NO"));
+  
 }
 
 /**
@@ -352,8 +362,12 @@ void StoreAnonSettings (string key, map event) {
 symbol HandleAnonSettings(string key, map event) {
   if (FtpServer::vsftpd_edit) {
      any button = event["ID"]:nil;
-     if (button == "EnableUpload") {
-        boolean check_upload = (boolean) UI::QueryWidget(`id("EnableUpload"), `Value);
+     boolean anon_upload = false;
+     boolean anon_create_dirs = false;
+     string yesno_comment ="";
+     string yesno_question ="";
+     boolean check_upload = (boolean) UI::QueryWidget(`id("EnableUpload"), `Value);
+     if (button == "EnableUpload") {        
         if (check_upload) {
            UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, true);
            UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, true); 
@@ -362,6 +376,44 @@ symbol HandleAnonSettings(string key, map event) {
 	   UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, false);
         }
      } // end of if (button == "EnableUpload") {
+
+     anon_upload = (boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value);
+     anon_create_dirs = (boolean) UI::QueryWidget(`id("AnonCreatDirs"), `Value);
+
+     if (((button ==  "AnonReadOnly") || (anon_upload) && (check_upload)) && (ask_again)) {
+        if (!FtpServer::create_upload_dir) { 
+           yesno_question ="Do you want to create directory\n" + FtpServer::anon_homedir +"upload with allowed writing?";
+           yesno_comment = "If you want that \"anonymous\" users can upload\n you need to create directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::create_upload_dir;
+           FtpServer::upload_good_permission = true;
+        } else if (!FtpServer::upload_good_permission) {
+           yesno_question ="Do you want to change permission\nfor" + FtpServer::anon_homedir +"upload (allow writing)?";
+           yesno_comment = "If you want that \"anonymous\" users can upload\n you need directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::upload_good_permission;
+        }
+        
+     }
+
+     if (((button ==  "AnonCreatDirs") || (anon_create_dirs) && (check_upload)) && (ask_again)) {
+        if (!FtpServer::create_upload_dir) {  
+           yesno_question ="Do you want to create directory\n" + FtpServer::anon_homedir +"upload with allowed writing?";
+           yesno_comment = "If you want that \"anonymous\" users can create directories\n you need to create directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::create_upload_dir;
+           FtpServer::upload_good_permission = true;
+        } else if (!FtpServer::upload_good_permission) {
+           yesno_question ="Do you want to change permission\nfor" + FtpServer::anon_homedir +"upload (allow writing)?";
+           yesno_comment = "If you want that \"anonymous\" users can create directories\n you need directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::upload_good_permission;
+        }
+     }
   } // end of if (FtpServer::vsftpd_edit) {
 }
 

@@ -146,13 +146,25 @@ If enabled authenticated users and anonymous are permitted.</p>
 
 /* anonymous settings anonymous can't upload dialog help 5/6 */
 _("<p><b>Anonymous Can Upload</b><br>
-If enabled anonymous users will be permitted to upload.</p>
+If enabled anonymous users will be permitted to upload.
+<i>vsftpd only: </i>If you want that anonymous users can upload you 
+need existing directory with allowed writing in home directory after login.</p>
 ")+
 
 /* anonymous settings anonymous can create dirs dialog help 6/6 */
 _("<p><b>Anonymous Can Create Dirs</b><br>
-If enabled anonymous users can create directories.</p>
+If enabled anonymous users can create directories.
+<i>vsftpd only: </i>If you want that anonymous users can create directories you 
+need existing directory with allowed writing in home directory after login.</p>
+")+
+
+/* anonymous settings anonymous can create dirs dialog help 6/6 */
+_("<p><b>Enable Upload <i>(vsftpd only)</i></b><br>
+If enable ftp users can upload. Anonymous users need to allow
+ \"Anonymous Can Upload\" for enabling upload.</p>
 "),
+
+
 
      /* expert settings dialog help 1/6 */
     "vsftpd_settings" : _("<p><b><big>Expert Settings</b><br>

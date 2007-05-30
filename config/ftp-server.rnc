@@ -23,7 +23,6 @@ ftp-server =
      element AnonCreatDirs { text }? &
      element Banner { text }? &
      element SSLEnable { text }? &
-     element SSLVersion { text }? &
      element TLS { text }? &
      element AntiWarez { text }? &
      element SSL { text }? &

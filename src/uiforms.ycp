@@ -116,8 +116,8 @@ term VsftpdAnonSettings() {
       `HBox(`HSpacing(1),`VBox (
         `Left(`CheckBox (`id("EnableUpload"), `opt(`notify), _("&Enable Upload"))),
 	`HBox(`HSpacing(2),`VBox(
-          `Left(`CheckBox (`id("AnonReadOnly"), _("Anon&ymous Can Upload"))),
-	  `Left(`CheckBox (`id("AnonCreatDirs"), _("Anonymou&s Can Create Directories")))
+          `Left(`CheckBox (`id("AnonReadOnly"), `opt(`notify), _("Anon&ymous Can Upload"))),
+	  `Left(`CheckBox (`id("AnonCreatDirs"),`opt(`notify), _("Anonymou&s Can Create Directories")))
         ))		
       ))					
     ), //end of `Frame ( _("Anonymous Settings")
