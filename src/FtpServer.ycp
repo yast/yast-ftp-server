@@ -37,6 +37,12 @@ global boolean Modified();
 
 global boolean WriteToEditMap (string key, string value);
 
+global boolean WriteSettings ();
+
+global boolean WriteUpload (); 
+
+global boolean WriteXinetd ();
+
 /**
  * Data was modified?
  */
@@ -94,6 +100,16 @@ global integer pureftpd_xined_id = -1;
  */
 
 global boolean start_xinetd = false;
+
+/**
+ * variable signifies if daemon will be stoped in xinetd
+ * 
+ * global boolean variable
+ */
+
+global boolean stop_daemon_xinetd = false;
+
+
 
 /**
  * variable signifies if it is create upload dir
@@ -350,6 +366,7 @@ boolean ReadSettings () {
   if (result) {
         result = InitEDIT_SETTINGS ();
   }
+
   //read info about anonymous user "ftp"
   Users::SetGUI (false);
   if ((Users::Read () == "") && (EDIT_SETTINGS["VirtualUser"]:nil == "NO")) {
@@ -446,6 +463,21 @@ boolean WriteToSETTINGS () {
    return true;
 }
 
+
+/**
+ * Restart daemon apply changes
+ * only if daemon running...
+ *
+ * @return boolean successfull
+*/
+//boolean ApplyChanges () {
+  
+
+
+
+//}
+
+
 /**
  * Write firewall configuration
  *
@@ -502,7 +534,7 @@ global boolean WriteToEditMap (string key, string value) {
  *
  * @return boolean successfull
 */
-boolean WriteSettings () {
+global boolean WriteSettings () {
   boolean result = false;
   result = WriteToSETTINGS();
   if (vsftpd_edit) {
@@ -558,7 +590,7 @@ boolean WriteSettings () {
  *
  * @return boolean result of function (true/false)
  */
-boolean WriteXinetd () {
+global boolean WriteXinetd () {
   boolean result = false;  
   if (vsftpd_xined_id != -1) {
      result = WriteStartViaXinetd (start_xinetd);
@@ -571,26 +603,32 @@ boolean WriteXinetd () {
  * It is necessary if user want to allow uploading for anonymous
  * @return boolean result of function (true/false)
  */
-boolean WriteUpload () {
+global boolean WriteUpload () {
   boolean result = true;
   string command ="";
+  string upload ="";
   integer authentication = tointeger(EDIT_SETTINGS["AnonAuthen"]:nil);
   if ((vsftpd_edit) && (authentication == 0) && (create_upload_dir) && (upload_good_permission)) {
      boolean write_enable = ((EDIT_SETTINGS["EnableUpload"]:nil == "YES") ? true:false);
      boolean anon_upload = ((EDIT_SETTINGS["AnonReadOnly"]:nil == "NO") ? true:false);
      boolean anon_create_dirs = ((EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES") ? true:false);
-     if ((write_enable) && ((anon_upload) || (anon_create_dirs)))
+     if ((write_enable) && ((anon_upload) || (anon_create_dirs)))        
+        if (substring (anon_homedir, (size(anon_homedir)-1)) == "/")
+           upload ="upload";
+        else
+           upload ="/upload";        
         command = "dir=`ls ";
         command = command + anon_homedir;
         command = command + " | grep upload`; if [ -z $dir ]; then mkdir ";
-        command = command + anon_homedir +"upload; chown ";
+        command = command + anon_homedir +upload + "; chown ";
         
         if (EDIT_SETTINGS["GuestUser"]:nil !="")
-           command = command + EDIT_SETTINGS["GuestUser"]:nil +":"+EDIT_SETTINGS["GuestUser"]:nil;
-        else if (EDIT_SETTINGS["FTPUser"]:nil !="")
+           command = command + EDIT_SETTINGS["GuestUser"]:nil +":"+EDIT_SETTINGS["GuestUser"]:nil;           
+        else if (EDIT_SETTINGS["FTPUser"]:nil !="") 
            command = command + EDIT_SETTINGS["FTPUser"]:nil +":"+EDIT_SETTINGS["FTPUser"]:nil; 
-        command = command + " " + anon_homedir +"upload; chmod 766 ";
-        command = command + anon_homedir +"upload; else chmod 766 " + anon_homedir +"upload; fi";
+        
+        command = command + " " + anon_homedir + upload + "; chmod 766 ";
+        command = command + anon_homedir +upload + "; else chmod 766 " + anon_homedir +"upload; fi";
 /*        
 "dir=`ls /srv/ftp/ | grep upload`; if [ -z $dir ]; then echo $dir; mkdir /srv/ftp/upload; 
  chown ftp:ftp /srv/ftp/upload/; chmod 755 /srv/ftp/upload; else chmod 766 /srv/ftp/upload/; fi"

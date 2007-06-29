@@ -109,7 +109,10 @@ map<string,any> StartStop () {
   result["service_not_running_label"] = _("FTP is not running");
   result["start_now_button"] = _("&Start FTP Now");
   result["stop_now_button"] = _("S&top FTP Now");
+  result["save_now_action"] = SaveAndRestartVsftpd;
   result["save_now_button"] = _("Sa&ve Settings and Restart FTP Now");
+  result["start_now_action"] = StartNowVsftpd;
+  result["stop_now_action"] = StopNowVsftpd;
   result["help"] = sformat (CWMServiceStart::StartStopHelpTemplate (true),
 	    // part of help text - push button label, NO SHORTCUT!!!
 	    _("Start FTP daemon Now"),
@@ -135,7 +138,10 @@ map<string,any> StartStopPure () {
   result["service_not_running_label"] = _("FTP is not running");
   result["start_now_button"] = _("&Start FTP Now");
   result["stop_now_button"] = _("S&top FTP Now");
+  result["save_now_action"] = SaveAndRestartPure;
   result["save_now_button"] = _("Sa&ve Settings and Restart FTP Now");
+  result["start_now_action"] = StartNowPure;
+  result["stop_now_action"] = StopNowPure;
   result["help"] = sformat (CWMServiceStart::StartStopHelpTemplate (true),
 	    // part of help text - push button label, NO SHORTCUT!!!
 	    _("Start FTP daemon Now"),

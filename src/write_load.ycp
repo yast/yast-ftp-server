@@ -212,7 +212,7 @@ boolean InitStartViaXinetd () {
 boolean WriteStartViaXinetd (boolean startxinetd) { 
   string pure_options = "";
   boolean result = false;
-  if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2"){
+  if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (!FtpServer::stop_daemon_xinetd)) {
      if (FtpServer::vsftpd_edit) {
         Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = true;
         Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = false;
@@ -231,6 +231,7 @@ boolean WriteStartViaXinetd (boolean startxinetd) {
      if (startxinetd)
         Inetd::netd_status = 0; //start xinetd if not running else reload
   } else {
+    Inetd::netd_status = 0;
     Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = false;
     Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = false;
   } //end of else [ if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2")]
