@@ -132,9 +132,9 @@ boolean StartNowVsftpd () {
   if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
     if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
        //FtpServer::start_xinetd = true;
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
     else {
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
     }
   } else {   
      string command = "rcvsftpd start";
@@ -157,9 +157,9 @@ boolean StopNowVsftpd () {
 if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
     if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
        //FtpServer::start_xinetd = true;
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
     else {
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
     }
   } else {
 
@@ -183,9 +183,9 @@ boolean SaveAndRestartVsftpd () {
   if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
     if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
        //FtpServer::start_xinetd = true;
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
     else {
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
      /*
      if ((Service::Status("xinetd") != 0) && 
         (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
@@ -245,9 +245,9 @@ boolean StartNowPure () {
   if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
     if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
        //FtpServer::start_xinetd = true;
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
     else {
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd now!");
      /*
      if ((Service::Status("xinetd") != 0) && 
         (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
@@ -302,7 +302,7 @@ boolean StartNowPure () {
 boolean StopNowPure () {
   boolean result = false;
   if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (Service::Status("xinetd") != 0)) {
-     Popup::Message("This is not supported now!");
+     Popup::Message("This is not supported via xinetd now!");
      /*
      FtpServer::stop_daemon_xinetd = true;
      result = FtpServer::WriteXinetd ();
@@ -327,9 +327,9 @@ boolean SaveAndRestartPure () {
   if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
     if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
        //FtpServer::start_xinetd = true;
-       Popup::Message("This is not supported now!");
+       Popup::Message("This is not supported via xinetd  now!");
     else {
-     Popup::Message("This is not supported now!");
+     Popup::Message("This is not supported via xinetd now!");
      /*     
      if ((Service::Status("xinetd") != 0) && 
         (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
