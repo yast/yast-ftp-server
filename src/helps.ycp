@@ -39,213 +39,216 @@ An additional dialog informs whether it is safe to do so.
 </p>
 "),
 
+/**
+ *-----------================= START_UP SCREEN =============----------
+ *
+ */
+
+
 /*Start widget switching daemons help 1/1 */
-"selected_services": _("<p><b><big>Selected Daemon</b><br>
-     Frame show you which daemon is currently configured: <b>vsftpd, pure-ftpd,   
+"selected_services": _("<p><b>Selected Service</b><br>
+     Frame shows which daemon is currently configured: <b>vsftpd, pure-ftpd,   
      </b>. If you have installed both daemons you can switch between them.
-</p>
-"),
+</p>"),
 
+/**
+ *-----------================= GENERAL SCREEN =============----------
+ *
+ */
 
-
-     /* general settings dialog help 1/6 */
-    "gen_settings" : _("<p><b><big>General settings</b><br>
-     General settings of FTP where you can specify: <b>Chroot, Logging,   
-     Umask, FTP Directory</b> and <b>Ports for Passive Mode</b>.
-</p>
-")+
-
-/* general settings welcome message dialog help 2/6 */
-_("<p><b>Welcome message</b><br>
+/* general welcome message help 1/1 */
+"Banner": _("<p><b>Welcome message</b><br>
 This option is the name of a file containing 
-text to display when someone connects to the server.</p>
-")+
+text to display when someone connects to the server.
+</p>"),
 
 
- /* general settings chroot dialog help 3/6 */
-_("<p><b>Chroot:</b><br>
+/* general chroot  help 1/1 */
+"ChrootEnable": _("<p><b>Chroot:</b><br>
 When enabled, local users will be (by default) placed in a 
 chroot() jail in their home directory after login.
-<b>Warning:</b> This option has security implications, 
+<i>Warning:</i> This option has security implications, 
 especially if the users have upload permission, 
-or shell access. Only enable if you know what you are doing.</p>
-")+
+or shell access. Only enable if you know what you are doing.
+</p>"),
+
+/* general logging  help 1/1 */
+"VerboseLogging": _("<p><b>Verbose logging:</b><br>
+When enabled, all FTP requests and responses are logged.
+</p>"),
+
+/* general umask  help - only pure-ftpd 1/1 */
+"Umask" : _("<p><b>Umask:</b><br>
+File creation mask. (umask for files):(umask for dirs). 
+177:077 if you feel paranoid.
+</p>"),
+
+/* general umask for anonymous  help - only vsftpd 1/1 */
+"UmaskAnon": _("<p><b>Umask for Anonymous:</b><br>
+The value that the umask for file creation is set to for anonymous users. 
+If you want to specify octal values, remember the \"0\" prefix otherwise 
+the value will be treated as a base 10 integer.
+</p>"),
+
+/* general umask for authenticated users  help - only vsftpd 1/1 */
+"UmaskLocal":  _("<p><b>Umask for Authenticated Users:</b><br>
+The value that the umask for file creation is set to for local users. 
+If you want to specify octal values, remember the \"0\" prefix otherwise 
+the value will be treated as a base 10 integer.
+</p>"),
+
+/* general FTP dir for anonymous help 1/1 */
+"FtpDirAnon": _("<p><b>Ftp Directory for Anonymous Users:</b><br>
+You can specify directory which is used for FTP anonymous users. 
+By pressing <i>Browse</i> you can select directory from local filesystem.
+</p>"),
 
 
- /* general settings logging dialog help 4/6 */
-_("<p><b>Verbose logging:</b><br>
-When enabled, all FTP requests and responses are logged.</p>
-")+
+/* general FTP dir for authenticated help 1/1 */
+"FtpDirLocal": _("<p><b>Ftp Directory for Authenticated Users:</b><br>
+You can specify directory which is used for FTP authenticated users. 
+By pressing <i>Browse</i> you can select directory from local filesystem.
+</p>"),
 
- /* general settings umask dialog help 5/6 */
-_("<p><b>Umask:</b><br>
-File creation mask. e.g. 177:077</p>
-")+
 
- /* general settings FTP dir dialog help 6/6 */
-_("<p><b>FTP Directory:</b><br>
-FTP Directory is directory which is used for FTP users.</p>
-"),
+/**
+ *-----------================= PERFORMANCE SCREEN =============----------
+ *
+ */
 
-     /* performance settings dialog help 1/6 */
-    "per_settings" : _("<p><b><big>Perfomance settings</b><br>
-     Performance settings of FTP. </p>
-")+
-
-/* performance settings Max Idle Time dialog help 2/6 */
-_("<p><b>Max Idle Time:</b><br>
+/* performance  Max Idle Time  help 1/1 */
+"MaxIdleTime": _("<p><b>Max Idle Time:</b><br>
 The timeout which is the maximum time a remote client 
-may spend between FTP commands. </p>
-")+
+may spend between FTP commands.
+</p>"),
 
-/* performance settings max clients per IP dialog help 3/6 */
-_("<p><b>Max Clients for One IP:</b><br>
+/* performance max clients per IP  help 1/1 */
+"MaxClientsPerIP": _("<p><b>Max Clients for One IP:</b><br>
 This is the maximum number of clients which may be connected 
-from the same source internet address. </p>
-")+
+from the same source internet address. 
+</p>"),
 
-/* performance settings max clients dialog help 4/6 */
-_("<p><b>Max Clients:</b><br>
+
+/* performance max clients help 1/1 */
+"MaxClientsNumber": _("<p><b>Max Clients:</b><br>
 This is the maximum number of clients which may be connected. 
-Any additional clients connecting will get an error message.</p>
-")+
+Any additional clients connecting will get an error message.
+</p>"),
 
-/* performance settings local max rate dialog help 5/6 */
-_("<p><b>Local Max Rate:</b><br>
-The maximum data transfer rate permitted for local authenticated users.</p>
-")+
+/* performance local max rate help 1/1 */
+"LocalMaxRate": _("<p><b>Local Max Rate:</b><br>
+The maximum data transfer rate permitted for local authenticated users.
+</p>"),
 
-/* performance settings anonymous max rate dialog help 6/6 */
-_("<p><b>Anonymous Max Rate:</b><br>
+
+/* performance  anonymous max rate help 1/1 */
+"AnonMaxRate": _("<p><b>Anonymous Max Rate:</b><br>
 The maximum data transfer rate permitted for anonymous clients.</p>
 "),
  
 
+/**
+ *-----------================= Authentication SCREEN =============----------
+ *
+ */
 
-     /* anonymous settings dialog help 1/6 */
-    "anon_settings" : _("<p><b><big>Anonymous settings</b><br>
-     Anonymous settings - there you can specify 
-settings for anonymous/authenticated users. </p>
-")+
+/* authentication  Enable/Disable Anonymous and Local help 1/1 */
+"AnonAuthen": _("<p><b>Enable/Disable Anonymous and Local Users</b><br>
+<i>Anonymous Only</i> If enabled only anonymous logins are permitted.
+<i>Authenticated Users Only</i> If enabled only authenticated users are permitted.
+<i>Both</i> If enabled authenticated users and anonymous are permitted.
+</p>"),
 
-/* anonymous settings anonymous only dialog help 2/6 */
-_("<p><b>Anonymous Only</b><br>
-If enabled only anonymous logins are permitted.</p>
-")+
-
-/* anonymous settings authenticated users only dialog help 3/6 */
-_("<p><b>Authenticated Users Only</b><br>
-If enabled only authenticated users are permitted.</p>
-")+
-
-/* anonymous settings both dialog help 4/6 */
-_("<p><b>Both</b><br>
-If enabled authenticated users and anonymous are permitted.</p>
-")+
+/* authentication  Enable Upload help 1/1 */
+"EnableUpload": _("<p><b>Enable Upload</b><br>
+If enable ftp users can upload. Anonymous users need to allow
+ \"Anonymous Can Upload\" for enabling upload.
+</p>"),
 
 
-/* anonymous settings anonymous can't upload dialog help 5/6 */
-_("<p><b>Anonymous Can Upload</b><br>
+/* authentication Anonymous Can Upload help 1/1 */
+"AnonReadOnly": _("<p><b>Anonymous Can Upload</b><br>
 If enabled anonymous users will be permitted to upload.
 <i>vsftpd only: </i>If you want that anonymous users can upload you 
-need existing directory with allowed writing in home directory after login.</p>
-")+
+need existing directory with allowed writing in home directory after login.
+</p>"),
 
-/* anonymous settings anonymous can create dirs dialog help 6/6 */
-_("<p><b>Anonymous Can Create Dirs</b><br>
+/* authentication Anonymous Can Create Dirs help 1/1 */
+"AnonCreatDirs": _("<p><b>Anonymous Can Create Dirs</b><br>
 If enabled anonymous users can create directories.
 <i>vsftpd only: </i>If you want that anonymous users can create directories you 
 need existing directory with allowed writing in home directory after login.</p>
-")+
-
-/* anonymous settings anonymous can create dirs dialog help 6/6 */
-_("<p><b>Enable Upload <i>(vsftpd only)</i></b><br>
-If enable ftp users can upload. Anonymous users need to allow
- \"Anonymous Can Upload\" for enabling upload.</p>
 "),
 
 
-
-     /* expert settings dialog help 1/6 */
-    "vsftpd_settings" : _("<p><b><big>Expert Settings</b><br>
-     Expert settings - security and firewall settings.</p>
-")+
-
+/**
+ *-----------================= EXPERT SETTINGS SCREEN =============----------
+ *
+ */
 
 
-/* expert settings security settings dialog help 3/6 */
-_("<p><b>Security settings</b><br>
-If enabled, and vsftpd was compiled against OpenSSL, 
-vsftpd will support secure connections via SSL.</p>
-")+
+/* expert settings Enable Passive Mode help 1/1 */
+"PassiveMode": _("<p><b>Enable Passive Mode</b><br>
+If enabled ftp server allowe passive mode for connection.   
+</p>"),
 
-/* expert settings security settings dialog help 4/6 */
-_("<p><b>Select version of SSL</b><br>
-<b>Enable SSL v2:</b> If enabled, this option will permit SSL v2 
-protocol connections.
-<b>Disable SSL v2:</b> If disabled, this option will NOT permit SSL v2 
-protocol connections.
-<b>Enable SSL v3:</b> If enabled, this option will permit SSL v3 
-protocol connections.
-<b>Disable SSL v3:</b> If disabled, this option will NOT permit SSL v3 
-protocol connections.
-<b>Enable SSL v2 & v3:</b> If enabled, this option will permit 
-SSL v2 and v3 protocol connections.
-<b>Disable SSL v2 & v3:</b> If disabled, this option will NOT permit 
-SSL v2 and v3 protocol connections.
-</p>
-")+
-/* expert settings security settings dialog help 5/6 */
-_("<p><b>Enable TLS</b><br>
-If enabled, this option will permit TLS v1 protocol connections.
-</p>
-")+
+/* expert settings Min Port for Pas. Mode help 1/1 */
+"PasMinPort":_("<p><b>Min Port for Pas. Mode</b><br>
+Minimal value for port range for passive connection replies. 
+- for firewalling 
+</p>"), 
 
-_("<p><b>DSA Certificate</b><br>
+/* expert settings Max Port for Pas. Mode help 1/1 */
+"PasMaxPort": _("<p><b>Max Port for Pas. Mode</b><br>
+Maximal value for port range for passive connection replies. 
+- for firewalling 
+</p>"), 
+
+/* expert settings  Enable SSL help 1/1 */
+"SSLEnable": _("<p><b>Enable SSL</b><br>
+If enabled SSL connections are allowed.
+</p>"), 
+
+/* expert settings  Enable SSL v2 help 1/1 */
+"SSLv2": _("<p><b>Enable SSL v2</b><br>
+If enabled SSL version 2 connections are allowed.
+</p>"), 
+
+/* expert settings  Enable SSL v3 help 1/1 */
+"SSLv3": _("<p><b>Enable SSL v3</b><br>
+If enabled SSL version 3 connections are allowed.
+</p>"), 
+
+/* expert settings Enable TLS  help 1/1 */
+"TLS": _("<p><b>Enable TLS</b><br>
+If enabled TLS connections are allowed.
+</p>"), 
+
+/* expert settings DSA Certificate to Use for SSL Encrypted Connections help 1/1 */
+"CertFile": _("<p><b>DSA Certificate to Use for SSL Encrypted Connections</b><br>
 This option specifies the location of the DSA certificate to 
-use for SSL encrypted connections.
-</p>
-")+
+use for SSL encrypted connections. You can select file by pressing <i>Browse</i>
+</p>"), 
 
-/* expert settings ports dialog help 6/6 */
-_("<p><b>Ports for Passive Mode:</b><br>
-Port range for passive connection replies. - for firewalling </p>
-"),
-
-     /* additional settings dialog help 1/5 */
-    "pureftpd_settings" : _("<p><b><big>Expert Settings</b><br>
-     Expert settings - security and firewall settings.</p>
-")+
-
-/* additional settings Disable Downloading 
-Unvalidated Datae dialog help 2/5 */
-_("<p><b>Disable Downloading Unvalidated Data</b><br>
+/* expert settings Disable Downloading Unvalidated Data help 1/1 */
+"AntiWarez": _("<p><b>Disable Downloading Unvalidated Data</b><br>
 Disallow downloading of files that were uploaded 
-but not validated by a local admin.</p>
-")+
+but not validated by a local admin
+</p>"), 
 
 
-/* additional settings Disable SSL/TLS dialog help 3/5 */
-_("<p><b>Disable SSL/TLS</b><br>
-Disable SSL/TLS encryption layer (default)</p>
-")+
+/* expert settings Security Settings help 1/1 */
+"SSL": _("<p><b>Security Settings</b><br>
+<i>Disable SSL/TLS</i> Disable SSL/TLS encryption layer.
+<i>Accept SSL and TLS</i> Accept both traditional and encrypted sessions.
+<i>Refuse Conections Without SSL/TLS</i> Refuse connections that don't use 
+SSL/TLS security mechanisms, including anonymous sessions.
+</p>"), 
 
-/* additional settings Accept SSL and TLS dialog help 4/5 */
-_("<p><b>Accept SSL and TLS</b><br>
-Accept both traditional and encrypted sessions.</p>
-")+
-
-/* additional settings refuse without SSL and TLS dialog help 4/5 */
-_("<p><b>Refuse Connection without SSL/TLS</b><br>
-Refuse connections that don't use SSL/TLS security 
-mechanisms, including anonymous sessions.</p>
-")+
-
-/* expert settings ports dialog help 6/6 */
-_("<p><b>Ports for Passive Mode:</b><br>
-Port range for passive connection replies. - for firewalling </p>
-"),
-
+/**
+ *-----------================= SUMMARY =============----------
+ *
+ */
 
 
    /* Summary dialog help 1/3 */

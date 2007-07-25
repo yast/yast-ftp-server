@@ -186,40 +186,7 @@ boolean SaveAndRestartVsftpd () {
        Popup::Message("This is not supported via xinetd now!");
     else {
        Popup::Message("This is not supported via xinetd now!");
-     /*
-     if ((Service::Status("xinetd") != 0) && 
-        (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
-        if (Mode::normal()) {
-           UI::OpenDialog(       
-             `VBox(
-	       `Label("Xinetd is not started!"),
-	       `Label("Do you want to start it?"),
-	       `HBox(
-	         `PushButton(`id(`accept), "&Start"),
-	         `PushButton(`id(`cancel), "Canc&el")
-               )
-             ) // end of `VBox(
-           ); // end of UI::OpenDialog(
-           while (true) {
-             any ret = UI::UserInput();
-             if ( ret == `accept ) {
-                FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
-                FtpServer::start_xinetd = true;
-	        break;
-             } else if (ret == `cancel) {
-                //FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
-                FtpServer::start_xinetd = false;
-	        break;
-             }
-           };
-           UI::CloseDialog();
-        } // end of if (Mode::normal()) {
-     } // end of if ((Service::Status("xinetd") != 0)...
-    }    
-    FtpServer::WriteSettings ();
-    FtpServer::WriteUpload ();
-    result = FtpServer::WriteXinetd (); 
-    */    
+ 
     } 
   } else {
     FtpServer::WriteSettings ();
@@ -248,40 +215,6 @@ boolean StartNowPure () {
        Popup::Message("This is not supported via xinetd now!");
     else {
        Popup::Message("This is not supported via xinetd now!");
-     /*
-     if ((Service::Status("xinetd") != 0) && 
-        (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
-        if (Mode::normal()) {
-           UI::OpenDialog(       
-             `VBox(
-	       `Label("Xinetd is not started!"),
-	       `Label("Do you want to start it?"),
-	       `HBox(
-	         `PushButton(`id(`accept), "&Start"),
-	         `PushButton(`id(`cancel), "Canc&el")
-               )
-             ) // end of `VBox(
-           ); // end of UI::OpenDialog(
-           while (true) {
-             any ret = UI::UserInput();
-             if ( ret == `accept ) {
-                FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
-                FtpServer::start_xinetd = true;
-	        break;
-             } else if (ret == `cancel) {
-                //FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
-                FtpServer::start_xinetd = false;
-	        break;
-             }
-           };
-           UI::CloseDialog();
-        } // end of if (Mode::normal()) {
-     } // end of if ((Service::Status("xinetd") != 0)...
-    }    
-    //FtpServer::WriteSettings ();
-    result = FtpServer::WriteXinetd ();  
-    y2milestone("[ftp-server] (StopNowPure) command for start pure-ftpd via xinetd");
-    */
     } 
   } else {
     string command = "rcpure-ftpd start";
@@ -330,41 +263,7 @@ boolean SaveAndRestartPure () {
        Popup::Message("This is not supported via xinetd  now!");
     else {
      Popup::Message("This is not supported via xinetd now!");
-     /*     
-     if ((Service::Status("xinetd") != 0) && 
-        (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
-        if (Mode::normal()) {
-           UI::OpenDialog(       
-             `VBox(
-	       `Label("Xinetd is not started!"),
-	       `Label("Do you want to start it?"),
-	       `HBox(
-	         `PushButton(`id(`accept), "&Start"),
-	         `PushButton(`id(`cancel), "Canc&el")
-               )
-             ) // end of `VBox(
-           ); // end of UI::OpenDialog(
-           while (true) {
-             any ret = UI::UserInput();
-             if ( ret == `accept ) {
-                FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
-                FtpServer::start_xinetd = true;
-	        break;
-             } else if (ret == `cancel) {
-                //FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
-                FtpServer::start_xinetd = false;
-	        break;
-             }
-           };
-           UI::CloseDialog();
-        } // end of if (Mode::normal()) {
-     } // end of if ((Service::Status("xinetd") != 0)...
-    
-    }    
-    FtpServer::WriteSettings ();
-    result = FtpServer::WriteXinetd ();  
-    y2milestone("[ftp-server] (StopNowPure) command for save and restart pure-ftpd via xinetd");  
-    */
+ 
     } 
   }  else {
     FtpServer::WriteSettings ();
@@ -380,6 +279,62 @@ boolean SaveAndRestartPure () {
 }
 
 
+/**
+ * Init function for general settings
+ * save values to temporary structure
+ */  
+void InitRBVsPure (string key) {
+  if ((FtpServer::vsftpd_installed) && (FtpServer::pureftpd_installed)) {
+     if (FtpServer::vsftpd_edit) {
+        UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+     }else
+        UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+  } else if (FtpServer::vsftpd_installed && !FtpServer::pureftpd_installed) {
+     UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+     UI::ChangeWidget(`id( "pure_item" ), `Enabled, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  } else if (!FtpServer::vsftpd_installed && FtpServer::pureftpd_installed) {
+     UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+     UI::ChangeWidget(`id( "pure_item" ), `Enabled, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  } else {
+     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  }
+
+  if (!Mode::normal()) {
+     if (FtpServer::vsftpd_edit) {
+        UI::ChangeWidget(`id( "vs_item" ), `Value, true);
+     } else {
+        UI::ChangeWidget(`id( "pure_item" ), `Value, true);
+     }
+     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
+     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
+  }
+}
+
+
+symbol HandleRBVsPure(string key, map event) {
+  if ((FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("pure_item"), `Value)) 
+     && FtpServer::vsftpd_installed) {
+     FtpServer::vsftpd_edit = false;
+     return `pureftpd;
+  }
+  if ((!FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("vs_item"), `Value)) 
+     && FtpServer::pureftpd_installed) {
+     FtpServer::vsftpd_edit = true;
+     return `vsftpd;
+  }
+
+}
+
+
+/**
+ *-----------================= GENERAL SCREEN =============----------
+ *
+ */
+
+
 
 /**
  * Init function for general settings
@@ -393,21 +348,316 @@ void InitGenSettings(string key) {
         UI::ChangeWidget(`id( "FtpDirAnon" ), `Enabled, false);
         UI::ChangeWidget(`id ( "SelectDirAnon" ),`Enabled, false);
      }	
-  } else {     
-     UI::ChangeWidget(`id( "UmaskAnon" ), `ValidChars, "01234567");
-     UI::ChangeWidget(`id( "UmaskLocal" ),`ValidChars, "01234567");
-     UI::ChangeWidget(`id("Banner"), `Value, FtpServer::ValueUIEdit("Banner"));
-     UI::ChangeWidget(`id( "UmaskAnon" ), `Value,  FtpServer::ValueUIEdit("UmaskAnon"));
-     UI::ChangeWidget(`id( "UmaskLocal" ), `Value,  FtpServer::ValueUIEdit("UmaskLocal"));
-     UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, FtpServer::ValueUIEdit("FtpDirLocal"));
+  } //else {     
+    // UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, FtpServer::ValueUIEdit("FtpDirLocal"));
      
-  } 
-  if  (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO")
-      UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, FtpServer::ValueUIEdit("FtpDirAnon"));
-  UI::ChangeWidget(`id( "ChrootEnable" ), `Value, (FtpServer::ValueUIEdit("ChrootEnable") == "YES"));	
-  UI::ChangeWidget(`id( "VerboseLogging" ), `Value, (FtpServer::ValueUIEdit("VerboseLogging") == "YES"));
+  //} 
+  
+  //if  (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO")
+  //    UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, FtpServer::ValueUIEdit("FtpDirAnon"));
+
   
 }
+/**
+ * Init function "Wellcome Message" for general settings
+ * change ValidChars for textentry
+ * only vsftpd
+ */
+void InitBanner(string key) {
+  UI::ChangeWidget(`id("Banner"), `Value, FtpServer::ValueUIEdit("Banner"));
+}
+
+/**
+ * Store function of "Wellcome Message"
+ * save values to temporary structure
+ * only vsftpd
+ */
+
+
+void StoreBanner (string key, map event) {
+  FtpServer::WriteToEditMap("Banner", tostring(UI::QueryWidget(`id("Banner"), `Value)));
+}
+/**
+ * Init function "Chroot Everyone" for general settings
+ * check_box
+ */
+
+
+void InitChrootEnable (string key) {
+  UI::ChangeWidget(`id( "ChrootEnable" ), `Value, (FtpServer::ValueUIEdit("ChrootEnable") == "YES"));
+}
+
+/**
+ * Store function of "Chroot Everyone"
+ * save values to temporary structure
+ */
+
+void StoreChrootEnable (string key, map event) {
+  FtpServer::WriteToEditMap("ChrootEnable", (((boolean) UI::QueryWidget(`id("ChrootEnable"), `Value) == true) ? "YES":"NO"));
+
+}
+
+
+
+/**
+ * Init function "Verbose Logging" for general settings
+ * check_box
+ */
+
+
+void InitVerboseLogging (string key) {
+  UI::ChangeWidget(`id( "VerboseLogging" ), `Value, (FtpServer::ValueUIEdit("VerboseLogging") == "YES"));
+}
+
+/**
+ * Store function of "Verbose Logging"
+ * save values to temporary structure
+ */
+
+void StoreVerboseLogging (string key, map event) {
+  FtpServer::WriteToEditMap("VerboseLogging", (((boolean) UI::QueryWidget(`id("VerboseLogging"), `Value) == true) ? "YES":"NO"));
+
+}
+
+
+
+
+
+
+/**
+ * Init function "Umask (umask files:umask dirs)" for general settings
+ * change ValidChars for textentry
+ * only pure-ftpd
+ */
+
+void InitUmask (string key) {
+  UI::ChangeWidget(`id("Umask"), `ValidChars, "01234567:");
+  UI::ChangeWidget(`id("Umask"), `Value,  FtpServer::ValueUIEdit("Umask"));
+}
+
+/**
+ * Valid function of "Umask (umask files:umask dirs)"
+ * check value of textentry
+ * only pure-ftpd
+ */
+
+boolean ValidUmask (string key, map event) {
+
+  string new_umask = (string)UI::QueryWidget (`id("Umask"), `Value);
+  if (size(new_umask) > 0) {
+     list <string> l = splitstring (new_umask, ":");
+     l = filter (string s, l, ``(s != ""));
+     if (size(l) < 2) {
+      	Popup::Message ("It is not valid umask!");
+	UI::SetFocus(`id("Umask"));
+        return false;
+     } 
+  }
+  return true;
+}
+/**
+ * Store function of "Umask (umask files:umask dirs)"
+ * save values to temporary structure
+ * only pure-ftpd
+ */
+
+
+void StoreUmask (string key, map event) {
+  FtpServer::WriteToEditMap("Umask", tostring(UI::QueryWidget(`id("Umask"), `Value)));
+}
+
+
+
+
+
+
+
+/**
+ * Init function "Umask for Anonymous" for general settings
+ * change ValidChars for textentry
+ * only vsftpd
+ */
+
+void InitUmaskAnon (string key) {
+  UI::ChangeWidget(`id( "UmaskAnon" ), `ValidChars, "01234567");
+  UI::ChangeWidget(`id( "UmaskAnon" ), `Value,  FtpServer::ValueUIEdit("UmaskAnon"));
+}
+
+/**
+ * Store function of "Umask for Anonymous"
+ * save values to temporary structure
+ * only vsftpd
+ */
+
+
+void StoreUmaskAnon (string key, map event) {
+  FtpServer::WriteToEditMap("UmaskAnon", tostring(UI::QueryWidget(`id("UmaskAnon"), `Value)));
+}
+
+
+/**
+ * Init function "Umask for Authenticated Users" for general settings
+ * change ValidChars for textentry
+ * only vsftpd
+ */
+
+void InitUmaskLocal (string key) {
+  UI::ChangeWidget(`id( "UmaskLocal" ),`ValidChars, "01234567");
+  UI::ChangeWidget(`id( "UmaskLocal" ), `Value,  FtpServer::ValueUIEdit("UmaskLocal"));
+}
+
+/**
+ * Store function of "Umask for Authenticated Users"
+ * save values to temporary structure
+ * only vsftpd
+ */
+
+
+void StoreUmaskLocal (string key, map event) {
+  FtpServer::WriteToEditMap("UmaskLocal", tostring(UI::QueryWidget(`id("UmaskLocal"), `Value)));
+}
+
+
+
+
+/**
+ * Init function of "Ftp Directory for Anonymous Users"
+ * textentry
+ *
+ */
+
+void InitFtpDirAnon (string key) {
+  if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "YES") {
+     UI::ChangeWidget(`id("FtpDirAnon"), `Enabled, false);
+     UI::ChangeWidget(`id ("BrowseAnon"),`Enabled, false);
+  } else {
+     UI::ChangeWidget(`id("FtpDirAnon"), `Value, FtpServer::ValueUIEdit("FtpDirAnon"));
+  }
+}
+
+
+/**
+ * Valid function of "Umask for Anonymous Users"
+ * check value of textentry
+ *
+ */
+
+boolean ValidFtpDirAnon (string key, map event) {
+  if (!FtpServer::vsftpd_edit) {
+     if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO") {
+        string AnonHomeDir = (string)UI::QueryWidget (`id("FtpDirAnon"), `Value);
+        //checking correct homedir for anonymous user 
+        if ((AnonHomeDir != "") && (Mode::normal())) {
+           if (AnonHomeDir != FtpServer::anon_homedir) {
+              string error = Users::EditUser($["homedirectory":AnonHomeDir]);
+              if ((error != nil) && (error != "")) {
+                 Popup::Error(error);
+	         UI::SetFocus(`id("FtpDirAnon"));
+	         return false;
+	      }
+              integer uid = FtpServer::anon_uid;
+              boolean failed = false;
+	      map<string,integer> ui_map = $[];
+              map error_map = $[];
+	      do {
+	         error_map = Users::CheckHomeUI (uid, AnonHomeDir, ui_map);
+	         if (error_map != $[]) {
+		    if (!Popup::YesNo (error_map ["question"]:""))
+		       failed = true;
+		    else
+		       ui_map[ error_map["question_id"]:"" ] = 1;
+	         }
+	      } while (error_map != $[] && !failed);
+	   } //end of if (AnonHomeDir != FtpServer::anon_homedir) {
+        } //end of if ((AnonHomeDir != "") && (Mode::normal())) {
+     } //end of if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil != "NO") {
+  } //end of if (!FtpServer::vsftpd_edit) {
+  return true;
+
+}
+
+
+/**
+ * Store function of "Umask for Anonynmous Users"
+ * save values to temporary structure
+ *
+ */
+
+
+void StoreFtpDirAnon (string key, map event) {
+ if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO")
+    FtpServer::WriteToEditMap("FtpDirAnon", tostring(UI::QueryWidget(`id("FtpDirAnon"), `Value)));
+
+}
+
+
+/**
+ * Handle function of "Browse"
+ * handling value in textentry of "Umask for Anonynmous Users"
+ */
+
+symbol HandleBrowseAnon (string key, map event) {
+  any button = event["ID"]:nil;
+  if (button == "BrowseAnon") {
+     string val = UI::AskForExistingDirectory  ("/","Please select directory...");
+     UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, val);
+  }
+  return nil;
+}
+
+
+
+/**
+ * Init function of "Ftp Directory for Authenticated Users"
+ * textentry
+ *
+ */
+
+void InitFtpDirLocal (string key) {
+  UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, FtpServer::ValueUIEdit("FtpDirLocal"));
+}
+
+
+
+/**
+ * Store function of "Umask for Authenticated Users"
+ * save values to temporary structure
+ *
+ */
+
+
+void StoreFtpDirLocal (string key, map event) {
+  FtpServer::WriteToEditMap("FtpDirLocal", tostring(UI::QueryWidget(`id("FtpDirLocal"), `Value)));
+}
+
+
+
+
+
+/**
+ * Handle function of "Browse"
+ * handling value in textentry of "Umask for Authenticated Users"
+ */
+
+symbol HandleBrowseLocal (string key, map event) {
+  any button = event["ID"]:nil;
+  if (button == "BrowseLocal") {
+     string val = UI::AskForExistingDirectory  ("/","Please select directory...");
+     UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, val);
+  }
+  return nil;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 /**
@@ -416,6 +666,7 @@ void InitGenSettings(string key) {
  */
 
 symbol HandleGenSettings(string key, map event) {
+
    any button = event["ID"]:nil;
    if (FtpServer::vsftpd_edit)  {      
       if (button == "SelectDirLocal") {
@@ -485,15 +736,13 @@ boolean GenValid (string key, map event) {
  */
 
 void StoreGenSettings (string key, map event) {  
-  foreach(string key, ["ChrootEnable", "VerboseLogging"],{
-     FtpServer::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
-  });
+
   if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil == "NO")
      FtpServer::WriteToEditMap("FtpDirAnon", (string) UI::QueryWidget(`id("FtpDirAnon"), `Value));
   if (!FtpServer::vsftpd_edit) {
      FtpServer::WriteToEditMap("Umask", (string) UI::QueryWidget(`id("Umask"), `Value));
   } else {
-     foreach(string key, ["UmaskAnon", "UmaskLocal", "FtpDirLocal", "Banner"],{
+     foreach(string key, ["FtpDirLocal"],{
         FtpServer::WriteToEditMap(key, (string) UI::QueryWidget(`id(key), `Value));
      });
 
@@ -501,54 +750,119 @@ void StoreGenSettings (string key, map event) {
 
 }
 
+
 /**
- * Init function for general settings
+ *-----------================= PERFORMANCE SCREEN =============----------
+ *
+ */
+
+
+/**
+ * Init function of "Max Idle Time [minutes]"
+ * intfield
+ *
+ */
+
+void InitMaxIdleTime (string key) {
+  UI::ChangeWidget(`id("MaxIdleTime"), `Value, tointeger(FtpServer::ValueUIEdit("MaxIdleTime")));
+}
+
+/**
+ * Store function of "Max Idle Time [minutes]"
  * save values to temporary structure
- */  
-void InitRBVsPure (string key) {
-  if ((FtpServer::vsftpd_installed) && (FtpServer::pureftpd_installed)) {
-     if (FtpServer::vsftpd_edit) {
-        UI::ChangeWidget(`id( "vs_item" ), `Value, true);
-     }else
-        UI::ChangeWidget(`id( "pure_item" ), `Value, true);
-  } else if (FtpServer::vsftpd_installed && !FtpServer::pureftpd_installed) {
-     UI::ChangeWidget(`id( "vs_item" ), `Value, true);
-     UI::ChangeWidget(`id( "pure_item" ), `Enabled, false);
-     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
-  } else if (!FtpServer::vsftpd_installed && FtpServer::pureftpd_installed) {
-     UI::ChangeWidget(`id( "pure_item" ), `Value, true);
-     UI::ChangeWidget(`id( "pure_item" ), `Enabled, false);
-     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
-  } else {
-     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
-     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
-  }
+ *
+ */
 
-  if (!Mode::normal()) {
-     if (FtpServer::vsftpd_edit) {
-        UI::ChangeWidget(`id( "vs_item" ), `Value, true);
-     } else {
-        UI::ChangeWidget(`id( "pure_item" ), `Value, true);
-     }
-     UI::ChangeWidget(`id( "pure_item" ), `Enable, false);
-     UI::ChangeWidget(`id("vs_item"), `Enabled, false);
-  }
+void StoreMaxIdleTime (string key, map event) {
+  FtpServer::WriteToEditMap("MaxIdleTime", tostring(UI::QueryWidget(`id("MaxIdleTime"), `Value)));
 }
 
 
-symbol HandleRBVsPure(string key, map event) {
-  if ((FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("pure_item"), `Value)) 
-     && FtpServer::vsftpd_installed) {
-     FtpServer::vsftpd_edit = false;
-     return `pureftpd;
-  }
-  if ((!FtpServer::vsftpd_edit) && ((boolean) UI::QueryWidget (`id("vs_item"), `Value)) 
-     && FtpServer::pureftpd_installed) {
-     FtpServer::vsftpd_edit = true;
-     return `vsftpd;
-  }
+/**
+ * Init function of "Max Clients for One IP"
+ * intfield
+ *
+ */
 
+void InitMaxClientsPerIP (string key) {
+  UI::ChangeWidget(`id("MaxClientsPerIP"), `Value, tointeger(FtpServer::ValueUIEdit("MaxClientsPerIP")));
 }
+
+/**
+ * Store function of "Max Clients for One IP"
+ * save values to temporary structure
+ *
+ */
+
+void StoreMaxClientsPerIP (string key, map event) {
+  FtpServer::WriteToEditMap("MaxClientsPerIP", tostring(UI::QueryWidget(`id("MaxClientsPerIP"), `Value)));
+}
+
+
+/**
+ * Init function of "Max Clients"
+ * intfield
+ *
+ */
+
+void InitMaxClientsNumber (string key) {
+  UI::ChangeWidget(`id("MaxClientsNumber"), `Value, tointeger(FtpServer::ValueUIEdit("MaxClientsNumber")));
+}
+
+/**
+ * Store function of "Max Clients"
+ * save values to temporary structure
+ *
+ */
+
+void StoreMaxClientsNumber (string key, map event) {
+  FtpServer::WriteToEditMap("MaxClientsNumber", tostring(UI::QueryWidget(`id("MaxClientsNumber"), `Value)));
+}
+
+
+/**
+ * Init function of "Local Max Rate [KB/s]"
+ * intfield
+ *
+ */
+
+void InitLocalMaxRate (string key) {
+  UI::ChangeWidget(`id("LocalMaxRate"), `Value, tointeger(FtpServer::ValueUIEdit("LocalMaxRate")));
+}
+
+/**
+ * Store function of "Local Max Rate [KB/s]"
+ * save values to temporary structure
+ *
+ */
+
+void StoreLocalMaxRate (string key, map event) {
+  FtpServer::WriteToEditMap("LocalMaxRate", tostring(UI::QueryWidget(`id("LocalMaxRate"), `Value)));
+}
+
+
+/**
+ * Init function of "Anonymous Max Rate [KB/s]"
+ * intfield
+ *
+ */
+
+void InitAnonMaxRate (string key) {
+  UI::ChangeWidget(`id("AnonMaxRate"), `Value, tointeger(FtpServer::ValueUIEdit("AnonMaxRate")));
+}
+
+/**
+ * Store function of "Anonymous Max Rate [KB/s]"
+ * save values to temporary structure
+ *
+ */
+
+void StoreAnonMaxRate (string key, map event) {
+  FtpServer::WriteToEditMap("AnonMaxRate", tostring(UI::QueryWidget(`id("AnonMaxRate"), `Value)));
+}
+
+
+
 /**
  * Init function for performance settings
  * change ValidChars from textentry
@@ -572,6 +886,196 @@ void StorePerforSettings (string key, map event) {
       FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
   });
 }
+
+/**
+ *-----------================= Authentication SCREEN =============----------
+ *
+ */
+
+
+
+/**
+ * Init function of "Enable/Disable Anonymous and Local Users"
+ * radiobuttongroup
+ *
+ */
+
+void InitAnonAuthen (string key) {
+  integer authentication = tointeger(FtpServer::ValueUIEdit("AnonAuthen"));
+  if (authentication == 0) { // anonymous only
+     UI::ChangeWidget(`id("AnonAuthen"), `Value, "anon_only");
+  } else if (authentication == 1) { //authenticated only
+     UI::ChangeWidget(`id("AnonAuthen"), `Value, "local_only");
+  } else { //both
+     UI::ChangeWidget(`id("AnonAuthen"), `Value, "both");
+  }
+}
+
+
+
+/**
+ * Store function of "Enable/Disable Anonymous and Local Users"
+ * save value to temporary structure
+ *
+ */
+
+void StoreAnonAuthen (string key, map event) {
+  string radiobut = (string) UI::QueryWidget(`id("AnonAuthen"), `Value);
+  if (radiobut == "anon_only") {
+     FtpServer::WriteToEditMap("AnonAuthen", "0");
+  } else if (radiobut == "local_only") {
+     FtpServer::WriteToEditMap("AnonAuthen", "1");
+  } else {
+     FtpServer::WriteToEditMap("AnonAuthen", "2");
+  } 
+}
+
+
+/**
+ * Init function of "Enable Upload"
+ * checkbox
+ *
+ */
+
+void InitEnableUpload (string key) {
+  UI::ChangeWidget(`id( "EnableUpload" ), `Notify, true);
+  if (FtpServer::ValueUIEdit("EnableUpload") == "YES") {
+     UI::ChangeWidget(`id( "EnableUpload" ), `Value, true);
+     UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, true);
+     UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, true);
+  } else {
+     UI::ChangeWidget(`id( "EnableUpload" ), `Value, false);
+     UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, false);
+     UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, false); 
+  }
+}
+
+
+/**
+ * Handle function of "Enable Upload"
+ * handling value and ask for creation upload directory
+ * function also disable/enable "Anon&ymous Can Upload" and 
+ * "Anonymou&s Can Create Directories"
+ */
+
+symbol HandleEnableUpload (string key, map event) {
+  any button = event["ID"]:nil;
+  //Popup::Message("Hello world");
+  if (Mode::normal()) {   
+     boolean anon_upload = false;
+     boolean anon_create_dirs = false;
+     string yesno_comment ="";
+     string yesno_question ="";
+     boolean check_upload = (boolean) UI::QueryWidget(`id("EnableUpload"), `Value);
+     if (button == "EnableUpload") {        
+        if (check_upload) {
+           UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, true);
+           UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, true); 
+        } else {
+	   UI::ChangeWidget(`id("AnonReadOnly"), `Enabled, false);
+	   UI::ChangeWidget(`id( "AnonCreatDirs" ),`Enabled, false);
+        }
+     } // end of if (button == "EnableUpload") {
+
+     anon_upload = (boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value);
+     anon_create_dirs = (boolean) UI::QueryWidget(`id("AnonCreatDirs"), `Value);
+
+     if (((button ==  "AnonReadOnly") || (anon_upload) && (check_upload)) && (ask_again)) {
+        if (!FtpServer::create_upload_dir) { 
+           yesno_question ="Do you want to create directory\n" + FtpServer::anon_homedir +"upload with allowed writing?";
+           yesno_comment = "If you want that \"anonymous\" users can upload\n you need to create directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::create_upload_dir;
+           FtpServer::upload_good_permission = true;
+        } else if (!FtpServer::upload_good_permission) {
+           yesno_question ="Do you want to change permission\nfor" + FtpServer::anon_homedir +"upload (allow writing)?";
+           yesno_comment = "If you want that \"anonymous\" users can upload\n you need directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::upload_good_permission;
+        }
+        
+     }
+
+     if (((button ==  "AnonCreatDirs") || (anon_create_dirs) && (check_upload)) && (ask_again)) {
+        if (!FtpServer::create_upload_dir) {  
+           yesno_question ="Do you want to create directory\n" + FtpServer::anon_homedir +"upload with allowed writing?";
+           yesno_comment = "If you want that \"anonymous\" users can create directories\n you need to create directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::create_upload_dir;
+           FtpServer::upload_good_permission = true;
+        } else if (!FtpServer::upload_good_permission) {
+           yesno_question ="Do you want to change permission\nfor" + FtpServer::anon_homedir +"upload (allow writing)?";
+           yesno_comment = "If you want that \"anonymous\" users can create directories\n you need directory with allowed writing.\n\n";
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + " is a home directory after login of \"anonymous\" users.";
+           FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           ask_again = FtpServer::upload_good_permission;
+        }
+     }
+  } // end of if (Mode::normal()) {
+}
+
+/**
+ * Store function of "Enable Upload"
+ * save value to temporary structure
+ *
+ */
+
+void StoreEnableUpload (string key, map event) {
+  FtpServer::WriteToEditMap("EnableUpload", 
+    (((boolean) UI::QueryWidget(`id("EnableUpload"), `Value) == true) ? "YES":"NO"));
+}
+
+
+
+/**
+ * Init function of "Anonymous Can Upload"
+ * checkbox
+ *
+ */
+
+void InitAnonReadOnly (string key) {
+  UI::ChangeWidget(`id( "AnonReadOnly" ), `Value, 
+    (FtpServer::ValueUIEdit("AnonReadOnly") == "NO"));
+}
+
+/**
+ * Store function of "Anonymous Can Upload"
+ * save value to temporary structure
+ *
+ */
+void StoreAnonReadOnly (string key, map event) {
+  FtpServer::WriteToEditMap("AnonReadOnly", 
+    (((boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value) == true) ? "NO":"YES"));
+}
+
+
+/**
+ * Init function of "Anonymous Can Create Directories"
+ * checkbox
+ *
+ */
+
+void InitAnonCreatDirs (string key) {
+  UI::ChangeWidget(`id( "AnonCreatDirs" ), `Value, 
+    (FtpServer::ValueUIEdit("AnonCreatDirs") == "YES"));
+}
+
+
+
+/**
+ * Store function of "Anonymous Can Create Directories"
+ * save value to temporary structure
+ *
+ */
+void StoreAnonCreatDirs (string key, map event) {
+  FtpServer::WriteToEditMap("AnonCreatDirs", 
+    (((boolean) UI::QueryWidget(`id("AnonCreatDirs"), `Value) == true) ? "YES":"NO"));
+}
+
+
 
 /**
  * Init function for anon settings
@@ -676,29 +1180,97 @@ symbol HandleAnonSettings(string key, map event) {
 }
 
 
+/**
+ *-----------================= EXPERT SETTINGS SCREEN =============----------
+ *
+ */
+
+
+/**
+ * Init function of "Enable Passive Mode"
+ * checkbox
+ *
+ * also include handling enable/disable Min and Max Ports
+ * handling intfields
+ */
+
+void InitPassiveMode (string key) {
+  UI::ChangeWidget(`id("PassiveMode"), `Notify, true);
+  UI::ChangeWidget(`id("PassiveMode"), `Value, (FtpServer::ValueUIEdit("PassiveMode") == "YES"));
+}
+
+
+/**
+ * Handle function of "Enable Passive Mode"
+ * handling enable/disable widgets
+ */
+
+symbol HandlePassiveMode (string key, map event) {  
+  boolean value = (boolean) UI::QueryWidget(`id("PassiveMode"), `Value);
+  if (value) {
+     UI::ChangeWidget(`id("PasMinPort"), `Enabled, true);
+     UI::ChangeWidget(`id("PasMaxPort"), `Enabled, true);
+  } else {
+     UI::ChangeWidget(`id("PasMinPort"), `Enabled, false);
+     UI::ChangeWidget(`id("PasMaxPort"), `Enabled, false);
+  }
+}
+
+
+/**
+ * Store function of "Enable Passive Mode"
+ * save values to temporary structure
+ *
+ */
+void StorePassiveMode (string key, map event) {
+  FtpServer::WriteToEditMap("PassiveMode", (((boolean) UI::QueryWidget(`id("PassiveMode"), `Value) == true) ? "YES":"NO"));
+  
+}
+
 
 
 
 /**
- * Init function for pure-ftp-server add settings
- * change values a display correct widget
+ * Init function of "Min Port for Pas. Mode"
+ * intfield
+ *
  */
-void InitPUREFTPTAddSettings (string key) {
-  UI::ChangeWidget(`id( "AntiWarez" ), `Value, 
-     (FtpServer::ValueUIEdit("AntiWarez") == "YES"));
-  integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
-  UI::ChangeWidget(`id("SSL"), `CurrentButton, tointeger(FtpServer::ValueUIEdit("SSL")));
-  foreach(string key, ["PasMinPort", "PasMaxPort"],{
-    UI::ChangeWidget(`id(key), `Value, tointeger(FtpServer::ValueUIEdit(key)));
-  });
+
+void InitPasMinPort (string key) {
+  UI::ChangeWidget(`id("PasMinPort"), `Value, tointeger(FtpServer::ValueUIEdit("PasMinPort")));
 }
 
 /**
- * Validate function for Expert settings (pure-ftpd)
- * 
+ * Store function of "Min Port for Pas. Mode"
+ * save values to temporary structure
+ *
+ */
+void StorePasMinPort (string key, map event) {
+  FtpServer::WriteToEditMap("PasMinPort", tostring(UI::QueryWidget(`id("PasMinPort"), `Value)));
+  FtpServer::WriteToEditMap("PassiveMode", (((boolean) UI::QueryWidget(`id("PassiveMode"), `Value) == true) ? "YES":"NO"));
+}
+
+
+
+/**
+ * Init function of "Max Port for Pas. Mode"
+ * intfield
+ *
  */
 
- boolean ValidPUREFTPExpSettings(string key, map event) {
+void InitPasMaxPort (string key) {
+  UI::ChangeWidget(`id("PasMaxPort"), `Value, tointeger(FtpServer::ValueUIEdit("PasMaxPort")));
+
+}
+
+
+/**
+ * Valid function of "Max Port for Pas. Mode"
+ * check values Max Port >= Min Port
+ *
+ */
+
+boolean ValidPasMaxPort (string key, map event) {
   integer min_port = tointeger(UI::QueryWidget (`id("PasMinPort"), `Value));
   integer max_port = tointeger(UI::QueryWidget (`id("PasMaxPort"), `Value));
     
@@ -707,11 +1279,165 @@ void InitPUREFTPTAddSettings (string key) {
      UI::SetFocus(`id("PasMinPort"));
      return false;
   }
-  
-  integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
+  return true;
+}
 
-  if ((!FileUtils::Exists("/etc/ssl/private/pure-ftpd.pem")) && (current > 0)) {
-     Popup::Error("Certificate /etc/ssl/private/pure-ftpd.pem for SSL connection is missing.");
+
+
+/**
+ * Store function of "Max Port for Pas. Mode"
+ * save values to temporary structure
+ *
+ */
+void StorePasMaxPort (string key, map event) {
+  FtpServer::WriteToEditMap("PasMaxPort", tostring(UI::QueryWidget(`id("PasMaxPort"), `Value)));
+}
+
+
+
+
+/**
+ * Init function of "Enable SSL"
+ * checkbox
+ *
+ * also include handling enable/disable SSL v2/3/TLS and Certificate
+ * handling checkboxes and textentry
+ */
+
+void InitSSLEnable (string key) {
+  UI::ChangeWidget(`id("SSLEnable"), `Notify, true);
+  UI::ChangeWidget(`id("SSLEnable"), `Value, (FtpServer::ValueUIEdit("SSLEnable") == "YES"));
+}
+
+
+/**
+ * Handle function of "Enable SSL"
+ * handling enable/disable widgets"
+ */
+
+symbol HandleSSLEnable (string key, map event) {
+  boolean value = (boolean) UI::QueryWidget(`id("SSLEnable"), `Value);
+  if (value) {
+     UI::ChangeWidget(`id("SSLv2"), `Enabled, true);
+     UI::ChangeWidget(`id("SSLv3"), `Enabled, true);
+     UI::ChangeWidget(`id("TLS"), `Enabled, true);
+     UI::ChangeWidget(`id("CertFile"), `Enabled, true);
+     UI::ChangeWidget(`id("BrowseCertFile"), `Enabled, true);
+  } else {
+     UI::ChangeWidget(`id("SSLv2"), `Enabled, false);
+     UI::ChangeWidget(`id("SSLv3"), `Enabled, false);
+     UI::ChangeWidget(`id("TLS"), `Enabled, false);
+     UI::ChangeWidget(`id("CertFile"), `Enabled, false);
+     UI::ChangeWidget(`id("BrowseCertFile"), `Enabled, false);
+  }
+}
+
+
+/**
+ * Store function of "Enable SSL"
+ * save values to temporary structure
+ *
+ */
+void StoreSSLEnable (string key, map event) {
+  FtpServer::WriteToEditMap("SSLEnable", (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));
+  
+}
+
+
+
+
+/**
+ * Init function of "Enable SSL v2"
+ * intfield
+ *
+ * also include handling enable/disable SSL
+ * handling checkboxframe
+ */
+
+void InitSSLv2 (string key) {
+  UI::ChangeWidget(`id("SSLv2"), `Value, (FtpServer::ValueUIEdit("SSLv2") == "YES"));
+  UI::ChangeWidget(`id("SSLEnable"), `Value, (FtpServer::ValueUIEdit("SSLEnable") == "YES"));
+}
+
+/**
+ * Store function of "Enable SSL v2"
+ * save values to temporary structure
+ *
+ * also include handling value enable/disable passive mode
+ */
+void StoreSSLv2 (string key, map event) {
+  FtpServer::WriteToEditMap("SSLv2", 
+    (((boolean) UI::QueryWidget(`id("SSLv2"), `Value) == true) ? "YES":"NO"));
+  FtpServer::WriteToEditMap("SSLEnable", 
+    (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));
+  
+}
+
+
+
+
+/**
+ * Init function of "Enable SSL v3"
+ * intfield
+ *
+ */
+
+void InitSSLv3 (string key) {
+  UI::ChangeWidget(`id("SSLv3"), `Value, (FtpServer::ValueUIEdit("SSLv3") == "YES"));
+}
+
+/**
+ * Store function of "Enable SSL v3"
+ * save value to temporary structure
+ *
+ */
+void StoreSSLv3 (string key, map event) {
+  FtpServer::WriteToEditMap("SSLv3", 
+    (((boolean) UI::QueryWidget(`id("SSLv3"), `Value) == true) ? "YES":"NO"));
+}
+/**
+ * Init function of "Enable TLS"
+ * intfield
+ *
+ */
+
+void InitTLS (string key) {
+  UI::ChangeWidget(`id("TLS"), `Value, (FtpServer::ValueUIEdit("TLS") == "YES"));
+}
+
+/**
+ * Store function of "Enable TLS"
+ * save value to temporary structure
+ *
+ */
+void StoreTLS (string key, map event) {
+  FtpServer::WriteToEditMap("TLS", 
+    (((boolean) UI::QueryWidget(`id("TLS"), `Value) == true) ? "YES":"NO"));
+}
+
+/**
+ * Init function of "DSA Certificate to Use for SSL Encrypted Connections"
+ * intfield
+ *
+ */
+
+void InitCertFile (string key) {
+  UI::ChangeWidget(`id( "CertFile" ), `Value, FtpServer::ValueUIEdit("CertFile"));
+}
+
+/**
+ * Valid function of "DSA Certificate to Use for SSL Encrypted Connections"
+ * check value if user enable SSL Certificate (textentry) doesn't be empty
+ *
+ */
+
+boolean ValidCertFile (string key, map event) {
+  string rsa_cert = tostring(UI::QueryWidget(`id("CertFile"), `Value));
+  boolean ssl_enable = (boolean) UI::QueryWidget(`id("SSLEnable"), `Value);
+
+  if (((rsa_cert == "")||(rsa_cert ==nil)) && (ssl_enable)) {
+     Popup::Error("DSA certificate is missing.");
+     UI::SetFocus(`id("CertFile"));
      return false;
   }
 
@@ -719,23 +1445,106 @@ void InitPUREFTPTAddSettings (string key) {
 
 }
 
+/**
+ * Store function of "DSA Certificate to Use for SSL Encrypted Connections"
+ * save value to temporary structure
+ *
+ */
+void StoreCertFile (string key, map event) {
+  FtpServer::WriteToEditMap("CertFile", tostring(UI::QueryWidget(`id("CertFile"), `Value)));
+}
+
+
+
 
 /**
- * Store function for pure-ftp-server add settings
- * save values to temporary structure
+ * Handle function of "Browse"
+ * handling value in textentry of "DSA Certificate to Use for SSL Encrypted Connections"
  */
-void StorePUREFTPDSettings (string key, map event) {
-  FtpServer::WriteToEditMap("AntiWarez", (((boolean) UI::QueryWidget(`id("AntiWarez"), `Value) == true) ? "YES":"NO"));
-  FtpServer::WriteToEditMap("SSL", tostring(UI::QueryWidget(`id("SSL"), `CurrentButton)));
 
-  //FtpServer::WriteToEditMap("CertFile", tostring(UI::QueryWidget(`id("CertFile"), `Value)));
-  foreach(string key, ["PasMinPort", "PasMaxPort"],{
-     FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
-  });
-  //y2milestone("-------------EDIT_SETTINGS-------------------");  
-  //y2milestone("Pure-ftpd configuration has been read: %1", FtpServer::EDIT_SETTINGS);
-  //y2milestone("---------------------------------------------");
+symbol HandleBrowseCertFile (string key, map event) {
+  any button = event["ID"]:nil;
+  if (button == "BrowseCertFile") {
+     string val = UI::AskForExistingFile  ("/","*.*","Please Select File");
+     UI::ChangeWidget(`id( "CertFile" ), `Value, val);
+  }
 }
+
+
+
+/**
+ * Init function of "Disable Downloading Unvalidated Data"
+ * checkbox
+ *
+ */
+
+void InitAntiWarez (string key) {
+  UI::ChangeWidget(`id( "AntiWarez" ), `Value, 
+     (FtpServer::ValueUIEdit("AntiWarez") == "YES"));
+}
+
+
+/**
+ * Store function of "Disable Downloading Unvalidated Data"
+ * save value to temporary structure
+ *
+ */
+void StoreAntiWarez (string key, map event) {
+  FtpServer::WriteToEditMap("AntiWarez", 
+    (((boolean) UI::QueryWidget(`id("AntiWarez"), `Value) == true) ? "YES":"NO"));
+}
+
+
+/**
+ * Init function of "Security Settings"
+ * checkbox
+ *
+ */
+
+void InitSSL (string key) {
+ integer security = tointeger(FtpServer::ValueUIEdit("SSL"));
+  if (security == 0) { // anonymous only
+     UI::ChangeWidget(`id("SSL"), `Value, "disable");
+  } else if (security == 1) { //authenticated only
+     UI::ChangeWidget(`id("SSL"), `Value, "accept");
+  } else { //both
+     UI::ChangeWidget(`id("SSL"), `Value, "refuse");
+  }
+}
+
+
+/**
+ * Valid function of "Security Settings"
+ * check of existing certificate
+ *
+ */
+
+boolean ValidSSL (string key, map event) {
+  string current = (string) UI::QueryWidget(`id("SSL"), `Value);
+  if ((!FileUtils::Exists("/etc/ssl/private/pure-ftpd.pem")) && 
+     ((current == "accept") || (current == "refuse"))) {
+     Popup::Error("Certificate /etc/ssl/private/pure-ftpd.pem for SSL connection is missing.");
+     return false;
+  }
+  return true;
+}
+/**
+ * Store function of "Security Settings"
+ * save value to temporary structure
+ *
+ */
+void StoreSSL (string key, map event) {
+  string radiobut = (string) UI::QueryWidget(`id("SSL"), `Value);
+  if (radiobut == "disable") {
+     FtpServer::WriteToEditMap("SSL", "0");
+  } else if (radiobut == "accept") {
+     FtpServer::WriteToEditMap("SSL", "1");
+  } else {
+     FtpServer::WriteToEditMap("SSL", "2");
+  } 
+}
+
+
 
 
 /**
@@ -819,6 +1628,71 @@ void StoreVSFTPDSettings (string key, map event) {
   //y2milestone("---------------------------------------------");
   
 }
+
+
+
+/**
+ * Init function for pure-ftp-server add settings
+ * change values a display correct widget
+ */
+void InitPUREFTPTAddSettings (string key) {
+  UI::ChangeWidget(`id( "AntiWarez" ), `Value, 
+     (FtpServer::ValueUIEdit("AntiWarez") == "YES"));
+  integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
+  UI::ChangeWidget(`id("SSL"), `CurrentButton, tointeger(FtpServer::ValueUIEdit("SSL")));
+  foreach(string key, ["PasMinPort", "PasMaxPort"],{
+    UI::ChangeWidget(`id(key), `Value, tointeger(FtpServer::ValueUIEdit(key)));
+  });
+}
+
+/**
+ * Validate function for Expert settings (pure-ftpd)
+ * 
+ */
+
+ boolean ValidPUREFTPExpSettings(string key, map event) {
+  integer min_port = tointeger(UI::QueryWidget (`id("PasMinPort"), `Value));
+  integer max_port = tointeger(UI::QueryWidget (`id("PasMaxPort"), `Value));
+    
+  if (min_port > max_port) {
+     Popup::Message ("Condition for ports is max port > min port.");
+     UI::SetFocus(`id("PasMinPort"));
+     return false;
+  }
+  
+  integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
+
+  if ((!FileUtils::Exists("/etc/ssl/private/pure-ftpd.pem")) && (current > 0)) {
+     Popup::Error("Certificate /etc/ssl/private/pure-ftpd.pem for SSL connection is missing.");
+     return false;
+  }
+
+  return true;
+
+}
+
+
+/**
+ * Store function for pure-ftp-server add settings
+ * save values to temporary structure
+ */
+void StorePUREFTPDSettings (string key, map event) {
+  FtpServer::WriteToEditMap("AntiWarez", (((boolean) UI::QueryWidget(`id("AntiWarez"), `Value) == true) ? "YES":"NO"));
+  FtpServer::WriteToEditMap("SSL", tostring(UI::QueryWidget(`id("SSL"), `CurrentButton)));
+
+  //FtpServer::WriteToEditMap("CertFile", tostring(UI::QueryWidget(`id("CertFile"), `Value)));
+  foreach(string key, ["PasMinPort", "PasMaxPort"],{
+     FtpServer::WriteToEditMap(key, tostring(UI::QueryWidget(`id(key), `Value)));
+  });
+  //y2milestone("-------------EDIT_SETTINGS-------------------");  
+  //y2milestone("Pure-ftpd configuration has been read: %1", FtpServer::EDIT_SETTINGS);
+  //y2milestone("---------------------------------------------");
+}
+
+
+
+
+
 
 
 }

@@ -152,46 +152,7 @@ map<string,any> StartStopPure () {
 
   return result;
 }
-/**
- * Init function where are added UI hadle functions 
- * special hack widget where is handlig disable back button
- *
- * @return map<string,any> map for start-stop widget
- */
 
-map<string,any> DisBackButton () {
-  map<string,any> result = $[];
-
-  result["widget"] = `custom;
-  result["custom_widget"] =`Empty();
-  result["init"] = BackButton;
-  result["help"] = " ";
-
-  return result;
-}
-
-
-/**
- * Init function where are added UI hadle functions 
- * General Settings widget
- *
- * @return map<string,any> map for General Settings widget
- */
-
-map<string,any> GenSettings () {
-  map<string,any> result = $[];
-
-  result["widget"] = `custom;
-  result["custom_widget"] = `VBox();
-  result["init"] = InitGenSettings;
-  result["handle"] = HandleGenSettings;
-  result["store"] = StoreGenSettings;
-  result["validate_type"] = `function;
-  result["validate_function"] = GenValid;
-  result["help"] = DialogHelpText("gen_settings");
-
-  return result;
-}
 
 /**
  * Init function where are added UI hadle functions 
@@ -215,12 +176,418 @@ map<string,any> RBVsftpdPureftpd () {
   return result;
 }
 
+
+
 /**
+ * Init function where are added UI hadle functions 
+ * special hack widget where is handlig disable back button
+ *
+ * @return map<string,any> map for start-stop widget
+ */
+
+map<string,any> DisBackButton () {
+  map<string,any> result = $[];
+
+  result["widget"] = `custom;
+  result["custom_widget"] =`Empty();
+  result["init"] = BackButton;
+  result["help"] = " ";
+
+  return result;
+}
+
+
+/**
+ *-----------================= GENERAL SCREEN =============----------
+ *
+ */
+
+
+/*
+ * Init function where are added UI hadle functions 
+ * General Settings widget
+ *
+ * @return map<string,any> map for General Settings widget
+ 
+
+map<string,any> GenSettings () {
+  map<string,any> result = $[];
+
+  result["widget"] = `custom;
+  result["custom_widget"] = `VBox();
+  result["init"] = InitGenSettings;
+  result["handle"] = HandleGenSettings;
+  result["store"] = StoreGenSettings;
+  result["validate_type"] = `function;
+  result["validate_function"] = GenValid;
+  result["help"] = DialogHelpText("gen_settings");
+
+  return result;
+}
+*/
+
+/**
+ * Wellcome Message for vsftpd
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+map<string,any> Banner () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Welcome message");
+  result["widget"] = `textentry;
+  result["init"] = InitBanner;
+  result["store"] = StoreBanner;
+  result["help"] = DialogHelpText("Banner");
+
+  return result;
+}
+
+/**
+ * Chroot Everyone
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+map<string,any> ChrootEnable () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Chroot Everyone");
+  result["widget"] = `checkbox;
+  result["init"] = InitChrootEnable;
+  result["store"] = StoreChrootEnable;
+  result["help"] = DialogHelpText("ChrootEnable");
+
+  return result;
+}
+
+/**
+ * Verbos Logging
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+map<string,any>  VerboseLogging() {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Verbose Logging");
+  result["widget"] = `checkbox;
+  result["init"] = InitVerboseLogging;
+  result["store"] = StoreVerboseLogging;
+  result["help"] = DialogHelpText("VerboseLogging");
+
+  return result;
+}
+
+/**
+ * Umask (umask files:umask dirs) only pure-ftpd
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+
+map<string,any> Umask () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Umask (umask files:umask dirs)");
+  result["widget"] = `textentry;
+  result["init"] = InitUmask;
+  result["store"] = StoreUmask;
+  result["validate_type"] = `function;
+  result["validate_function"] = ValidUmask;
+  result["help"] = DialogHelpText("Umask");
+
+  return result;
+}
+
+/**
+ * Umask for Anonynous for vsftpd
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+
+map<string,any> UmaskAnon () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Umask for Anonymous");
+  result["widget"] = `textentry;
+  result["init"] = InitUmaskAnon;
+  result["store"] = StoreUmaskAnon;
+  result["help"] = DialogHelpText("UmaskAnon");
+
+  return result;
+}
+
+
+
+
+/**
+ * Umask for Authenticated Users for vsftpd
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+
+map<string,any> UmaskLocal () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Uma&sk for Authenticated Users");
+  result["widget"] = `textentry;
+  result["init"] = InitUmaskLocal;
+  result["store"] = StoreUmaskLocal;
+  result["help"] = DialogHelpText("UmaskLocal");
+
+  return result;
+}
+
+/**
+ * Ftp Directory for Anonymous Users
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+
+map<string,any> FtpDirAnon () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Ftp Directory for Anon&ymous Users");
+  result["widget"] = `textentry;
+  result["init"] = InitFtpDirAnon;
+  result["validate_type"] = `function;
+  result["validate_function"] = ValidFtpDirAnon;
+  result["store"] = StoreFtpDirAnon;
+  result["help"] = DialogHelpText("FtpDirAnon");
+
+  return result;
+}
+
+
+/**
+ * "Browse" button for FTP Dir Anon
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+
+map<string,any> BrowseAnon () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Brows&e");
+  result["widget"] = `push_button;
+  result["handle"] = HandleBrowseAnon;
+  result["help"] = _(" ");
+
+  return result;
+}
+
+
+/**
+ * Ftp Directory for Authenticated Users
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+
+map<string,any> FtpDirLocal () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Ftp Directory for Authenticated Users");
+  result["widget"] = `textentry;
+  result["init"] = InitFtpDirLocal;
+  result["store"] = StoreFtpDirLocal;
+  result["help"] = DialogHelpText("FtpDirLocal");
+
+  return result;
+}
+
+
+/**
+ * "Browse" button for FTP Dir Local/Authenticated
+ * General Settings widget
+ *
+ * @return map<string,any> map for General screen
+ */
+
+
+map<string,any> BrowseLocal () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Br&owse");
+  result["widget"] = `push_button;
+  result["handle"] = HandleBrowseLocal;
+  result["help"] = _(" ");
+
+  return result;
+}
+
+
+/**
+ *-----------================= PERFORMANCE SCREEN =============----------
+ *
+ */
+
+
+
+/*
+ * Init function where are added UI hadle functions 
+ * Perform Settings widget
+ *
+ * @return map<string,any> map for Perform Settings widget
+ 
+
+map<string,any> PerformSettings () {
+  map<string,any> result = $[];
+
+  result["widget"] = `custom;
+  result["custom_widget"] =`VBox();
+  result["init"] = InitPerSettings;
+  result["store"] = StorePerforSettings;
+  result["help"] = DialogHelpText("per_settings");
+  
+  return result;
+   
+}
+*/
+
+
+/**
+ * Max Idle Time [minutes]
+ * Performance Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+
+map<string,any> MaxIdleTime () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Max Idle Time [minutes]");
+  result["widget"] = `intfield;
+  result["minimum"] = 0;
+  result["maximum"] = 1440;
+  result["init"] = InitMaxIdleTime;
+  result["store"] = StoreMaxIdleTime;
+  result["help"] = DialogHelpText("MaxIdleTime");
+
+  return result;
+}
+
+
+
+/**
+ * Max Clients for One IP
+ * Performance Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+
+map<string,any> MaxClientsPerIP () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Max Cli&ents for One IP");
+  result["widget"] = `intfield;
+  result["minimum"] = 0;
+  result["maximum"] = 50;
+  result["init"] = InitMaxClientsPerIP;
+  result["store"] = StoreMaxClientsPerIP;
+  result["help"] = DialogHelpText("MaxClientsPerIP");
+
+  return result;
+}
+
+
+/**
+ * Max Clients
+ * Performance Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+
+map<string,any> MaxClientsNumber () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Ma&x Clients");
+  result["widget"] = `intfield;
+  result["minimum"] = 0;
+  result["maximum"] = 9999;
+  result["init"] = InitMaxClientsNumber;
+  result["store"] = StoreMaxClientsNumber;
+  result["help"] = DialogHelpText("MaxClientsNumber");
+
+  return result;
+}
+
+
+/**
+ * Local Max Rate [KB/s]
+ * Performance Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+
+map<string,any> LocalMaxRate () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Local Max Rate [KB/s]");
+  result["widget"] = `intfield;
+  result["minimum"] = 0;
+  result["maximum"] = 10000000;
+  result["init"] = InitLocalMaxRate;
+  result["store"] = StoreLocalMaxRate;
+  result["help"] = DialogHelpText("LocalMaxRate");
+
+  return result;
+}
+
+
+/**
+ * Anonymous Max Rate [KB/s]
+ * Performance Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+
+map<string,any> AnonMaxRate () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Anonymous Max &Rate [KB/s]");
+  result["widget"] = `intfield;
+  result["minimum"] = 0;
+  result["maximum"] = 10000000;
+  result["init"] = InitAnonMaxRate;
+  result["store"] = StoreAnonMaxRate;
+  result["help"] = DialogHelpText("AnonMaxRate");
+
+  return result;
+}
+
+/**
+ *-----------================= Authentication SCREEN =============----------
+ *
+ */
+
+
+/*
  * Init function where are added UI hadle functions 
  * Anonymous Settings widget
  *
  * @return map<string,any> map for Anonymous Settings widget
- */
+ 
 
 map<string,any> AnonSettings () {
   map<string,any> result = $[];
@@ -234,14 +601,112 @@ map<string,any> AnonSettings () {
 
   return result;
 }
+*/
+
+/**
+ * Enable/Disable Anonymous and Local Users
+ * Authentication Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+
+map<string,any> AnonAuthen () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Enable/Disable Anonymous and Local Users");
+  result["widget"] = `radio_buttons;
+  result["items"] = [
+    ["anon_only", _("Anonymo&us Only")],
+    ["local_only", _("Aut&henticated Users Only")],
+    ["both", _("&Both")],
+  ];
+  result["init"] = InitAnonAuthen;
+  result["store"] = StoreAnonAuthen;
+  result["help"] = DialogHelpText("AnonAuthen");
+
+  return result;
+}
+
+/**
+ * Enable Upload
+ * Authentication Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+map<string,any>  EnableUpload () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Enable Upload");
+  result["widget"] = `checkbox;
+  result["init"] = InitEnableUpload;
+  result["handle"] = HandleEnableUpload;
+  result["store"] = StoreEnableUpload;
+  result["help"] = DialogHelpText("EnableUpload");
+
+  return result;
+}
 
 
 /**
+ * Anonymous Can Upload
+ * Authentication Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+map<string,any>  AnonReadOnly () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Anon&ymous Can Upload");
+  result["widget"] = `checkbox;
+  result["init"] = InitAnonReadOnly;
+  result["store"] = StoreAnonReadOnly;
+  result["help"] = DialogHelpText("AnonReadOnly");
+
+  return result;
+}
+
+
+
+/**
+ * Anonymous Can Create Directories
+ * Authentication Settings widget
+ *
+ * @return map<string,any> map for Performance screen
+ */
+
+map<string,any> AnonCreatDirs () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Anonymou&s Can Create Directories");
+  result["widget"] = `checkbox;
+  result["init"] = InitAnonCreatDirs;
+  result["store"] = StoreAnonCreatDirs;
+  result["help"] = DialogHelpText("AnonCreatDirs");
+
+  return result;
+}
+
+
+
+
+
+
+
+/**
+ *-----------================= EXPERT SETTINGS SCREEN =============----------
+ *
+ */
+
+
+/*
  * Init function where are added UI hadle functions 
  * Expert Settings widget (vsftpd)
  *
  * @return map<string,any> map for Expert Settings widget
- */
+ 
 
 map<string,any> VSFTPDSettings () {
   map<string,any> result = $[];
@@ -258,12 +723,273 @@ map<string,any> VSFTPDSettings () {
   return result;
 }
 
+*/
+
 /**
+ * Enable Pass&ive Mode
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any>  PassiveMode () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Enable Pass&ive Mode");
+  result["widget"] = `checkbox;
+  result["init"] = InitPassiveMode;
+  result["store"] = StorePassiveMode;
+  result["handle"] = HandlePassiveMode;
+  result["help"] = DialogHelpText("PassiveMode");
+
+  return result;
+}
+
+
+
+/**
+ * Min Port for Pas. Mode
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any> PasMinPort () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Min Port for Pas. Mode");
+  result["widget"] = `intfield;
+  result["minimum"] = 1024;
+  result["maximum"] = 65535;
+  result["init"] = InitPasMinPort;
+  result["store"] = StorePasMinPort;
+  result["help"] = DialogHelpText("PasMinPort");
+
+  return result;
+}
+
+
+
+/**
+ * Max Port for Pas. Mode
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any> PasMaxPort () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Max P&ort for Pas. Mode");
+  result["widget"] = `intfield;
+  result["minimum"] = 1024;
+  result["maximum"] = 65535;
+  result["init"] = InitPasMaxPort;
+  result["store"] = StorePasMaxPort;  
+  result["validate_type"] = `function;
+  result["validate_function"] = ValidPasMaxPort;
+  result["help"] = DialogHelpText("PasMaxPort");
+
+  return result;
+}
+
+
+
+/**
+ * Enable SSL
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any>  SSLEnable () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Enab&le SSL");
+  result["widget"] = `checkbox;
+  result["init"] = InitSSLEnable;
+  result["store"] = StoreSSLEnable;
+  result["handle"] = HandleSSLEnable;
+  result["help"] = DialogHelpText("SSLEnable");
+
+  return result;
+}
+
+
+
+
+/**
+ * Enable SSL v2
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any>  SSLv2 () {
+  map<string,any> result = $[];
+
+  result["label"] = _("&Enable SSL v2");
+  result["widget"] = `checkbox;
+  result["init"] = InitSSLv2;
+  result["store"] = StoreSSLv2;
+  result["help"] = DialogHelpText("SSLv2");
+
+  return result;
+}
+
+
+/**
+ * Enable SSL v3
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any>  SSLv3 () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Enable SSL &v2");
+  result["widget"] = `checkbox;
+  result["init"] = InitSSLv3;
+  result["store"] = StoreSSLv3;
+  result["help"] = DialogHelpText("SSLv3");
+
+  return result;
+}
+
+
+/**
+ * Enable TLS
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any>  TLS () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Enable &TLS");
+  result["widget"] = `checkbox;
+  result["init"] = InitTLS;
+  result["store"] = StoreTLS;
+  result["help"] = DialogHelpText("TLS");
+
+  return result;
+}
+
+
+/**
+ * DSA Certificate to Use for SSL Encrypted Connections
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any> CertFile () {
+  map<string,any> result = $[];
+
+  result["label"] = _("D&SA Certificate to Use for SSL Encrypted Connections");
+  result["widget"] = `textentry;
+  result["init"] = InitCertFile;
+  result["validate_type"] = `function;
+  result["validate_function"] = ValidCertFile;
+  result["store"] = StoreCertFile;
+  result["help"] = DialogHelpText("CertFile");
+
+  return result;
+}
+
+
+/**
+ * "Browse" button for DSA Certificate
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any> BrowseCertFile () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Br&owse");
+  result["widget"] = `push_button;
+  result["handle"] = HandleBrowseCertFile;
+  result["help"] = _(" ");
+
+  return result;
+}
+
+
+
+
+/**
+ * Disable Downloading Unvalidated Data
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any>  AntiWarez () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Disable Downloading &Unvalidated Data");
+  result["widget"] = `checkbox;
+  result["init"] = InitAntiWarez;
+  result["store"] = StoreAntiWarez;
+  result["help"] = DialogHelpText("AntiWarez");
+
+  return result;
+}
+
+
+/**
+ * Security Settings
+ * Expert Settings widget
+ *
+ * @return map<string,any> map for Expert screen
+ */
+
+
+map<string,any> SSL () {
+  map<string,any> result = $[];
+
+  result["label"] = _("Security Settings");
+  result["widget"] = `radio_buttons;
+  result["items"] = [
+    ["disable", _("Disable SSL/&TLS")],
+    ["accept", _("Accept &SSL and TLS")],
+    ["refuse", _("&Refuse Conections Without SSL/TLS")],
+  ];
+  result["init"] = InitSSL;
+  result["validate_type"] = `function;
+  result["validate_function"] = ValidSSL;
+  result["store"] = StoreSSL;
+  result["help"] = DialogHelpText("SSL");
+
+  return result;
+}
+
+/**
+ *-----------================= SCREENS OF FTP_SERVER =============----------
+ *
+ */
+
+
+/*
  * Init function where are added UI hadle functions 
  * Expert Settings widget (pure-ftpd)
  *
  * @return map<string,any> map for Expert Settings widget
- */
+ *
 
 map<string,any> PUREFTPDAddSettings () {
   map<string,any> result = $[];
@@ -279,6 +1005,10 @@ map<string,any> PUREFTPDAddSettings () {
   return result;
 }
 
+*/
+
+
+
 
 /**
  * Init function where are added UI hadle functions 
@@ -293,14 +1023,14 @@ map<string,any> start_up () {
   map<string,any> result = $[];
 
   result["contents"] = `VBox (		
-	       "StartMode",
-	       `VSpacing(1),
-	       // disabling start/stop buttons when it doesn't make sense
-	       (Mode::normal() ? "StartStop":`Empty()),
-	       `VSpacing(1),
-	       "RBVsPureFTPd",
-	       `VStretch ()
-	      );
+    "StartMode",
+    `VSpacing(1),
+    // disabling start/stop buttons when it doesn't make sense
+    (Mode::normal() ? "StartStop":`Empty()),
+    `VSpacing(1),
+    "RBVsPureFTPd",
+    `VStretch ()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] =  _("FTP Start-Up");
   // TRANSLATORS: tree menu item
@@ -322,13 +1052,42 @@ map<string,any> gen_settings () {
   map<string,any> result = $[];
 
   result["contents"] = `VBox (		
-	       FTPGenSettingsVsftpd()
-	      );
+    `Frame ( _("General Settings"),`HBox(`HSpacing(1),`VBox(
+      `Left("Banner"),
+      `Left("ChrootEnable"),
+      `Left("VerboseLogging"),
+      `Left(`HBox (
+        `Left("UmaskAnon"),
+        `Left("UmaskLocal")
+      ))
+    ))),
+    `VSpacing(1),
+    `Frame ( _("FTP Directories"),`HBox(`HSpacing(1),`VBox(
+      `Left(`HBox(`HSpacing(1),
+        `Left("FtpDirAnon"), 
+        `VBox(
+          `Left(`Label("")),
+          `Left("BrowseAnon")
+         )
+      )),
+      `Left(`HBox(`HSpacing(1),
+        `Left("FtpDirLocal"),
+        `VBox(
+          `Left(`Label("")),
+          `Left("BrowseLocal")
+        )
+      ))
+    ))),
+    `VStretch ()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] =  _("FTP General Settings");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("General");
-  result["widget_names"] = [ "DisBackButton", "GenSettings"];
+  result["widget_names"] = [ "DisBackButton", "Banner",
+                             "ChrootEnable", "VerboseLogging", "UmaskAnon", 
+                             "UmaskLocal", "BrowseAnon", "BrowseLocal",
+                             "FtpDirAnon", "FtpDirLocal"];
 
   return result;
 }
@@ -345,13 +1104,29 @@ map<string,any> gen_settings_pure () {
   map<string,any> result = $[];
 
   result["contents"] = `VBox (		
-	       FTPGenSettingsPureftpd()
-	      );
+    `Frame ( _("General Settings"),`HBox(`HSpacing(1),`VBox(
+      `Left("ChrootEnable"),
+      `Left("VerboseLogging"),
+      `Left("Umask")
+    ))),
+    `VSpacing(1),
+    `Frame ( _("FTP Directories"),`HBox(`HSpacing(1),`VBox(
+      `Left(`HBox(`HSpacing(1),
+        `Left("FtpDirAnon"),
+        `VBox(
+          `Left(`Label("")),
+          `Left("BrowseAnon")
+        )
+      ))
+    ))),
+    `VStretch ()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] =  _("FTP General Settings");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("General");
-  result["widget_names"] = [ "DisBackButton", "GenSettings"];
+  result["widget_names"] = [ "DisBackButton", "ChrootEnable", "VerboseLogging",
+                             "Umask", "FtpDirAnon", "BrowseAnon",];
 
   return result;
 }
@@ -368,14 +1143,25 @@ map<string,any> gen_settings_pure () {
 map<string,any> perfor_settings () {
   map<string,any> result = $[];
 
-  result["contents"] = `VBox (		
-	       FTPPerforSettings()
-	      );
+  result["contents"] = `VBox (
+    `Frame ( _("General Settings"),`HBox(`HSpacing(1),`VBox(
+      `Left(`MinWidth(20,"MaxIdleTime")),
+      `Left(`MinWidth(20,"MaxClientsPerIP")),
+      `Left(`MinWidth(20,"MaxClientsNumber"))
+    ))),
+    `VSpacing(1),
+    `Frame ( _("FTP Directories"),`HBox(`HSpacing(1),`VBox(
+      `Left(`MinWidth(20,"LocalMaxRate")),
+      `Left(`MinWidth(20,"AnonMaxRate"))
+    ))),
+    `VStretch ()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] = _("FTP Performance Settings");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("Performance");
-  result["widget_names"] = [ "DisBackButton", "PerforSettings"];
+  result["widget_names"] = [ "DisBackButton", "MaxClientsPerIP", "MaxIdleTime",
+                           "AnonMaxRate", "LocalMaxRate", "MaxClientsNumber",];
 
   return result;
 }
@@ -426,13 +1212,20 @@ map<string,any> anon_settings () {
   map<string,any> result = $[];
 
   result["contents"] = `VBox (		
-	       FTPAnonSettings()
-	      );
+   "AnonAuthen",
+    `VSpacing(1),
+    `Frame ( _("Uploading"),`HBox(`HSpacing(1),`VBox(
+      `Left("AnonReadOnly"),
+      `Left("AnonCreatDirs")
+    ))),
+    `VStretch ()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] = _("FTP Anonymous Settings");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("Authentication");
-  result["widget_names"] = [ "DisBackButton", "AnonSettings"];
+  result["widget_names"] = [ "DisBackButton", "AnonAuthen",
+                             "AnonReadOnly", "AnonCreatDirs"];
 
   return result;
 }
@@ -449,13 +1242,23 @@ map<string,any> vsftpd_anon_settings () {
   map<string,any> result = $[];
 
   result["contents"] = `VBox (		
-	       VsftpdAnonSettings()
-	      );
+    "AnonAuthen",
+    `VSpacing(1),
+    `Frame ( _("Uploading"),`HBox(`HSpacing(1),`VBox(
+      `Left("EnableUpload"),
+      `HBox(`HSpacing(2),`VBox(
+        `Left("AnonReadOnly"),
+	`Left("AnonCreatDirs")
+      ))
+    ))),
+    `VStretch ()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] = _("FTP Anonymous Settings");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("Authentication");
-  result["widget_names"] = [ "DisBackButton", "AnonSettings"];
+  result["widget_names"] = [ "DisBackButton",  "AnonAuthen", "EnableUpload",
+                             "AnonReadOnly", "AnonCreatDirs"];
 
   return result;
 }
@@ -471,19 +1274,48 @@ map<string,any> addit_settings () {
   map<string,any> result = $[];
 
   result["contents"] = `VBox (		
-	       VSFTPDAddSettings(),
-	       `VSpacing(1),
-	       `Frame ( _("SUSEfirewall Settings"),
-                 `HBox(`HSpacing(1),
-	           "Firewall"
-               )),
-               `VStretch()
-	      );
+    `Frame ( _("Passive Mode"),		
+      `HBox(`HSpacing(1), `VBox(
+        `Left("PassiveMode"),
+	`HBox(`HSpacing(2), `Left(`HSquash(`HBox(
+	  "PasMinPort",
+	  "PasMaxPort",
+	`HStretch()
+        ))))
+      ))
+    ), //end of `Frame ( "Passiv Mode Settings"    
+    `VSpacing(1),
+    `Frame(_("Enab&le SSL"),
+    //`CheckBoxFrame(`id("SSLEnable"), _("Enab&le SSL"), true,	
+      `HBox(`HSpacing(1),`VBox (
+        `Left("SSLEnable"),
+        `HBox(`HSpacing(2),`VBox (
+	  `Left("SSLv2"),
+	  `Left("SSLv3"),
+	  `Left("TLS"),
+	  `Left(`HBox(
+	    "CertFile",
+	    `VBox ( `Label(""),
+	      "BrowseCertFile"
+	    )
+	  )) // end of `Left(`HBox(
+        )) // end of `HBox(`HSpacing(1),`VBox (
+      )) // end of `HBox(`HSpacing(1),`VBox (
+    ), //end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true
+    `VSpacing(1),
+    `Frame ( _("SUSEfirewall Settings"),
+      `HBox(`HSpacing(1),
+	"Firewall"
+      )),
+    `VStretch()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] = _("FTP Expert Settings");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("Expert Settings");
-  result["widget_names"] = [ "DisBackButton", "VSFTPDAddSettings", "Firewall"];
+  result["widget_names"] = [ "DisBackButton",  "Firewall", "PasMinPort",  "PasMaxPort",
+    			     "SSLv2", "SSLv3", "TLS", "CertFile", "BrowseCertFile", 
+                             "PassiveMode", "SSLEnable" ];
 
   return result;
 }
@@ -499,19 +1331,35 @@ map<string,any> addit_settings_pure () {
   map<string,any> result = $[];
 
   result["contents"] = `VBox (		
-	       PUREFTPDSecSettings(),
-	       `VSpacing(1),
-	       `Frame ( _("SUSEfirewall Settings"),
-                 `HBox(`HSpacing(1),
-	           "Firewall"
-               )),
-               `VStretch()
-	      );
+    `Frame ( _("Passive Mode"),
+     `HBox(`HSpacing(1), `Left(`HSquash(`HBox(
+       "PasMinPort",
+       "PasMaxPort",
+       `HStretch()
+      ))))
+    ), 
+    `VSpacing(1),
+    `Frame ( _("Additional Settings"),
+      `HBox(`HSpacing(1),`VBox (				
+	`Left("AntiWarez")
+      ))
+    ), //end of `Frame ( _("Additional Settings")	       
+    `VSpacing(1),
+    "SSL",
+    `VSpacing(1),
+    `Frame ( _("SUSEfirewall Settings"),
+      `HBox(`HSpacing(1),
+	"Firewall"
+      )
+    ),
+    `VStretch()
+  );
   // TRANSLATORS: part of dialog caption
   result["caption"] = _("FTP Expert Settings");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("Expert Settings");
-  result["widget_names"] = [ "DisBackButton", "PUREFTPDAddSettings", "Firewall"];
+  result["widget_names"] = [ "DisBackButton", "Firewall", "PasMinPort", 
+                             "PasMaxPort", "AntiWarez", "SSL",];
 
   return result;
 }
@@ -530,25 +1378,42 @@ map<string,any> addit_settings_pure () {
   map<string,map<string,any> > wid_handling_vsftpd = $[
     
     "StartMode" : CWMServiceStart::CreateAutoStartWidget ( StartMode ()),
-
     "StartStop" : CWMServiceStart::CreateStartStopWidget (StartStop ()),
-
     "DisBackButton" : DisBackButton (),
-
-    "GenSettings" : GenSettings(),
-
-    "PerforSettings" : PerformSettings (), 
-
-    "AnonSettings" : AnonSettings (),
-
-    "VSFTPDAddSettings": VSFTPDSettings(),
-
-    //"PUREFTPDAddSettings": PUREFTPDAddSettings (),
-
     "RBVsPureFTPd" : RBVsftpdPureftpd (),
 
-    "Firewall" : CWMFirewallInterfaces::CreateOpenFirewallWidget (FirewallSettingsVs()),
+    "Banner" : Banner(),
+    "ChrootEnable" : ChrootEnable (),
+    "VerboseLogging" : VerboseLogging(),
+    "UmaskAnon" : UmaskAnon(),
+    "UmaskLocal" : UmaskLocal(),
+    "FtpDirAnon" : FtpDirAnon (),
+    "BrowseAnon" : BrowseAnon (),
+    "FtpDirLocal" : FtpDirLocal (),
+    "BrowseLocal" : BrowseLocal (),
 
+    "MaxIdleTime" : MaxIdleTime (),
+    "MaxClientsPerIP" : MaxClientsPerIP (),
+    "MaxClientsNumber" : MaxClientsNumber (),
+    "LocalMaxRate" : LocalMaxRate (),
+    "AnonMaxRate" : AnonMaxRate (),
+
+    "AnonAuthen" : AnonAuthen (),
+    "EnableUpload" : EnableUpload (),
+    "AnonReadOnly" : AnonReadOnly (),
+    "AnonCreatDirs" : AnonCreatDirs (),
+
+    "PassiveMode" : PassiveMode (),
+    "PasMinPort" : PasMinPort (),
+    "PasMaxPort" : PasMaxPort (),
+    "SSLEnable" : SSLEnable (),
+    "SSLv2" : SSLv2 (),
+    "SSLv3" : SSLv3 (),
+    "TLS" : TLS (),
+    "CertFile" : CertFile (),
+    "BrowseCertFile" : BrowseCertFile (),
+    "Firewall" : CWMFirewallInterfaces::CreateOpenFirewallWidget (FirewallSettingsVs()),
+    
   ];
 
 
@@ -562,13 +1427,9 @@ map<string,any> addit_settings_pure () {
   map<string, map<string,any> > tabs_vsftpd = $[
   
     "start_up"  : start_up (),
-
     "gen_settings" : gen_settings (),
-
     "perfor_settings" :perfor_settings (),
-
     "anon_settings" : vsftpd_anon_settings (),
-
     "addit_settings" : addit_settings (),
 
   ];
@@ -616,23 +1477,33 @@ map<symbol,any> functions = $[
  */
 
 map<string,map<string,any> > wid_handling_pureftpd = $[
-    
-    "StartMode" : CWMServiceStart::CreateAutoStartWidget (StartMode ()),
-
-    "StartStop" : CWMServiceStart::CreateStartStopWidget (StartStopPure ()),
 
     "DisBackButton" : DisBackButton (),
 
-    "GenSettings" : GenSettings(),
-
-    "PerforSettings" : PerformSettings (), 
-
-    "AnonSettings" : AnonSettings (),
-
-    "PUREFTPDAddSettings": PUREFTPDAddSettings (),
-
+    "StartMode" : CWMServiceStart::CreateAutoStartWidget (StartMode ()),
+    "StartStop" : CWMServiceStart::CreateStartStopWidget (StartStopPure ()),
     "RBVsPureFTPd" : RBVsftpdPureftpd (),
 
+    "ChrootEnable" : ChrootEnable (),
+    "VerboseLogging" : VerboseLogging(),
+    "Umask" : Umask (),
+    "FtpDirAnon" : FtpDirAnon (),
+    "BrowseAnon" : BrowseAnon (),
+
+    "MaxIdleTime" : MaxIdleTime (),
+    "MaxClientsPerIP" : MaxClientsPerIP (),
+    "MaxClientsNumber" : MaxClientsNumber (),
+    "LocalMaxRate" : LocalMaxRate (),
+    "AnonMaxRate" : AnonMaxRate (),
+
+    "AnonAuthen" : AnonAuthen (),
+    "AnonReadOnly" : AnonReadOnly (),
+    "AnonCreatDirs" : AnonCreatDirs (),
+
+    "PasMinPort" : PasMinPort (),
+    "PasMaxPort" : PasMaxPort (),
+    "AntiWarez" : AntiWarez (),
+    "SSL" : SSL (),
     "Firewall" : CWMFirewallInterfaces::CreateOpenFirewallWidget (FirewallSettingsPure()),
   ];
 
@@ -679,7 +1550,6 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
 	"functions"	: functions,
     ]);
   }
-
 
 
 
