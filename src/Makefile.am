@@ -12,7 +12,6 @@ ynclude_DATA =			\
 	dialogs.ycp		\
 	complex.ycp		\
 	wid_functions.ycp	\
-	uiforms.ycp		\
 	write_load.ycp
 
 desktop_DATA =			\
