@@ -151,11 +151,13 @@ boolean SettingsXinetdPure (list <string> server_args) {
 
   //PasMinPort and PasMaxPort
   option = find(string opt, pure_ftpd_xinet_conf, ``(issubstring(opt,"-p")));
-  if (option != nil)
+  if (option != nil) {
      option = substring(tostring(option),2);
+     option = filterchars(option,"0123456789:");
+  }
   if (option != nil) {
      list <string> ports = [];
-     ports = splitstring(option," ");
+     ports = splitstring(option,":");
      if (size(ports)==2) {
         FtpServer::EDIT_SETTINGS["PasMinPort"] = ports[0]:"";
         FtpServer::EDIT_SETTINGS["PasMaxPort"] = ports[1]:""; 
@@ -999,7 +1001,9 @@ global string ValueUI (string key, boolean write) {
                  Service::Disable("pure-ftpd");
 	      if (FtpServer::vsftpd_edit) {
 		    FtpServer::VS_SETTINGS["listen"]=nil;
-		 }
+	      } else {
+		    FtpServer::PURE_SETTINGS["Daemonize"]="NO";		    
+              }
            } else {           
               if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "1") {
                  if (FtpServer::vsftpd_edit) {
@@ -1012,13 +1016,17 @@ global string ValueUI (string key, boolean write) {
                  }
                  if (FtpServer::vsftpd_edit) {
 		    FtpServer::VS_SETTINGS["listen"]="YES";
-		 }
+		 } else {
+		    FtpServer::PURE_SETTINGS["Daemonize"]="YES";
+                 }
               } else {
                  Service::Disable("vsftpd");
 		 Service::Disable("pure-ftpd");
 		 if (FtpServer::vsftpd_edit) {
 		    FtpServer::VS_SETTINGS["listen"]="YES";
-		 }
+		 } else {
+		    FtpServer::PURE_SETTINGS["Daemonize"]="YES";
+                 }
 	      }
               FtpServer::start_xinetd = false;
            }	   

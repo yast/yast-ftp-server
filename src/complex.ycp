@@ -52,6 +52,10 @@ boolean ReadFTPService () {
   integer vsftpd_init_count = 0;
   integer pureftpd_init_count = 0;
   any ret = nil;
+  boolean vs_package_available = false;
+  boolean pure_package_available = false;
+
+  
   if (Package::Installed("vsftpd")) {
      vsftpd_init_count = vsftpd_init_count + 1;
      FtpServer::vsftpd_installed = true;
@@ -62,8 +66,17 @@ boolean ReadFTPService () {
      FtpServer::pureftpd_installed = true;
   }
 
+  
   if ((vsftpd_init_count == 0) && (pureftpd_init_count == 0)) {
-     //Popup::Error("There isn't installed ftp daemon (vsftpd/pure-ftpd)!" );
+     vs_package_available = Package::Available("vsftpd");
+     pure_package_available = Package::Available("pure-ftpd");
+     if ((!vs_package_available)&&(!pure_package_available)) {
+        Popup::Error("Packages for vsftpd and pure-ftpd are not available.");
+        y2error("[ftp-server] (ReadFTPService ()) Packages for vsftpd and pure-ftpd are not available.");
+        return false;
+     }
+
+
      UI::OpenDialog(
        `RadioButtonGroup(`id("IntstallFTPd"), 
 	 `VBox(
@@ -79,6 +92,15 @@ boolean ReadFTPService () {
 	 ) // end of `VBox(
        ) //end of `RadioButtonGroup(`id("IntstallFTPd")
      ); // end of UI::OpenDialog(
+     if (!vs_package_available) {
+        UI::ChangeWidget(`id(0),`Enabled, false);
+        UI::ChangeWidget(`id(1),`Value, true);
+     }
+
+     if (!pure_package_available) {
+        UI::ChangeWidget(`id(1),`Enabled, false);
+        UI::ChangeWidget(`id(0),`Value, true);
+     }
      integer install = 0;
      while (true) {
        ret = UI::UserInput();
@@ -99,11 +121,13 @@ boolean ReadFTPService () {
      if (install == 0) {
         daemon = "vsftpd";
         daemon_list = add(daemon_list, daemon);
+        result = vs_package_available;
      } else {
         daemon = "pure-ftpd";
         daemon_list = add(daemon_list, daemon);
+        result = pure_package_available;
      }
-     result = Package::Available(daemon);
+     //result = Package::Available(daemon);
      if (result == true) {
         result = Package::DoInstall(daemon_list);
         if (result == false) {
