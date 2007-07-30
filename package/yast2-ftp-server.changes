@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 30 17:09:13 CEST 2007 - juhliarik@suse.cz
+
+- added patch for pure-ftpd and running via xinetd
+- added corrections into help text
+- V 2.15.7 
+
+-------------------------------------------------------------------
 Fri Jun 29 12:46:15 CEST 2007 - juhliarik@suse.cz
 
 - added patch for creating upload dir
