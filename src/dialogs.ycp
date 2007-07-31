@@ -22,7 +22,7 @@ import "CWMFirewallInterfaces";
 
 include "ftp-server/helps.ycp";
 include "ftp-server/wid_functions.ycp";
-//include "ftp-server/uiforms.ycp";
+
 
 
 

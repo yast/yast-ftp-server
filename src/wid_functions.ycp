@@ -23,7 +23,6 @@ import "Mode";
 import "FileUtils";
 
 
-include "ftp-server/uiforms.ycp";
 
 
 /**
