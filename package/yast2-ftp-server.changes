@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 31 09:51:21 CEST 2007 - juhliarik@suse.cz
+
+- added path for "Bad or unknown file 'ftp-server/uiforms.ycp'"
+- V 2.15.8
+
+-------------------------------------------------------------------
 Mon Jul 30 17:09:13 CEST 2007 - juhliarik@suse.cz
 
 - added patch for pure-ftpd and running via xinetd
