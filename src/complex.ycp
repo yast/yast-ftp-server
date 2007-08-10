@@ -71,7 +71,7 @@ boolean ReadFTPService () {
      vs_package_available = Package::Available("vsftpd");
      pure_package_available = Package::Available("pure-ftpd");
      if ((!vs_package_available)&&(!pure_package_available)) {
-        Popup::Error("Packages for vsftpd and pure-ftpd are not available.");
+        Popup::Error(_("Packages for vsftpd and pure-ftpd are not available."));
         y2error("[ftp-server] (ReadFTPService ()) Packages for vsftpd and pure-ftpd are not available.");
         return false;
      }
@@ -80,14 +80,14 @@ boolean ReadFTPService () {
      UI::OpenDialog(
        `RadioButtonGroup(`id("IntstallFTPd"), 
 	 `VBox(
-           `Heading ("No server package installed"),
-	   `Left(`Label("Choose ftp daemon please.")),
-	   `Left(`Label("If you want to cancel configuration of ftp you can push Cancel button.")),
-	   `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", true)),
-	   `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd")),
+           `Heading (_("No server package installed")),
+	   `Left(`Label(_("Choose ftp daemon please."))),
+	   `Left(`Label(_("If you want to cancel configuration of ftp you can push Cancel button."))),
+	   `Left(`RadioButton(`id(0), `opt(`notify), _("&vsftpd"), true)),
+	   `Left(`RadioButton(`id(1), `opt(`notify), _("&pure-ftpd"))),
 	   `HBox(
-	     `PushButton(`id(`accept), "&Install"),
-	     `PushButton(`id(`cancel), "&Cancel")
+	     `PushButton(`id(`accept), _("&Install")),
+	     `PushButton(`id(`cancel), _("&Cancel"))
            )
 	 ) // end of `VBox(
        ) //end of `RadioButtonGroup(`id("IntstallFTPd")
@@ -131,7 +131,7 @@ boolean ReadFTPService () {
      if (result == true) {
         result = Package::DoInstall(daemon_list);
         if (result == false) {
-  	   Popup::Error("Installation failed!");
+  	   Popup::Error(_("Installation failed."));
            y2milestone("[ftp-server] Installation failed");
 	   return false;
 	}
@@ -143,11 +143,11 @@ boolean ReadFTPService () {
  	   vsftpd_init_count = vsftpd_init_count + 1;
         }
      } else if (result == false) {
-	Popup::Error("Package for ftp is not available");
+	Popup::Error(_("Package for ftp is not available."));
 	y2milestone("[ftp-server] Package for ftp is not available");
 	return false;
      } else if (result == nil) {
-        Popup::Error("Package was not found");
+        Popup::Error(_("Package was not found"));
 	y2milestone("[ftp-server] Package was not found");
 	return false;
      } 	           
@@ -183,12 +183,12 @@ boolean ReadFTPService () {
      (FtpServer::pureftpd_installed) && (FtpServer::vsftpd_installed)) {
      UI::OpenDialog(
        `RadioButtonGroup(`id(`rb), `VBox(
-	 `Label("Choose daemon?"),
-	 `Left(`RadioButton(`id(0), `opt(`notify), "&vsftpd", ((FtpServer::vsftpd_edit)? true:false))),
-	 `Left(`RadioButton(`id(1), `opt(`notify), "&pure-ftpd", ((FtpServer::vsftpd_edit)? false:true))),
+	 `Label(_("Choose daemon?")),
+	 `Left(`RadioButton(`id(0), `opt(`notify), _("&vsftpd"), ((FtpServer::vsftpd_edit)? true:false))),
+	 `Left(`RadioButton(`id(1), `opt(`notify), _("&pure-ftpd"), ((FtpServer::vsftpd_edit)? false:true))),
 	 `HBox(
-	   `PushButton(`id(`close), "&Accept"),
-	   `PushButton(`id(`abort),  "&Cancel")
+	   `PushButton(`id(`close), _("&Accept")),
+	   `PushButton(`id(`abort),  _("&Cancel"))
 	 )
        )) //end of `RadioButtonGroup(`id(`rb), `VBox(
      ); //end of UI::OpenDialog(

@@ -18,6 +18,7 @@ import "Inetd";
 
 
 
+
 boolean IdFTPXinetd () {
   boolean old_progress = Progress::set (false);
   boolean ret = Inetd::Read();     
@@ -1047,14 +1048,12 @@ global string ValueUI (string key, boolean write) {
 	   return ((Service::Status("xinetd") == 0) ? "YES":"NO");
 	}  	   	
 	break; 
-
   
     default:
 	y2milestone ("[ftp-server] ValueUI(string key): unknown parameter %1", key);
 	return "";
 	break;
-    
-    
+        
   }
 
 

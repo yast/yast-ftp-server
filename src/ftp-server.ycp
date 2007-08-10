@@ -341,12 +341,12 @@ boolean FTPdCMDUmask (map options) {
 	      FtpServer::EDIT_SETTINGS["UmaskLocal"] = temp[1]:nil;
 	   } else {
 	      CommandLine::Error(_("Entered umask is not valid!"));
-	      CommandLine::Print("Example of correct umask <local users>:<anonymous> (177:077)");
+	      CommandLine::Print(_("Example of correct umask <local users>:<anonymous> (177:077)"));
 	      CommandLine::Print("");
 	   }
 	} else {
 	   CommandLine::Error(_("Entered umask is not valid!"));
-	   CommandLine::Print("Example of correct umask <local users>:<anonymous> (177:077)");
+	   CommandLine::Print(_("Example of correct umask <local users>:<anonymous> (177:077)"));
 	   CommandLine::Print("");
 	}
      }
@@ -362,7 +362,7 @@ boolean FTPdCMDUmask (map options) {
 	   FtpServer::EDIT_SETTINGS["Umask"] = value;
 	} else {
 	   CommandLine::Error(_("Entered umask is not valid!"));
-	   CommandLine::Print("Example of correct umask <files>:<dirs> (set_umask=177:077)");
+	   CommandLine::Print(_("Example of correct umask <files>:<dirs> (set_umask=177:077)"));
 	   CommandLine::Print("");
 	}
      } // end of if (options["set_umask"]:nil!=nil)
@@ -383,7 +383,7 @@ boolean FTPdCMDAnonDir (map options) {
 	   FtpServer::EDIT_SETTINGS["FtpDirAnon"] = value;
 	} else {
 	   CommandLine::Error(_("Option is empty."));
-	   CommandLine::Print("Example of correct imput set_anon_dir=/srv/ftp"); 
+	   CommandLine::Print(_("Example of correct imput set_anon_dir=/srv/ftp")); 
 	   CommandLine::Print("");
 	}
      } 
@@ -408,7 +408,7 @@ boolean FTPdCMDAuthenDir(map options) {
 	      FtpServer::EDIT_SETTINGS["FtpDirLocal"] = value;
 	   } else {
 	      CommandLine::Error(_("Option is empty."));
-	      CommandLine::Print("Example of correct imput set_authen_dir=/srv/ftp"); 
+	      CommandLine::Print(_("Example of correct imput set_authen_dir=/srv/ftp")); 
 	      CommandLine::Print("");
 	   }
         } 
@@ -419,7 +419,7 @@ boolean FTPdCMDAuthenDir(map options) {
      }
   } else {
     // TRANSLATORS: CommandLine error message
-    CommandLine::Error(_("Options is not supported in pure-ftp-server."));
+    CommandLine::Error(_("Option is not supported in pure-ftpd server."));
     CommandLine::Print("");
   }  
 }
@@ -441,7 +441,7 @@ boolean FTPdCMDPassPorts (map options) {
 	   CommandLine::Print("");	   
 	} else {
 	   // TRANSLATORS: CommandLine error message
-     	   CommandLine::Error(_("Please enter minimal port > maximal port."));
+     	   CommandLine::Error(_("Please enter minimal port < maximal port."));
      	   CommandLine::Print("");
 	}
      } else {
@@ -733,7 +733,7 @@ boolean  FTPdCMDSSL_TLS (map options) {
 map cmdline_description = $[
   "id" 	: "ftp-server",
     /* Command line help text for the Xftpd module */
-  "help"	: _("Configuration of ftp-server"),
+  "help"	: _("Configuration of FTP server"),
   "guihandler"	: FtpdSequence,
   "initialize"	: FtpServer::Read,
   "finish"	: FtpServer::Write,
@@ -1043,7 +1043,7 @@ map cmdline_description = $[
 	"set_max_rate":$[
      		"type" : "integer",
 		// TRANSLATORS: CommandLine help
-		"help" : _("The maximum rate for ftp users [kb/s]."),
+		"help" : _("The maximum rate for FTP users [kb/s]."),
 	],
 
 	"anon_only": $[

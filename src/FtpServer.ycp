@@ -15,7 +15,7 @@
 module "FtpServer";
 textdomain "ftp-server";
 
-
+import "sum";
 import "Progress";
 import "Report";
 import "Summary";
@@ -253,6 +253,7 @@ include "ftp-server/write_load.ycp";
  *  @return boolean successfull
  */
 boolean ReadPUREFTPDSettings () {
+    y2milestone("test sum: %1",sum::suma(1,1));
     foreach (string key,  SCR::Dir(.pure-ftpd), {
 	string val = (string) SCR::Read(add(.pure-ftpd, key));
 	//string val = (string) select((list <string>) SCR::Read(add(.pure-ftpd, key)), 0, "");
