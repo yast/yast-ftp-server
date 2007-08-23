@@ -190,19 +190,91 @@ boolean SettingsXinetdPure (list <string> server_args) {
 }
 
 
+global string PureSettingsForXinetd () {
+  string result = "";
+    
+  if (FtpServer::EDIT_SETTINGS["ChrootEnable"]:nil == "YES")
+     result = "-A ";
 
+  if (FtpServer::EDIT_SETTINGS["VerboseLogging"]:nil == "YES")
+     result = result + "-d ";
+
+  if (FtpServer::EDIT_SETTINGS["AnonReadOnly"]:nil == "YES")
+     result = result + "-i ";
+
+  if (FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES")
+     result = result + "-M "; 
+
+  if (FtpServer::EDIT_SETTINGS["AntiWarez"]:nil == "YES")
+     result = result + "-s ";
+  
+  //anonymous only
+  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "0")
+     result = result + "-e ";
+  
+  //local only
+  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "1")
+     result = result + "-E ";
+
+  //both
+  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "2")
+     result = result + "-e -E ";
+
+  if (FtpServer::EDIT_SETTINGS["Umask"]:nil != "")
+     result = result + "-U "+ FtpServer::EDIT_SETTINGS["Umask"]:nil;
+ 
+  //SSL
+  if (FtpServer::EDIT_SETTINGS["SSL"]:nil != "")
+     result = result +"-Y"+ FtpServer::EDIT_SETTINGS["SSL"]:nil +" ";
+
+  //anonymous rate
+  if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil != "0")
+     result = result +"-t" + FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil +" ";
+
+  //local rate   
+  if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil != "0")
+     result = result +"-T" + FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil +" ";
+
+  //max clients  
+  if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil != "")
+     result = result +"-c" + FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil +" ";
+
+  //max clients per IP
+  if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil != "")
+     result = result +"-C" + FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil +" ";
+
+  //max idle time
+  if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil != "")
+     result = result +"-I" + FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil +" ";
+
+  //port range for passive connections
+  result = result + "-p"+FtpServer::EDIT_SETTINGS["PasMinPort"]:nil+":"+FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil;
+
+  y2milestone("[ftp-server] (PureSettingsForXinetd) options for xinetd from pure-ftpd settings: %1", result);  
+  return result;
+}
 
 
 boolean InitStartViaXinetd () {
+  boolean xinetd_running = false;
   if (IdFTPXinetd ()) {
+
+     if (Service::Status("xinetd") == 0) {
+        xinetd_running = true;
+        FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
+     }
      if (FtpServer::vsftpd_edit) {		 
         if (Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"]:nil == true) {
            FtpServer::EDIT_SETTINGS["StartDaemon"] = "2"; 
+           if (xinetd_running)           
+              FtpServer::vsftp_xinetd_running = true;
            return true;
         }
      } else {
         if (Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"]:nil == true) {
            FtpServer::EDIT_SETTINGS["StartDaemon"] = "2";
+           if (xinetd_running)
+              FtpServer::pure_ftp_xinetd_running = true;
            return true;
         }
      }
@@ -212,31 +284,43 @@ boolean InitStartViaXinetd () {
 }
 
 
-boolean WriteStartViaXinetd (boolean startxinetd) { 
+global boolean WriteStartViaXinetd (boolean startxinetd, boolean push_star_now) { 
   string pure_options = "";
   boolean result = false;
+
   if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (!FtpServer::stop_daemon_xinetd)) {
+
      if (FtpServer::vsftpd_edit) {
         Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = true;
         Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = false;
+        FtpServer::pure_ftp_xinetd_running = false;
      } else {
         Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = true;
         Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = false;
-        map options = (map)SCR::Execute (.target.bash_output, 
+        FtpServer::vsftp_xinetd_running = false;
+        if (push_star_now) {
+           pure_options = PureSettingsForXinetd ();
+        } else { 
+           map options = (map)SCR::Execute (.target.bash_output, 
                       "/usr/sbin/pure-config-args /etc/pure-ftpd/pure-ftpd.conf");        
-	if (options["exit"]:nil ==  0)
-           pure_options = (string) options["stdout"]:nil;
-        else
-           return false; 
+	   if (options["exit"]:nil ==  0)
+              pure_options = (string) options["stdout"]:nil;
+           else
+              return false;
+        } 
         Inetd::netd_conf[FtpServer::pureftpd_xined_id,"server"] = "/usr/sbin/pure-ftpd";
         Inetd::netd_conf[FtpServer::pureftpd_xined_id,"server_args"] = pure_options;
      }
+
      if (startxinetd)
         Inetd::netd_status = 0; //start xinetd if not running else reload
+
   } else {
     Inetd::netd_status = 0;
     Inetd::netd_conf[FtpServer::pureftpd_xined_id,"enabled"] = false;
     Inetd::netd_conf[FtpServer::vsftpd_xined_id,"enabled"] = false;
+    FtpServer::vsftp_xinetd_running = false;
+    FtpServer::pure_ftp_xinetd_running = false;
   } //end of else [ if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2")]
 
   Inetd::netd_conf[FtpServer::pureftpd_xined_id,"changed"] = true;
@@ -245,6 +329,7 @@ boolean WriteStartViaXinetd (boolean startxinetd) {
   boolean status_progress = Progress::set(false);
   result = Inetd::Write();
   Progress::set(status_progress);
+
   return result;
 
 }
@@ -994,16 +1079,19 @@ global string ValueUI (string key, boolean write) {
     case("StartXinetd"):
         boolean result = false;	
 	 if (write) {
-	   if (EDIT_SETTINGS["StartXinetd"]:nil == "YES") {
-	      FtpServer::start_xinetd = true;
-              if (Service::Enabled("vsftpd"))
-                 Service::Disable("vsftpd");
-              if (Service::Enabled("pure-ftpd"))
-                 Service::Disable("pure-ftpd");
-	      if (FtpServer::vsftpd_edit) {
+
+           if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
+	      if (EDIT_SETTINGS["StartXinetd"]:nil == "YES") {
+	         FtpServer::start_xinetd = true;
+                 if (Service::Enabled("vsftpd"))
+                    Service::Disable("vsftpd");
+                 if (Service::Enabled("pure-ftpd"))
+                    Service::Disable("pure-ftpd");
+	         if (FtpServer::vsftpd_edit) {
 		    FtpServer::VS_SETTINGS["listen"]=nil;
-	      } else {
+	         } else {
 		    FtpServer::PURE_SETTINGS["Daemonize"]="NO";		    
+                 }
               }
            } else {           
               if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "1") {

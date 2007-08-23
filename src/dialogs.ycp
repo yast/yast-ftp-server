@@ -196,6 +196,26 @@ map<string,any> DisBackButton () {
   return result;
 }
 
+/**
+ * Init function where are added UI hadle functions 
+ * special hack widget where is handlig Start/Stop button
+ *
+ * @return map<string,any> map for start-stop widget
+ */
+
+map<string,any> StartStopRestart () {
+  map<string,any> result = $[];
+
+  result["widget"] = `custom;
+  result["custom_widget"] =`Empty();
+  result["init"] = InitStartStopRestart;
+  result["help"] = " ";
+
+
+
+  return result;
+}
+
 
 /**
  *-----------================= GENERAL SCREEN =============----------
@@ -854,7 +874,7 @@ map<string,any>  SSLv2 () {
 map<string,any>  SSLv3 () {
   map<string,any> result = $[];
 
-  result["label"] = _("Enable SSL &v2");
+  result["label"] = _("Enable SSL &v3");
   result["widget"] = `checkbox;
   result["init"] = InitSSLv3;
   result["store"] = StoreSSLv3;
@@ -1035,7 +1055,7 @@ map<string,any> start_up () {
   result["caption"] =  _("FTP Start-Up");
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("Start-Up");
-  result["widget_names"] = [ "DisBackButton", "StartMode", "StartStop", "RBVsPureFTPd"];
+  result["widget_names"] = [ "DisBackButton", "StartMode", "StartStop", "RBVsPureFTPd", "StartStopRestart"];
 
   return result;
 }
@@ -1126,7 +1146,7 @@ map<string,any> gen_settings_pure () {
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("General");
   result["widget_names"] = [ "DisBackButton", "ChrootEnable", "VerboseLogging",
-                             "Umask", "FtpDirAnon", "BrowseAnon",];
+                             "Umask", "FtpDirAnon", "BrowseAnon"];
 
   return result;
 }
@@ -1381,6 +1401,7 @@ map<string,any> addit_settings_pure () {
     "StartStop" : CWMServiceStart::CreateStartStopWidget (StartStop ()),
     "DisBackButton" : DisBackButton (),
     "RBVsPureFTPd" : RBVsftpdPureftpd (),
+    "StartStopRestart": StartStopRestart (),
 
     "Banner" : Banner(),
     "ChrootEnable" : ChrootEnable (),
@@ -1479,6 +1500,7 @@ map<symbol,any> functions = $[
 map<string,map<string,any> > wid_handling_pureftpd = $[
 
     "DisBackButton" : DisBackButton (),
+    "StartStopRestart": StartStopRestart (),
 
     "StartMode" : CWMServiceStart::CreateAutoStartWidget (StartMode ()),
     "StartStop" : CWMServiceStart::CreateStartStopWidget (StartStopPure ()),

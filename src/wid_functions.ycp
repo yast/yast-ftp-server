@@ -21,6 +21,7 @@ import "Mode";
 import "Users";
 import "Mode";
 import "FileUtils";
+import "Label";
 
 
 
@@ -71,10 +72,42 @@ boolean GetStartedViaXinetd () {
   if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2")
      result = true;
   else
-     result = false;     
+     result = false; 
+
+    
   return result;
 }
 
+
+boolean AskStartXinetd () {
+  boolean result = false;
+
+  if ((Service::Status("xinetd") != 0) && (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
+     if (Mode::normal()) {
+        UI::OpenDialog( `VBox(
+	  `Label(_("Xinetd is not running.")),
+	  `Label(_("Start it now?")),
+	  `HBox(
+	    `PushButton(`id(`accept), Label::YesButton()),
+	    `PushButton(`id(`cancel), Label::NoButton())
+          )
+        )); // end of UI::OpenDialog(
+        while (true) {
+          any ret = UI::UserInput();
+          if ( ret == `accept ) {
+             result = true;
+	     break;
+          } else if (ret == `cancel) {
+             result = false;
+	     break;
+          }
+        };
+        UI::CloseDialog();
+     } // end of if (Mode::normal()) {
+  } // end of if ((Service::Status("xinetd") != 0)...
+
+  return result;
+}
 
 /**
  * CWMServiceStart function with one boolean parameter  
@@ -84,34 +117,11 @@ void SetStartedViaXinetd (boolean enable_service) {
   boolean result = true;
   if (enable_service) {
      FtpServer::EDIT_SETTINGS["StartDaemon"] = "2";
-     if ((Service::Status("xinetd") != 0) && 
-        (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "NO")) {
-        if (Mode::normal()) {
-           UI::OpenDialog(       
-             `VBox(
-	       `Label("Xinetd is not started!"),
-	       `Label("Do you want to start it?"),
-	       `HBox(
-	         `PushButton(`id(`accept), "&Start"),
-	         `PushButton(`id(`cancel), "Canc&el")
-               )
-             ) // end of `VBox(
-           ); // end of UI::OpenDialog(
-           while (true) {
-             any ret = UI::UserInput();
-             if ( ret == `accept ) {
-                //FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
-                result = true;
-	        break;
-             } else if (ret == `cancel) {
-                //FtpServer::EDIT_SETTINGS["StartXinetd"] = "NO";
-                result = false;
-	        break;
-             }
-           };
-           UI::CloseDialog();
-        } // end of if (Mode::normal()) {
-     } // end of if ((Service::Status("xinetd") != 0)...
+     result = AskStartXinetd ();
+     if (!result) {
+        if (Service::Status("xinetd") == 0)
+           result = true;
+     }
      if (result)
         FtpServer::EDIT_SETTINGS["StartXinetd"] = "YES";
      else
@@ -123,19 +133,57 @@ void SetStartedViaXinetd (boolean enable_service) {
 
 }
 
+
+void UpdateInfoAboutStartingFTP () {
+
+  //which radiobutton is selected for starting "when booting", "via xinetd" or "manually"
+  any value = UI::QueryWidget (`id ("_cwm_service_startup"),`Value);
+
+  if (tostring(value) == "_cwm_startup_manual")
+     FtpServer::EDIT_SETTINGS["StartDaemon"] = "0";
+
+  else if (tostring(value) == "_cwm_startup_auto")
+     FtpServer::EDIT_SETTINGS["StartDaemon"] = "1";
+
+  else
+     FtpServer::EDIT_SETTINGS["StartDaemon"] = "2";
+
+}
+
+
 /**
  * Function start vsftpd
  */
 boolean StartNowVsftpd () {
   boolean result = false;
-  if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
-    if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
-       //FtpServer::start_xinetd = true;
-       Popup::Message(_("This is not supported via xinetd now."));
-    else {
-       Popup::Message(_("This is not supported via xinetd now."));
-    }
-  } else {   
+
+  UpdateInfoAboutStartingFTP ();
+  
+  if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (Service::Status("pure-ftpd") != 0)) {
+
+     SCR::Write(add(.vsftpd, "listen"), nil); 
+     SCR::Write(.vsftpd, nil);    
+     FtpServer::stop_daemon_xinetd = false;
+     result = AskStartXinetd ();
+
+     if (!result) {
+        if ((Service::Status("xinetd") == 0) || (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES"))
+        result = true;
+     }
+
+     if (FtpServer::WriteStartViaXinetd(true,true) && result) {
+         FtpServer::vsftp_xinetd_running = true;
+         FtpServer::pure_ftp_xinetd_running = false;
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
+         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);   
+         result = true;
+     }
+
+
+  } else {     
+     SCR::Write(add(.vsftpd, "listen"), "YES"); 
+     SCR::Write(.vsftpd, nil);    
      string command = "rcvsftpd start";
      map options = (map)SCR::Execute (.target.bash_output, command);
      y2milestone("[ftp-server] (StartNowVsftpd) command for starting vsftpd:  %1  output: %2",command, options);       
@@ -153,13 +201,19 @@ boolean StartNowVsftpd () {
  */
 boolean StopNowVsftpd () {
   boolean result = false;
-if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
-    if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
-       //FtpServer::start_xinetd = true;
-       Popup::Message(_("This is not supported via xinetd now."));
-    else {
-       Popup::Message(_("This is not supported via xinetd now."));
-    }
+
+  //UpdateInfoAboutStartingFTP ();
+
+  if (FtpServer::vsftp_xinetd_running) {
+    FtpServer::stop_daemon_xinetd = true;
+     if (FtpServer::WriteStartViaXinetd(true,true)) {
+         FtpServer::vsftp_xinetd_running = false;
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is not running")));
+         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, true);
+         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false);
+         result = true;    
+     }
+
   } else {
 
     string command = "rcvsftpd stop";
@@ -176,21 +230,34 @@ if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
 /**
  * Function saves configuration and restarts vsftpd
  */
-boolean SaveAndRestartVsftpd () {
+boolean SaveAndRestartVsftpd () {  
+  boolean result = false;
   
-  boolean result = false;  
-  if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
-    if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
-       //FtpServer::start_xinetd = true;
-       Popup::Message(_("This is not supported via xinetd now."));
-    else {
-       Popup::Message(_("This is not supported via xinetd now."));
+  result =   StopNowVsftpd ();
+  UpdateInfoAboutStartingFTP ();
+
+  if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (Service::Status("pure-ftpd") != 0)) {
+     result = AskStartXinetd ();
+     //write settings to disk...
+     FtpServer::WriteSettings ();     
+     
+     if (!result) {
+        if ((Service::Status("xinetd") == 0) || (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES"))
+        result = true;
+     }
+     FtpServer::stop_daemon_xinetd = false;
+     if (FtpServer::WriteStartViaXinetd(true,false) && result) {
+         FtpServer::vsftp_xinetd_running = true;
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
+         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);   
+         result = true; 
+     }
+         
  
-    } 
   } else {
-    FtpServer::WriteSettings ();
-    FtpServer::WriteUpload ();
-    string command = "rcvsftpd restart";
+    FtpServer::WriteSettings ();    
+    string command = "rcvsftpd start";
     map options = (map)SCR::Execute (.target.bash_output, command);
     y2milestone("[ftp-server] (SaveAndRestartVsftpd) command for save and restart vsftpd:  %1  output: %2",command, options);       
     if (options["exit"]:nil ==  0)
@@ -198,8 +265,11 @@ boolean SaveAndRestartVsftpd () {
     else
        result = false;
   }
+  FtpServer::WriteUpload ();
   return result;
 }
+
+
 
 
 /**
@@ -208,21 +278,41 @@ boolean SaveAndRestartVsftpd () {
 
 boolean StartNowPure () {
   boolean result = false;
-  if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
-    if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
-       //FtpServer::start_xinetd = true;
-       Popup::Message(_("This is not supported via xinetd now."));
-    else {
-       Popup::Message(_("This is not supported via xinetd now."));
-    } 
+
+  UpdateInfoAboutStartingFTP ();
+
+  if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (Service::Status("vsftpd") != 0)) {
+     FtpServer::stop_daemon_xinetd = false;
+     result = AskStartXinetd ();
+
+     if (!result) {
+        if ((Service::Status("xinetd") == 0) || (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES"))
+        result = true;
+     }
+
+     if (FtpServer::WriteStartViaXinetd(true,true) && result) {
+         FtpServer::pure_ftp_xinetd_running = true;
+         FtpServer::vsftp_xinetd_running = false;
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
+         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
+         result = true;    
+     }
   } else {
+
+    SCR::Write(add(.pure-ftpd, "Daemonize"), "YES"); 
+    SCR::Write(.pure-ftpd, nil);
     string command = "rcpure-ftpd start";
+
     map options = (map)SCR::Execute (.target.bash_output, command);
-    y2milestone("[ftp-server] (StartNowPure) command for start pure-ftpd:  %1  output: %2",command, options);       
+
+    y2milestone("[ftp-server] (StartNowPure) command for start pure-ftpd:  %1  output: %2",command, options);  
+         
     if (options["exit"]:nil ==  0)
        result = true;
     else
        result = false;
+    
   }
   return result;
 }
@@ -232,13 +322,19 @@ boolean StartNowPure () {
  */
 
 boolean StopNowPure () {
-  boolean result = false;
-  if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (Service::Status("xinetd") != 0)) {
-     Popup::Message(_("This is not supported via xinetd now."));
-     /*
+  boolean result = false; 
+
+  if (FtpServer::pure_ftp_xinetd_running) {
+     //Popup::Message(_("This is not supported via xinetd now."));
+     
      FtpServer::stop_daemon_xinetd = true;
-     result = FtpServer::WriteXinetd ();
-     */
+     if (FtpServer::WriteStartViaXinetd(true,true)) {
+         FtpServer::pure_ftp_xinetd_running = false;
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is not running")));
+         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, true);
+         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false); 
+         result = true;  
+     }
   } else {
      string command = "rcpure-ftpd stop";
      map options = (map)SCR::Execute (.target.bash_output, command);
@@ -256,17 +352,32 @@ boolean StopNowPure () {
  */
 boolean SaveAndRestartPure () {
   boolean result = false;
-  if (FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") {
-    if (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES")
-       //FtpServer::start_xinetd = true;
-       Popup::Message(_("This is not supported via xinetd  now."));
-    else {
-     Popup::Message(_("This is not supported via xinetd now."));
- 
-    } 
+
+  result = StopNowPure ();
+  UpdateInfoAboutStartingFTP ();
+
+  if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (Service::Status("vsftpd") != 0)) {
+     result = AskStartXinetd ();
+     //write settings to disk...
+     FtpServer::WriteSettings ();     
+     
+     if (!result) {
+        if ((Service::Status("xinetd") == 0) || (FtpServer::EDIT_SETTINGS["StartXinetd"]:nil == "YES"))
+        result = true;
+     }
+     FtpServer::stop_daemon_xinetd = false;
+     if (FtpServer::WriteStartViaXinetd(true,false) && result) {
+         FtpServer::pure_ftp_xinetd_running = true;
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
+         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);  
+         result = true;  
+     }
+         
   }  else {
+    //write settings to disk...
     FtpServer::WriteSettings ();
-    string command = "rcpure-ftpd restart";
+    string command = "rcpure-ftpd start";
     map options = (map)SCR::Execute (.target.bash_output, command);
     y2milestone("[ftp-server] (StopNowPure) command for save and restart pure-ftpd:  %1  output: %2",command, options);
     if (options["exit"]:nil ==  0)
@@ -274,6 +385,7 @@ boolean SaveAndRestartPure () {
     else
        result = false;
   }
+  result = FtpServer::WriteUpload ();
   return result;
 }
 
@@ -326,6 +438,31 @@ symbol HandleRBVsPure(string key, map event) {
   }
 
 }
+
+/**
+ * Init function for start-up
+ * 
+ * init starting via xinetd and update status
+ */  
+
+void InitStartStopRestart (string key) {
+
+  if ((FtpServer::pure_ftp_xinetd_running) && (!FtpServer::vsftpd_edit)) {
+     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+     UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
+     UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
+     
+  }
+
+  if ((FtpServer::vsftp_xinetd_running) && (FtpServer::vsftpd_edit)) {
+     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+     UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
+     UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
+  }
+}
+
+
+
 
 
 /**
