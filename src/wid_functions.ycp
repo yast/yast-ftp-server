@@ -1178,6 +1178,60 @@ void InitAnonReadOnly (string key) {
 }
 
 /**
+ * Handle function of "Anonymous Can Upload"
+ * check permissions for upload dir
+ *
+ */
+
+symbol  HandleAnonReadOnly (string key, map event) {
+  string yesno_comment ="";
+  string yesno_question ="";
+  boolean result = false;
+  boolean enable = (boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value);
+
+
+  if (enable) {
+
+     if (!FtpServer::vsftpd_edit) {
+     
+        if (FtpServer::pure_ftp_allowed_permissios_upload == 0) {
+           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_comment = sformat(_("If you want to allow uploads for \"anonymous\" users, \nyou need a directory with write access for them."));
+	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           if (result) {
+              FtpServer::pure_ftp_allowed_permissios_upload = 1;
+              FtpServer::change_permissions = true;
+           } else {
+              FtpServer::pure_ftp_allowed_permissios_upload = -1;
+              FtpServer::change_permissions = false;
+           }           
+        } //end of if (FtpServer::pure_ftp_allowed_permissios_upload == 0)
+
+     } else {
+
+        if (FtpServer::pure_ftp_allowed_permissios_upload == 1) {
+           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_comment = sformat(_("For anonymous connections, it is necessary\n that a home directory of an anonymous user is not writeable."));
+	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           if (result) {
+              FtpServer::pure_ftp_allowed_permissios_upload = 0;
+              FtpServer::change_permissions = true;
+           } else {
+              FtpServer::pure_ftp_allowed_permissios_upload = -1;
+              FtpServer::change_permissions = false;
+           }           
+        } //end of if (FtpServer::pure_ftp_allowed_permissios_upload == 1)
+
+
+     } //end else for if if (!FtpServer::vsftpd_edit) {
+     
+     
+  } // end of if (enable) {
+
+
+}
+
+/**
  * Store function of "Anonymous Can Upload"
  * save value to temporary structure
  *
@@ -1198,6 +1252,63 @@ void InitAnonCreatDirs (string key) {
   UI::ChangeWidget(`id( "AnonCreatDirs" ), `Value, 
     (FtpServer::ValueUIEdit("AnonCreatDirs") == "YES"));
 }
+
+
+
+/**
+ * Handle function of "Anonymous Can Create Directories"
+ * check permissions for upload dir
+ *
+ */
+
+symbol  HandleAnonCreatDirs (string key, map event) {
+  string yesno_comment ="";
+  string yesno_question ="";
+  boolean result = false;
+  boolean enable = (boolean) UI::QueryWidget(`id("AnonReadOnly"), `Value);
+
+
+  if (enable) {
+
+     if (!FtpServer::vsftpd_edit) {
+     
+        if (FtpServer::pure_ftp_allowed_permissios_upload == 0) {
+           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_comment = sformat(_("If you want to allow uploads for \"anonymous\" users, \nyou need a directory with write access for them."));
+	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           if (result) {
+              FtpServer::pure_ftp_allowed_permissios_upload = 1;
+              FtpServer::change_permissions = true;
+           } else {
+              FtpServer::pure_ftp_allowed_permissios_upload = -1;
+              FtpServer::change_permissions = false;
+           }           
+        } //end of if (FtpServer::pure_ftp_allowed_permissios_upload == 0)
+
+     } else {
+
+        if (FtpServer::pure_ftp_allowed_permissios_upload == 1) {
+           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_comment = sformat(_("For anonymous connections, it is necessary\n that a home directory of an anonymous user is not writeable."));
+	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
+           if (result) {
+              FtpServer::pure_ftp_allowed_permissios_upload = 0;
+              FtpServer::change_permissions = true;
+           } else {
+              FtpServer::pure_ftp_allowed_permissios_upload = -1;
+              FtpServer::change_permissions = false;
+           }           
+        } //end of if (FtpServer::pure_ftp_allowed_permissios_upload == 1)
+
+
+     } //end else for if if (!FtpServer::vsftpd_edit) {
+     
+     
+  } // end of if (enable) {
+
+
+}
+
 
 
 

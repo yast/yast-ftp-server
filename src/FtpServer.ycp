@@ -146,6 +146,27 @@ global boolean create_upload_dir = false;
 global boolean upload_good_permission = false;
 
 /**
+ * variable signifies if upload dir for anonymous has good permissions
+ * it is only for pure-ftpd
+ *
+ * -1 == home dir is "/"
+ *  0 == writting access disallow
+ *  1 == writting allowed
+ * global integer variable
+ */
+
+global integer pure_ftp_allowed_permissios_upload = 0;
+
+/**
+ * variable signifies if user choose change permissions for home dir
+ * for anonymous connections with allowed upload
+ *
+ * global boolean variable
+ */
+
+global boolean change_permissions = false;
+
+/**
  * variable signifies home dir for anonymous user
  * 
  * global string variable
@@ -339,11 +360,72 @@ boolean ReadVSFTPDUpload () {
         }
      } 
   }
+  
   return result;
 }
 
 
+/**
+ * Read pure-fptd configuration
+ * checking permissions for upload
+ *
+ *  @return boolean successfull
+ */
 
+
+boolean ReadPermisionUplaod () {
+
+  boolean result = false;
+  string command = "";
+  string directory = "";
+  string upload_dir = "";
+
+  list <string> directories = filter(string key, splitstring(anon_homedir, "/"), {return (key != "");});
+  
+  y2milestone("[ftp-server] (ReadPermisionUplaod) rozzekane directories...:  %1 ",directories);
+
+  if (size(directories) == 1 ) {
+     directory = "/";
+     upload_dir = deletechars(anon_homedir,"/");
+    
+  } else if (size(directories) > 1 ) {
+     upload_dir = directories[(size(directories)-1)]:"";
+     //Popup::Message(upload_dir);
+     directory = "/" + mergestring(remove(directories, (size(directories)-1)), "/");
+     //Popup::Message(directory);
+  } else {
+     pure_ftp_allowed_permissios_upload = -1;
+     
+  }
+
+  
+  if ((anon_homedir !="") && (pure_ftp_allowed_permissios_upload != -1))
+     command = "ls -l "+directory+ " | grep "+ upload_dir;
+  if (command != "") {
+     map options = (map)SCR::Execute (.target.bash_output, command);
+     y2milestone("[ftp-server] (ReadPermisionUplaod) command for checking permissions for upload dir:  %1",command);       
+     if (options["exit"]:nil ==  0)
+        result = true;
+     else
+        result = false;
+     if (result) {
+        string permissions =  substring (tostring(options["stdout"]:nil),0,10);
+        string w = filterchars (permissions, "w");
+        string r = filterchars (permissions, "r");
+        if ((size(w) <3) || (size(r) <3)) {
+           pure_ftp_allowed_permissios_upload = 0;
+           //Popup::Message("good permissions");
+        } else {
+           pure_ftp_allowed_permissios_upload = 1;
+           //Popup::Message("wrong permissions");
+        }
+     }
+     //Popup::Message(tostring(pure_ftp_allowed_permissios_upload)); 
+  }
+  return result;
+
+
+}
 
 /**
  * Remap current pure -FtpServer configuration
@@ -351,6 +433,7 @@ boolean ReadVSFTPDUpload () {
  *
  * @return boolean successfull
  */
+
 boolean InitEDIT_SETTINGS () {
    foreach (string key, UI_keys, {
        string val = ValueUI(key, false);
@@ -414,9 +497,10 @@ boolean ReadSettings () {
   SuSEFirewall::Read ();
   Progress::set (progress_orig);
   //read existing upload directory for vsftpd
-  if (vsftpd_edit) {
+  if (vsftpd_edit)
      result = ReadVSFTPDUpload ();
-  } 
+
+  result = ReadPermisionUplaod ();
   return result;
 }
 
@@ -646,7 +730,7 @@ global boolean WriteUpload () {
            command = command + EDIT_SETTINGS["FTPUser"]:nil +":"+EDIT_SETTINGS["FTPUser"]:nil; 
         
         command = command + " " + anon_homedir + upload + "; chmod 766 ";
-        command = command + anon_homedir +upload + "; else chmod 766 " + anon_homedir +"upload; fi";
+        command = command + anon_homedir +upload + "; else chmod 766 " + anon_homedir +upload+"; fi";
 /*        
 "dir=`ls /srv/ftp/ | grep upload`; if [ -z $dir ]; then echo $dir; mkdir /srv/ftp/upload; 
  chown ftp:ftp /srv/ftp/upload/; chmod 755 /srv/ftp/upload; else chmod 766 /srv/ftp/upload/; fi"
@@ -672,6 +756,18 @@ global boolean WriteUpload () {
     if (Service::Status("pure-ftpd") == 0)
        options = (map)SCR::Execute (.target.bash_output, "rcpure-ftpd restart");
   }
+
+  //update permissions for home directory if upload is enabled...
+  if ((pure_ftp_allowed_permissios_upload != -1) && (change_permissions)) {
+     if (vsftpd_edit) {
+        command = "chmod 755 " + anon_homedir;
+        options = (map)SCR::Execute (.target.bash_output, command);
+     } else {
+        command = "chmod 777 " + anon_homedir;
+        options = (map)SCR::Execute (.target.bash_output, command);
+     }
+  }
+
   return result;
 }
 /**

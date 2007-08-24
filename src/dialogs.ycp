@@ -683,6 +683,7 @@ map<string,any>  AnonReadOnly () {
   result["widget"] = `checkbox;
   result["init"] = InitAnonReadOnly;
   result["store"] = StoreAnonReadOnly;
+  result["handle"] = HandleAnonReadOnly;
   result["help"] = DialogHelpText("AnonReadOnly");
 
   return result;
@@ -704,6 +705,7 @@ map<string,any> AnonCreatDirs () {
   result["widget"] = `checkbox;
   result["init"] = InitAnonCreatDirs;
   result["store"] = StoreAnonCreatDirs;
+  result["handle"] = HandleAnonCreatDirs;
   result["help"] = DialogHelpText("AnonCreatDirs");
 
   return result;

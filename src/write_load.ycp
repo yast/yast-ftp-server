@@ -902,7 +902,7 @@ global string ValueUI (string key, boolean write) {
 		 FtpServer::VS_SETTINGS["dsa_cert_file"] = nil;	
            } else {
 	      return ((haskey(FtpServer::VS_SETTINGS, "dsa_cert_file") ? 
-		     toupper(FtpServer::VS_SETTINGS["dsa_cert_file"]:nil) : FtpServer::DEFAULT_CONFIG["CertFile"]:nil));
+		     FtpServer::VS_SETTINGS["dsa_cert_file"]:nil : FtpServer::DEFAULT_CONFIG["CertFile"]:nil));
 	   } 
 	} else {
            if (!write)
