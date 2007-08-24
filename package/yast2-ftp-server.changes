@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 24 13:15:38 CEST 2007 - juhliarik@suse.cz
+
+- added patch for changing permission and starting daemons
+- V 2.15.9
+
+-------------------------------------------------------------------
 Tue Jul 31 09:51:21 CEST 2007 - juhliarik@suse.cz
 
 - added path for "Bad or unknown file 'ftp-server/uiforms.ycp'"
