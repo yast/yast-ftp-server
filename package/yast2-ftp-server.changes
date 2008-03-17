@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 17 12:43:32 CET 2008 - jsrain@suse.cz
+
+- added 'StartupNotify=true' to the desktop file (bnc #304964)
+
+-------------------------------------------------------------------
 Fri Aug 24 13:15:38 CEST 2007 - juhliarik@suse.cz
 
 - added patch for changing permission and starting daemons
