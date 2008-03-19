@@ -1486,8 +1486,8 @@ map<symbol,any> functions = $[
 	"screens"	: tabs_vsftpd,
 	"widget_descr"	: wid_handling_vsftpd,
 	"back_button"	: Label::BackButton(),
-	"abort_button"	: Label::AbortButton(),
-	"next_button"	: Label::AcceptButton(),
+	"abort_button"	: Label::CancelButton(),
+	"next_button"	: Label::FinishButton(),
 	"functions"	: functions,
     ]);
   }
@@ -1569,8 +1569,8 @@ map<string,map<string,any> > wid_handling_pureftpd = $[
 	"screens"	: tabs_pureftpd,
 	"widget_descr"	: wid_handling_pureftpd,
 	"back_button"	: Label::BackButton(),
-	"abort_button"	: Label::AbortButton(),
-	"next_button"	: Label::AcceptButton(),
+	"abort_button"	: Label::CancelButton(),
+	"next_button"	: Label::FinishButton(),
 	"functions"	: functions,
     ]);
   }

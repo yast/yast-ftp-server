@@ -88,8 +88,8 @@ boolean AskStartXinetd () {
 	  `Label(_("Xinetd is not running.")),
 	  `Label(_("Start it now?")),
 	  `HBox(
-	    `PushButton(`id(`accept), Label::YesButton()),
-	    `PushButton(`id(`cancel), Label::NoButton())
+	    `PushButton(`id(`accept), Label::OKButton()),
+	    `PushButton(`id(`cancel), Label::CancelButton())
           )
         )); // end of UI::OpenDialog(
         while (true) {
