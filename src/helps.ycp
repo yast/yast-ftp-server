@@ -76,7 +76,7 @@ or shell access. Only enable if you know what you are doing.
 
 /* general logging  help 1/1 */
 "VerboseLogging": _("<p><b>Verbose Logging</b><br>
-When enabled, all FTP requests and responses are logged.
+When enabled, all ftp requests and responses are logged.
 </p>
 "),
 
@@ -90,29 +90,31 @@ File creation mask. (umask for files):(umask for dirs).
 /* general umask for anonymous  help - only vsftpd 1/1 */
 "UmaskAnon": _("<p><b>Umask for Anonymous:</b><br>
 The value that the umask for file creation is set to for anonymous users. 
-If you want to specify octal values, remember the \"0\" prefix otherwise 
+If you want to specify octal values, remember the \"0\" prefix, otherwise 
 the value will be treated as a base 10 integer.
-</p>"),
+</p>
+"),
 
 /* general umask for authenticated users  help - only vsftpd 1/1 */
 "UmaskLocal":  _("<p><b>Umask for Authenticated Users:</b><br>
 The value that the umask for file creation is set to for local users. 
-If you want to specify octal values, remember the \"0\" prefix otherwise 
+If you want to specify octal values, remember the \"0\" prefix, otherwise 
 the value will be treated as a base 10 integer.
-</p>"),
+</p>
+"),
 
 /* general FTP dir for anonymous help 1/1 */
 "FtpDirAnon": _("<p><b>FTP Directory for Anonymous Users:</b><br>
-You can specify directory which is used for FTP anonymous users. 
-By pressing <b>Browse</b> you can select directory from local filesystem.
+Here you can specify a directory which is used for ftp anonymous users. 
+By pressing <b>Browse</b> you can select a directory from local filesystem.
 </p>
 "),
 
 
 /* general FTP dir for authenticated help 1/1 */
 "FtpDirLocal": _("<p><b>FTP Directory for Authenticated Users:</b><br>
-You can specify directory which is used for FTP authenticated users. 
-By pressing <b>Browse</b> you can select directory from local filesystem.
+You can specify a directory which is used for ftp authenticated users. 
+By pressing <b>Browse</b> you can select a directory from local filesystem.
 </p>
 "),
 
@@ -124,9 +126,10 @@ By pressing <b>Browse</b> you can select directory from local filesystem.
 
 /* performance  Max Idle Time  help 1/1 */
 "MaxIdleTime": _("<p><b>Max Idle Time:</b><br>
-The timeout which is the maximum time a remote client 
-may spend between FTP commands.
-</p>"),
+The maximum time (timeout) a remote client 
+may spend between ftp commands.
+</p>
+"),
 
 /* performance max clients per IP  help 1/1 */
 "MaxClientsPerIP": _("<p><b>Max Clients for One IP:</b><br>
@@ -168,17 +171,19 @@ The maximum data transfer rate permitted for anonymous clients.</p>
 
 /* authentication  Enable Upload help 1/1 */
 "EnableUpload": _("<p><b>Enable Upload</b><br>
-If enable ftp users can upload. Anonymous users need to allow
- \"Anonymous Can Upload\" for enabling upload.
-</p>"),
+If enabled ftp users can upload. Anonymous users need to allow
+ <b>Anonymous Can Upload</b> for enabling upload.
+</p>
+"),
 
 
 /* authentication Anonymous Can Upload help 1/1 */
 "AnonReadOnly": _("<p><b>Anonymous Can Upload</b><br>
 If enabled anonymous users will be permitted to upload.
-<i>vsftpd only: </i>If you want that anonymous users can upload you 
-need existing directory with allowed writing in home directory after login.
-</p>"),
+<i>vsftpd only: </i>If you want to allow anonymous users to upload, you 
+need an existing directory with write persmission in the home directory after login.
+</p>
+"),
 
 /* authentication Anonymous Can Create Dirs help 1/1 */
 "AnonCreatDirs": _("<p><b>Anonymous Can Create Dirs</b><br>
@@ -196,20 +201,21 @@ need existing directory with allowed writing in home directory after login.</p>
 
 /* expert settings Enable Passive Mode help 1/1 */
 "PassiveMode": _("<p><b>Enable Passive Mode</b><br>
-If enabled ftp server allowe passive mode for connection.   
-</p>"),
+If enabled ftp server allow passive mode for connection.   
+</p>
+"),
 
 /* expert settings Min Port for Pas. Mode help 1/1 */
-"PasMinPort":_("<p><b>Min Port for Pas. Mode</b><br>
-Minimal value for port range for passive connection replies. 
-- for firewalling 
-</p>"), 
+"PasMinPort":_("<p><b>Min Port for Passive Mode</b><br>
+Minimal value for a port range for passive connection replies. This is used for protection by means of a firewall. 
+</p>
+"), 
 
 /* expert settings Max Port for Pas. Mode help 1/1 */
 "PasMaxPort": _("<p><b>Max Port for Pas. Mode</b><br>
-Maximal value for port range for passive connection replies. 
-- for firewalling 
-</p>"), 
+Maximal value for a port range for passive connection replies. This is used for protection by means of a firewall. 
+</p>
+"), 
 
 /* expert settings  Enable SSL help 1/1 */
 "SSLEnable": _("<p><b>Enable SSL</b><br>
@@ -234,7 +240,7 @@ If enabled TLS connections are allowed.
 /* expert settings DSA Certificate to Use for SSL Encrypted Connections help 1/1 */
 "CertFile": _("<p><b>DSA Certificate to Use for SSL Encrypted Connections</b><br>
 This option specifies the location of the DSA certificate to 
-use for SSL encrypted connections. You can select file by pressing <b>Browse</b>
+use for SSL encrypted connections. You can select a file by pressing <b>Browse</b>
 </p>
 "), 
 
@@ -248,9 +254,8 @@ but not validated by a local admin
 /* expert settings Security Settings help 1/1 */
 "SSL": _("<p><b>Security Settings</b><br>
 <i>Disable SSL/TLS</i> Disable SSL/TLS encryption layer.
-<i>Accept SSL and TLS</i> Accept both traditional and encrypted sessions.
-<i>Refuse Conections Without SSL/TLS</i> Refuse connections that don't use 
-SSL/TLS security mechanisms, including anonymous sessions.
+<i>Accept SSL and TLS</i> Accept both, traditional and encrypted sessions.
+<i>Refuse Conections Without SSL/TLS</i> Refuse connections that do not use SSL/TLS security mechanisms, including anonymous sessions.
 </p>"), 
 
 /**
@@ -261,13 +266,13 @@ SSL/TLS security mechanisms, including anonymous sessions.
 
    /* Summary dialog help 1/3 */
     "summary" : _("<p><b><big>FTP Server Configuration</big></b><br>
-Configure FTP server here.<br></p>
+Configure the ftp server here.<br></p>
 ")+
 
     /* Summary dialog help 2/3 */
     _("<p><b><big>Adding an FTP Server:</big></b><br>
-Choose an FTP server from the list of detected FTP servers.
-If your FTP server was not detected, use <b>Other (not detected)</b>.
+Choose an ftp server from the list of detected ftp servers.
+If your ftp server was not detected, use <b>Other (not detected)</b>.
 Then press <b>Configure</b>.</p>
 ") +
 
@@ -278,20 +283,20 @@ the configuration opens.</p>
 "),
 
     /* Ovreview dialog help 1/3 */
-    "overview" : _("<p><b><big>FTP Server Configuration Overview</big></b><br>
-Obtain an overview of installed FTP servers. Additionally
+    "overview" : _("<p><b><big>FTP Server Configuration Overvie</big></b><br>
+Obtain an overview of the installed ftp servers. Additionally,
 edit their configurations.<br></p>
 ") +
 
     /* Ovreview dialog help 2/3 */
 _("<p><b><big>Adding a FTP Server</big></b><br>
-Press <b>Add</b> to configure an FTP server.</p>
+Press <b>Add</b> to configure an ftp server.</p>
 ") +
 
     /* Ovreview dialog help 3/3 */
 _("<p><b><big>Editing or Deleting</big></b><br>
-Choose a  FTP server to change or remove.
-Then press <b>Edit</b> or <b>Delete</b> as desired.</p>
+Choose an ftp server to change or remove.
+Then press <b>Edit</b> or <b>Delete</b>, respectively.</p>
 "),
 
 

@@ -81,8 +81,8 @@ boolean ReadFTPService () {
        `RadioButtonGroup(`id("IntstallFTPd"), 
 	 `VBox(
            `Heading (_("No server package installed")),
-	   `Left(`Label(_("Choose ftp daemon please."))),
-	   `Left(`Label(_("If you want to cancel configuration of ftp you can push Cancel button."))),
+	   `Left(`Label(_("Please choose an ftp daemon."))),
+	   `Left(`Label(_("Press <b>Cancel</b> to cancel the configuration of the ftp."))),
 	   `Left(`RadioButton(`id(0), `opt(`notify), _("&vsftpd"), true)),
 	   `Left(`RadioButton(`id(1), `opt(`notify), _("&pure-ftpd"))),
 	   `HBox(
@@ -147,7 +147,7 @@ boolean ReadFTPService () {
 	y2milestone("[ftp-server] Package for ftp is not available");
 	return false;
      } else if (result == nil) {
-        Popup::Error(_("Package was not found"));
+        Popup::Error(_("Package not found"));
 	y2milestone("[ftp-server] Package was not found");
 	return false;
      } 	           

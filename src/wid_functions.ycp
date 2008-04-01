@@ -174,7 +174,7 @@ boolean StartNowVsftpd () {
      if (FtpServer::WriteStartViaXinetd(true,true) && result) {
          FtpServer::vsftp_xinetd_running = true;
          FtpServer::pure_ftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);   
          result = true;
@@ -208,7 +208,7 @@ boolean StopNowVsftpd () {
     FtpServer::stop_daemon_xinetd = true;
      if (FtpServer::WriteStartViaXinetd(true,true)) {
          FtpServer::vsftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is not running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is not running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, true);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false);
          result = true;    
@@ -248,7 +248,7 @@ boolean SaveAndRestartVsftpd () {
      FtpServer::stop_daemon_xinetd = false;
      if (FtpServer::WriteStartViaXinetd(true,false) && result) {
          FtpServer::vsftp_xinetd_running = true;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);   
          result = true; 
@@ -293,7 +293,7 @@ boolean StartNowPure () {
      if (FtpServer::WriteStartViaXinetd(true,true) && result) {
          FtpServer::pure_ftp_xinetd_running = true;
          FtpServer::vsftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
          result = true;    
@@ -330,7 +330,7 @@ boolean StopNowPure () {
      FtpServer::stop_daemon_xinetd = true;
      if (FtpServer::WriteStartViaXinetd(true,true)) {
          FtpServer::pure_ftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is not running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is not running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, true);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false); 
          result = true;  
@@ -368,7 +368,7 @@ boolean SaveAndRestartPure () {
      FtpServer::stop_daemon_xinetd = false;
      if (FtpServer::WriteStartViaXinetd(true,false) && result) {
          FtpServer::pure_ftp_xinetd_running = true;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);  
          result = true;  
@@ -448,14 +448,14 @@ symbol HandleRBVsPure(string key, map event) {
 void InitStartStopRestart (string key) {
 
   if ((FtpServer::pure_ftp_xinetd_running) && (!FtpServer::vsftpd_edit)) {
-     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
      UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
      UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
      
   }
 
   if ((FtpServer::vsftp_xinetd_running) && (FtpServer::vsftpd_edit)) {
-     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
+     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
      UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
      UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
   }
@@ -584,7 +584,7 @@ boolean ValidUmask (string key, map event) {
      list <string> l = splitstring (new_umask, ":");
      l = filter (string s, l, ``(s != ""));
      if (size(l) < 2) {
-      	Popup::Message (_("It is not valid umask."));
+      	Popup::Message (_("Not a valid umask."));
 	UI::SetFocus(`id("Umask"));
         return false;
      } 
@@ -829,7 +829,7 @@ boolean GenValid (string key, map event) {
          list <string> l = splitstring (new_umask, ":");
          l = filter (string s, l, ``(s != ""));
          if (size(l) < 2) {
-      	     Popup::Message (_("It is not valid umask."));
+      	     Popup::Message (_("Not a valid umask."));
 	     UI::SetFocus(`id("Umask"));
              return false;
          }
@@ -1118,16 +1118,23 @@ symbol HandleEnableUpload (string key, map event) {
 
      if (((button ==  "AnonReadOnly") || (anon_upload) && (check_upload)) && (ask_again)) {
         if (!FtpServer::create_upload_dir) { 
-           yesno_question =_("Do you want to create directory\n") + FtpServer::anon_homedir +_("upload with allowed writing?");
-           yesno_comment = _("If you want that \"anonymous\" users can upload\n you need to create directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question =_("Do you want to create a directory?\n") + FtpServer::anon_homedir +_("Upload with write access?");
+           yesno_comment = _("If you want anonymous users to be able to upload,
+ you need to create a directory with write access.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::create_upload_dir;
            FtpServer::upload_good_permission = true;
         } else if (!FtpServer::upload_good_permission) {
-           yesno_question = _("Do you want to change permission\nfor") + FtpServer::anon_homedir +_("upload (allow writing)?");
-           yesno_comment = _("If you want that \"anonymous\" users can upload\n you need directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question = _("Do you want to change permissions
+for
+") + FtpServer::anon_homedir +_("Upload (allow writing)?");
+           yesno_comment = _("If you want anonymous users to be able to upload, you need a directory with write access.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::upload_good_permission;
         }
@@ -1136,16 +1143,24 @@ symbol HandleEnableUpload (string key, map event) {
 
      if (((button ==  "AnonCreatDirs") || (anon_create_dirs) && (check_upload)) && (ask_again)) {
         if (!FtpServer::create_upload_dir) {  
-           yesno_question = _("Do you want to create directory\n") + FtpServer::anon_homedir +_("upload with allowed writing?");
-           yesno_comment = _("If you want that \"anonymous\" users can create directories\n you need to create directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question = _("Do you want to create a directory?\n") + FtpServer::anon_homedir +_("Upload with write access?");
+           yesno_comment = _("If you want anonymous users to be able to create directories,
+ you have to create a directory with write access.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::create_upload_dir;
            FtpServer::upload_good_permission = true;
         } else if (!FtpServer::upload_good_permission) {
-           yesno_question = _("Do you want to change permission\nfor") + FtpServer::anon_homedir +_("upload (allow writing)?");
-           yesno_comment = _("If you want that \"anonymous\" users can create directories\n you need directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question = _("Do you want to change permissions
+for
+") + FtpServer::anon_homedir +_("Upload (allow writing)?");
+           yesno_comment = _("If you want anonymous users to be able to create directories,
+ you need a directory with write acccess.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::upload_good_permission;
         }
@@ -1195,7 +1210,7 @@ symbol  HandleAnonReadOnly (string key, map event) {
      if (!FtpServer::vsftpd_edit) {
      
         if (FtpServer::pure_ftp_allowed_permissios_upload == 0) {
-           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_question = sformat(_("Change permissions of %1 ?\n"), FtpServer::anon_homedir);
            yesno_comment = sformat(_("If you want to allow uploads for \"anonymous\" users, \nyou need a directory with write access for them."));
 	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
            if (result) {
@@ -1210,8 +1225,9 @@ symbol  HandleAnonReadOnly (string key, map event) {
      } else {
 
         if (FtpServer::pure_ftp_allowed_permissios_upload == 1) {
-           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
-           yesno_comment = sformat(_("For anonymous connections, it is necessary\n that a home directory of an anonymous user is not writeable."));
+           yesno_question = sformat(_("Change permissions of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_comment = sformat(_("For anonymous connections the home directory of an anonymous user should have no write access.
+"));
 	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
            if (result) {
               FtpServer::pure_ftp_allowed_permissios_upload = 0;
@@ -1273,7 +1289,7 @@ symbol  HandleAnonCreatDirs (string key, map event) {
      if (!FtpServer::vsftpd_edit) {
      
         if (FtpServer::pure_ftp_allowed_permissios_upload == 0) {
-           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_question = sformat(_("Change permissions of %1 ?\n"), FtpServer::anon_homedir);
            yesno_comment = sformat(_("If you want to allow uploads for \"anonymous\" users, \nyou need a directory with write access for them."));
 	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
            if (result) {
@@ -1288,8 +1304,9 @@ symbol  HandleAnonCreatDirs (string key, map event) {
      } else {
 
         if (FtpServer::pure_ftp_allowed_permissios_upload == 1) {
-           yesno_question = sformat(_("Change permission of %1 ?\n"), FtpServer::anon_homedir);
-           yesno_comment = sformat(_("For anonymous connections, it is necessary\n that a home directory of an anonymous user is not writeable."));
+           yesno_question = sformat(_("Change permissions of %1 ?\n"), FtpServer::anon_homedir);
+           yesno_comment = sformat(_("For anonymous connections the home directory of an anonymous user should have no write access.
+"));
 	   result = Popup::YesNoHeadline(yesno_question, yesno_comment);
            if (result) {
               FtpServer::pure_ftp_allowed_permissios_upload = 0;
@@ -1391,16 +1408,23 @@ symbol HandleAnonSettings(string key, map event) {
 
      if (((button ==  "AnonReadOnly") || (anon_upload) && (check_upload)) && (ask_again)) {
         if (!FtpServer::create_upload_dir) { 
-           yesno_question = _("Do you want to create directory\n") + FtpServer::anon_homedir +_("upload with allowed writing?");
-           yesno_comment = _("If you want that \"anonymous\" users can upload\n you need to create directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question = _("Do you want to create a directory?\n") + FtpServer::anon_homedir +_("Upload with write access?");
+           yesno_comment = _("If you want anonymous users to be able to upload,
+ you need to create a directory with write access.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::create_upload_dir;
            FtpServer::upload_good_permission = true;
         } else if (!FtpServer::upload_good_permission) {
-           yesno_question = _("Do you want to change permission\nfor") + FtpServer::anon_homedir +_("upload (allow writing)?");
-           yesno_comment = _("If you want that \"anonymous\" users can upload\n you need directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question = _("Do you want to change permissions
+for
+") + FtpServer::anon_homedir +_("Upload (allow writing)?");
+           yesno_comment = _("If you want anonymous users to be able to upload, you need a directory with write access.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::upload_good_permission;
         }
@@ -1409,16 +1433,24 @@ symbol HandleAnonSettings(string key, map event) {
 
      if (((button ==  "AnonCreatDirs") || (anon_create_dirs) && (check_upload)) && (ask_again)) {
         if (!FtpServer::create_upload_dir) {  
-           yesno_question = _("Do you want to create directory\n") + FtpServer::anon_homedir +_("upload with allowed writing?");
-           yesno_comment = _("If you want that \"anonymous\" users can create directories\n you need to create directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question = _("Do you want to create a directory?\n") + FtpServer::anon_homedir +_("Upload with write access?");
+           yesno_comment = _("If you want anonymous users to be able to create directories,
+ you have to create a directory with write access.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::create_upload_dir = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::create_upload_dir;
            FtpServer::upload_good_permission = true;
         } else if (!FtpServer::upload_good_permission) {
-           yesno_question = _("Do you want to change permission\nfor") + FtpServer::anon_homedir +_("upload (allow writing)?");
-           yesno_comment = _("If you want that \"anonymous\" users can create directories\n you need directory with allowed writing.\n\n");
-           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after login of \"anonymous\" users.");
+           yesno_question = _("Do you want to change permissions
+for
+") + FtpServer::anon_homedir +_("Upload (allow writing)?");
+           yesno_comment = _("If you want anonymous users to be able to create directories,
+ you need a directory with write acccess.
+
+");
+           yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
            FtpServer::upload_good_permission = Popup::YesNoHeadline(yesno_question, yesno_comment);
            ask_again = FtpServer::upload_good_permission;
         }
@@ -1770,7 +1802,7 @@ boolean ValidSSL (string key, map event) {
   string current = (string) UI::QueryWidget(`id("SSL"), `Value);
   if ((!FileUtils::Exists("/etc/ssl/private/pure-ftpd.pem")) && 
      ((current == "accept") || (current == "refuse"))) {
-     Popup::Error(_("Certificate /etc/ssl/private/pure-ftpd.pem for SSL connection is missing."));
+     Popup::Error(_("The <tt>/etc/ssl/private/pure-ftpd.pem</tt> certificate for the SSL connection is missing."));
      return false;
   }
   return true;
@@ -1910,7 +1942,7 @@ void InitPUREFTPTAddSettings (string key) {
   integer current = (integer) UI::QueryWidget(`id("SSL"), `CurrentButton);
 
   if ((!FileUtils::Exists("/etc/ssl/private/pure-ftpd.pem")) && (current > 0)) {
-     Popup::Error(_("Certificate /etc/ssl/private/pure-ftpd.pem for SSL connection is missing."));
+     Popup::Error(_("The <tt>/etc/ssl/private/pure-ftpd.pem</tt> certificate for the SSL connection is missing."));
      return false;
   }
 

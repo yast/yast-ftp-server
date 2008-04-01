@@ -49,7 +49,7 @@ define boolean AbortDialog () {
     // TRANSLATORS: popup headline
     _("Aborting FTP Configuration"),
     // TRANSLATORS: popup message
-    _("All changes would be lost.Really abort configuration?"));
+    _("All changes will be lost. Really abort configuration?"));
 }
 
 /**
@@ -105,8 +105,8 @@ map<string,any> PerformSettings () {
 map<string,any> StartStop () {
   map<string,any> result = $[];
   result["service_id"] = "vsftpd";
-  result["service_running_label"] = _("FTP is running");
-  result["service_not_running_label"] = _("FTP is not running");
+  result["service_running_label"] = _("ftp is running");
+  result["service_not_running_label"] = _("ftp is not running");
   result["start_now_button"] = _("&Start FTP Now");
   result["stop_now_button"] = _("S&top FTP Now");
   result["save_now_action"] = SaveAndRestartVsftpd;
@@ -134,8 +134,8 @@ map<string,any> StartStop () {
 map<string,any> StartStopPure () {
   map<string,any> result = $[];
   result["service_id"] = "pure-ftpd";
-  result["service_running_label"] = _("FTP is running");
-  result["service_not_running_label"] = _("FTP is not running");
+  result["service_running_label"] = _("ftp is running");
+  result["service_not_running_label"] = _("ftp is not running");
   result["start_now_button"] = _("&Start FTP Now");
   result["stop_now_button"] = _("S&top FTP Now");
   result["save_now_action"] = SaveAndRestartPure;
