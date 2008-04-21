@@ -97,7 +97,7 @@ the value will be treated as a base 10 integer.
 
 /* general umask for authenticated users  help - only vsftpd 1/1 */
 "UmaskLocal":  _("<p><b>Umask for Authenticated Users:</b><br>
-The value that the umask for file creation is set to for local users. 
+The value that the umask for file creation is set to for authenticated users. 
 If you want to specify octal values, remember the \"0\" prefix, otherwise 
 the value will be treated as a base 10 integer.
 </p>
