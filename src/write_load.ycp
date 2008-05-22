@@ -368,7 +368,8 @@ global string ValueUI (string key, boolean write) {
     case("VerboseLogging"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-              FtpServer::VS_SETTINGS["log_ftp_protocol"] = FtpServer::EDIT_SETTINGS["VerboseLogging"]:nil;	
+              FtpServer::VS_SETTINGS["log_ftp_protocol"] = FtpServer::EDIT_SETTINGS["VerboseLogging"]:nil;
+	      FtpServer::VS_SETTINGS["syslog_enable"] = FtpServer::EDIT_SETTINGS["VerboseLogging"]:nil;	
            } else {
 	      return ((haskey(FtpServer::VS_SETTINGS, "log_ftp_protocol") ? 
 		     toupper(FtpServer::VS_SETTINGS["log_ftp_protocol"]:nil) : FtpServer::DEFAULT_CONFIG["VerboseLogging"]:nil));
