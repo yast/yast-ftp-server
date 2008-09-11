@@ -186,14 +186,14 @@ boolean FTPdCMDShow (map options) {
   // access permissions for anonymous users
   CommandLine::PrintNoCR(_("Access Permissions for Anonymous: "));
   if (FtpServer::EDIT_SETTINGS["AnonReadOnly"]:nil == "NO") {
-     CommandLine::PrintNoCR(_("Upload: enabled; "));
+     CommandLine::PrintNoCR(_("Upload enabled; "));
   } else {
-     CommandLine::PrintNoCR(_("Upload: disabled; "));
+     CommandLine::PrintNoCR(_("Upload disabled; "));
   }  
   if (FtpServer::EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES") {
-     CommandLine::Print(_("Create directories: enabled"));
+     CommandLine::Print(_("Create directories enabled"));
   } else  {
-     CommandLine::Print(_("Create directories: disabled"));
+     CommandLine::Print(_("Create directories disabled"));
   } 
 
   // welcome message vsftpd only
@@ -826,7 +826,7 @@ map cmdline_description = $[
 	"max_clients_ip" : $[
 	"handler" : FTPdCMDMaxClientsIP,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("The maximum clients connected via IP"),
+	"help" 	  : _("The maximum number of clients connected via IP"),
 	"example" : [
 		   "max_clients_ip set_max_clients=20",
 	            ],
@@ -1029,7 +1029,7 @@ map cmdline_description = $[
 	"set_idle_time":$[
      		"type" : "integer",
 		// TRANSLATORS: CommandLine help
-		"help" : _("Maximal Idle Time (in minutes)."),
+		"help" : _("Maximum Idle Time (in minutes)."),
 	],
 
 
@@ -1043,7 +1043,7 @@ map cmdline_description = $[
 	"set_max_rate":$[
      		"type" : "integer",
 		// TRANSLATORS: CommandLine help
-		"help" : _("The maximum rate for ftp users (KB/s)."),
+		"help" : _("The maximum data transfer rate for ftp users (KB/s)."),
 	],
 
 	"anon_only": $[

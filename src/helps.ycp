@@ -106,7 +106,7 @@ the value will be treated as a base 10 integer.
 /* general FTP dir for anonymous help 1/1 */
 "FtpDirAnon": _("<p><b>FTP Directory for Anonymous Users:</b><br>
 Here you can specify a directory which is used for ftp anonymous users. 
-By pressing <b>Browse</b> you can select a directory from local filesystem.
+By pressing <b>Browse</b> you can select a directory from the local filesystem.
 </p>
 "),
 
@@ -114,7 +114,7 @@ By pressing <b>Browse</b> you can select a directory from local filesystem.
 /* general FTP dir for authenticated help 1/1 */
 "FtpDirLocal": _("<p><b>FTP Directory for Authenticated Users:</b><br>
 You can specify a directory which is used for ftp authenticated users. 
-By pressing <b>Browse</b> you can select a directory from local filesystem.
+By pressing <b>Browse</b> you can select a directory from the local filesystem.
 </p>
 "),
 
@@ -165,14 +165,14 @@ The maximum data transfer rate permitted for anonymous clients.</p>
 "AnonAuthen": _("<p><b>Enable/Disable Anonymous and Local Users</b><br>
 <b>Anonymous Only</b> If enabled only anonymous logins are permitted.
 <b>Authenticated Users Only</b> If enabled only authenticated users are permitted.
-<b>Both</b> If enabled authenticated users and anonymous are permitted.
+<b>Both</b> If enabled authenticated users and anonymous users are permitted.
 </p>
 "),
 
 /* authentication  Enable Upload help 1/1 */
 "EnableUpload": _("<p><b>Enable Upload</b><br>
-If enabled ftp users can upload. Anonymous users need to allow
- <b>Anonymous Can Upload</b> for enabling upload.
+If enabled ftp users can upload. To allow anonymous users 
+to upload enable <b>Anonymous Can Upload</b>
 </p>
 "),
 
@@ -201,19 +201,21 @@ need existing directory with allowed writing in home directory after login.</p>
 
 /* expert settings Enable Passive Mode help 1/1 */
 "PassiveMode": _("<p><b>Enable Passive Mode</b><br>
-If enabled ftp server allow passive mode for connection.   
+If enabled the ftp server will allow passive mode for connections.   
 </p>
 "),
 
 /* expert settings Min Port for Pas. Mode help 1/1 */
 "PasMinPort":_("<p><b>Min Port for Passive Mode</b><br>
-Minimal value for a port range for passive connection replies. This is used for protection by means of a firewall. 
+Minimum value for a port range for passive connection replies.
+This is used for protection by means of a firewall. 
 </p>
 "), 
 
 /* expert settings Max Port for Pas. Mode help 1/1 */
 "PasMaxPort": _("<p><b>Max Port for Pas. Mode</b><br>
-Maximal value for a port range for passive connection replies. This is used for protection by means of a firewall. 
+Maximum value for a port range for passive connection replies.
+ This is used for protection by means of a firewall. 
 </p>
 "), 
 
@@ -290,14 +292,13 @@ edit their configurations.<br></p>
 
     /* Ovreview dialog help 2/3 */
 _("<p><b><big>Adding a FTP Server</big></b><br>
-Press <b>Add</b> to configure an ftp server.</p>
+Press <b>Add</b> to configure a ftp server.</p>
 ") +
 
     /* Ovreview dialog help 3/3 */
 _("<p><b><big>Editing or Deleting</big></b><br>
-Choose an ftp server to change or remove.
-Then press <b>Edit</b> or <b>Delete</b>, respectively.</p>
-"),
+Choose a ftp server to change or remove.
+Then press <b>Edit</b> or <b>Delete</b>, respectively.</p>\n"),
 
 
 ];

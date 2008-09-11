@@ -880,7 +880,7 @@ global boolean Read() {
            if (CommandLine::YesNo())
               vsftpd_edit = true;
 	} else {
-	   CommandLine::Error(_("You have installed both daemons. You have to run the configuration in interactive mode."));
+	   CommandLine::Error(_("You have installed both daemons. Therefore you have to run the configuration in interactive mode."));
            return false;
 	}
      }

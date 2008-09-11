@@ -82,7 +82,7 @@ boolean ReadFTPService () {
 	 `VBox(
            `Heading (_("No server package installed")),
 	   `Left(`Label(_("Please choose an ftp daemon."))),
-	   `Left(`Label(_("Press Cancel to cancel the configuration of the ftp."))),
+	   `Left(`Label(_("Press <b>Cancel</b> to cancel the configuration of the ftp."))),
 	   `Left(`RadioButton(`id(0), `opt(`notify), _("&vsftpd"), true)),
 	   `Left(`RadioButton(`id(1), `opt(`notify), _("&pure-ftpd"))),
 	   `HBox(
