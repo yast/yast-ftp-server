@@ -285,7 +285,7 @@ the configuration opens.</p>
 "),
 
     /* Ovreview dialog help 1/3 */
-    "overview" : _("<p><b><big>FTP Server Configuration Overvie</big></b><br>
+    "overview" : _("<p><b><big>FTP Server Configuration Overview</big></b><br>
 Obtain an overview of the installed ftp servers. Additionally,
 edit their configurations.<br></p>
 ") +
