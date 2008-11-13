@@ -602,27 +602,6 @@ map<string,any> AnonMaxRate () {
  */
 
 
-/*
- * Init function where are added UI hadle functions 
- * Anonymous Settings widget
- *
- * @return map<string,any> map for Anonymous Settings widget
- 
-
-map<string,any> AnonSettings () {
-  map<string,any> result = $[];
-
-  result["widget"] = `custom;
-  result["custom_widget"] = `VBox();
-  result["init"] = InitAnonSettings;
-  result["store"] = StoreAnonSettings;
-  result["handle"] = HandleAnonSettings;
-  result["help"] = DialogHelpText("anon_settings");
-
-  return result;
-}
-*/
-
 /**
  * Enable/Disable Anonymous and Local Users
  * Authentication Settings widget
@@ -710,11 +689,6 @@ map<string,any> AnonCreatDirs () {
 
   return result;
 }
-
-
-
-
-
 
 
 /**

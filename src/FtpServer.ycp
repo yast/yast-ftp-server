@@ -382,7 +382,7 @@ boolean ReadPermisionUplaod () {
 
   list <string> directories = filter(string key, splitstring(anon_homedir, "/"), {return (key != "");});
   
-  y2milestone("[ftp-server] (ReadPermisionUplaod) rozzekane directories...:  %1 ",directories);
+  y2milestone("[ftp-server] (ReadPermisionUplaod) split directories...:  %1 ",directories);
 
   if (size(directories) == 1 ) {
      directory = "/";
@@ -489,7 +489,9 @@ boolean ReadSettings () {
      //y2milestone("---------------------------------------------");
      if ((anon_homedir != "") && (anon_homedir != nil)) {
         if (EDIT_SETTINGS["FtpDirAnon"]:nil == "")
-	   EDIT_SETTINGS["FtpDirAnon"] = anon_homedir;	
+	   EDIT_SETTINGS["FtpDirAnon"] = anon_homedir;
+	else if (EDIT_SETTINGS["FtpDirAnon"]:nil != nil)
+	   anon_homedir = EDIT_SETTINGS["FtpDirAnon"]:nil;
      }
   }
   //read firewall settings
@@ -710,7 +712,7 @@ global boolean WriteUpload () {
   string upload =""; 
   map options = $[];
   integer authentication = tointeger(EDIT_SETTINGS["AnonAuthen"]:nil);
-  if ((vsftpd_edit) && (authentication == 0) && (create_upload_dir) && (upload_good_permission)) {
+  if ((vsftpd_edit) && (authentication != 1)  && (create_upload_dir) && (upload_good_permission)) {
      boolean write_enable = ((EDIT_SETTINGS["EnableUpload"]:nil == "YES") ? true:false);
      boolean anon_upload = ((EDIT_SETTINGS["AnonReadOnly"]:nil == "NO") ? true:false);
      boolean anon_create_dirs = ((EDIT_SETTINGS["AnonCreatDirs"]:nil == "YES") ? true:false);
@@ -736,7 +738,7 @@ global boolean WriteUpload () {
  chown ftp:ftp /srv/ftp/upload/; chmod 755 /srv/ftp/upload; else chmod 766 /srv/ftp/upload/; fi"
 */
         y2milestone("[ftp-server] (WriteUpload) bash command for creating upload dir : %1", command);
-        options = (map)SCR::Execute (.target.bash_output, command);        
+        options = (map)SCR::Execute (.target.bash_output, command);
 	if (options["exit"]:nil ==  0)
            result = true;
         else

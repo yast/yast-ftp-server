@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Nov 13 18:18:38 CET 2008 - juhliarik@suse.cz
+
+- added fix for settings upload directory for anonymous 
+  (bnc #409203) 
+- fixed typo (bnc #438092)
+- 2.17.2
+
+-------------------------------------------------------------------
 Tue Sep 30 18:12:18 CEST 2008 - juhliarik@suse.cz
 
 - corrected typo in help text (bnc #407517) 

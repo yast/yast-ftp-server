@@ -407,8 +407,7 @@ global string ValueUI (string key, boolean write) {
     case("FtpDirAnon"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 
-	      if ((FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != "") && 
-                 (FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != FtpServer::anon_homedir))	       
+	      if (FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != "")
                  FtpServer::VS_SETTINGS["anon_root"] = FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil;
 	      else
 		 FtpServer::VS_SETTINGS["anon_root"] = nil;	
