@@ -475,15 +475,15 @@ boolean ReadSettings () {
         //Popup::Message("if ((vsftpd_edit) && (EDIT_SETTINGS");
         Users::SelectUserByName (EDIT_SETTINGS["GuestUser"]:nil);
         userinfo = Users::GetCurrentUser ();
-        string guest_home_dir = (string) userinfo["homedirectory"]:nil;
+        string guest_home_dir = (string) userinfo["homeDirectory"]:nil;
         if ((guest_home_dir != "") && (guest_home_dir != nil) 
            && (EDIT_SETTINGS["FtpDirLocal"]:nil == ""))
 	   EDIT_SETTINGS["FtpDirLocal"] = guest_home_dir;
      }
      Users::SelectUserByName (EDIT_SETTINGS["FTPUser"]:nil);
      userinfo = Users::GetCurrentUser ();
-     anon_homedir = (string) userinfo["homedirectory"]:nil;
-     anon_uid     = (integer) userinfo["uidnumber"]:nil;
+     anon_homedir = (string) userinfo["homeDirectory"]:nil;
+     anon_uid     = (integer) userinfo["uidNumber"]:nil;
      //y2milestone("-------------User info-------------------");  
      //y2milestone("Users :CurrentUser %1", userinfo);
      //y2milestone("---------------------------------------------");
@@ -655,7 +655,7 @@ global boolean WriteSettings () {
         if (result) {
 	   if ((EDIT_SETTINGS["FtpDirAnon"]:nil != anon_homedir) &&
               (anon_homedir != "") && (anon_homedir != nil)) {
-              string error = Users::EditUser($["homedirectory":EDIT_SETTINGS["FtpDirAnon"]:nil]);
+              string error = Users::EditUser($["homeDirectory":EDIT_SETTINGS["FtpDirAnon"]:nil]);
               if ((error != nil) && (error != "")) {
                  result= false;
                  Popup::Error(error);

@@ -685,7 +685,7 @@ boolean ValidFtpDirAnon (string key, map event) {
         //checking correct homedir for anonymous user 
         if ((AnonHomeDir != "") && (Mode::normal())) {
            if (AnonHomeDir != FtpServer::anon_homedir) {
-              string error = Users::EditUser($["homedirectory":AnonHomeDir]);
+              string error = Users::EditUser($["homeDirectory":AnonHomeDir]);
               if ((error != nil) && (error != "")) {
                  Popup::Error(error);
 	         UI::SetFocus(`id("FtpDirAnon"));
@@ -693,7 +693,7 @@ boolean ValidFtpDirAnon (string key, map event) {
 	      }
               integer uid = FtpServer::anon_uid;
               boolean failed = false;
-	      map<string,integer> ui_map = $[];
+	      map<string,any> ui_map = $[];
               map error_map = $[];
 	      do {
 	         error_map = Users::CheckHomeUI (uid, AnonHomeDir, ui_map);
@@ -701,7 +701,7 @@ boolean ValidFtpDirAnon (string key, map event) {
 		    if (!Popup::YesNo (error_map ["question"]:""))
 		       failed = true;
 		    else
-		       ui_map[ error_map["question_id"]:"" ] = 1;
+		       ui_map[ error_map["question_id"]:"" ] = AnonHomeDir;
 	         }
 	      } while (error_map != $[] && !failed);
 	   } //end of if (AnonHomeDir != FtpServer::anon_homedir) {
@@ -840,7 +840,7 @@ boolean GenValid (string key, map event) {
         //checking correct homedir for anonymous user 
         if ((AnonHomeDir != "") && (Mode::normal())) {
            if (AnonHomeDir != FtpServer::anon_homedir) {
-              string error = Users::EditUser($["homedirectory":AnonHomeDir]);
+              string error = Users::EditUser($["homeDirectory":AnonHomeDir]);
               if ((error != nil) && (error != "")) {
                  Popup::Error(error);
 	         UI::SetFocus(`id("FtpDirAnon"));
