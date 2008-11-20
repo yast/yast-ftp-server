@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 20 12:35:28 CET 2008 - juhliarik@suse.cz
+
+- updated ftp-server for using yast module Users (bnc #445463) 
+- 2.17.3
+
+-------------------------------------------------------------------
 Thu Nov 13 18:18:38 CET 2008 - juhliarik@suse.cz
 
 - added fix for settings upload directory for anonymous 
