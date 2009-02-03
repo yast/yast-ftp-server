@@ -243,7 +243,7 @@ global map <string, string > DEFAULT_CONFIG = $[
      "AnonAuthen"		 : "1",  // 0 => anonymous only, 1 => authenticated only, 2=> both
      "AnonReadOnly"		 : "YES",
      "AnonCreatDirs"		 : "NO",
-     "Banner"			 : "Welcome message",
+     "Banner"			 : _("Welcome message"),
      "SSLEnable"		 : "NO",
      "SSLv2"			 : "NO", //enable/disable SSL version 2 (vsftpd only)
      "SSLv3"			 : "NO", //enable/disable SSL version 3 (vsftpd only)
