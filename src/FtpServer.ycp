@@ -32,6 +32,8 @@ import "PortAliases";
 /**
  * Prototypes
  */
+global void SetModified(boolean set_modified);
+
 global boolean Modified();
 
 global boolean WriteToEditMap (string key, string value);
@@ -821,6 +823,16 @@ global define boolean Abort() ``{
 global boolean GetModified() {
     return modified;
 }
+
+/**
+ * Function set modified variable.
+ *
+ * @param boolean modified
+ */
+global void SetModified(boolean set_modified) {
+    modified = set_modified;
+}
+
 
 
 /**

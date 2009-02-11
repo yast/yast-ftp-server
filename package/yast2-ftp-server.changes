@@ -1,3 +1,11 @@
+-------------------------------------------------------------------
+Wed Feb 11 14:36:11 CET 2009 - juhliarik@suse.de
+
+- deleted unecessary Back button (bnc#440531)
+- using popup question about really abort only after some changes
+  (bnc#460154 )
+- 2.18.0
+
 ------------------------------------------------------------------
 Tue Feb 03 15:12:18 CEST 2008 - juhliarik@suse.cz
 
