@@ -383,7 +383,7 @@ boolean FTPdCMDAnonDir (map options) {
 	   FtpServer::EDIT_SETTINGS["FtpDirAnon"] = value;
 	} else {
 	   CommandLine::Error(_("Option is empty."));
-	   CommandLine::Print(_("Example of correct imput set_anon_dir=/srv/ftp")); 
+	   CommandLine::Print(_("Example of correct input set_anon_dir=/srv/ftp")); 
 	   CommandLine::Print("");
 	}
      } 
@@ -408,7 +408,7 @@ boolean FTPdCMDAuthenDir(map options) {
 	      FtpServer::EDIT_SETTINGS["FtpDirLocal"] = value;
 	   } else {
 	      CommandLine::Error(_("Option is empty."));
-	      CommandLine::Print(_("Example of correct imput set_authen_dir=/srv/ftp")); 
+	      CommandLine::Print(_("Example of correct input set_authen_dir=/srv/ftp")); 
 	      CommandLine::Print("");
 	   }
         } 

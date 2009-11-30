@@ -509,7 +509,7 @@ global string ValueUI (string key, boolean write) {
 	         ports = add(ports, FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil);
 	         if (size(ports) == 2) {
 		    string val = ports[0]:nil;
-		    val = val+" ";
+		    val = val+":";
 		    val = val+ports[1]:nil;
 		    FtpServer::PURE_SETTINGS["PassivePortRange"] = val;
 	         }
@@ -519,7 +519,7 @@ global string ValueUI (string key, boolean write) {
  	   }	
            else {
 	      if (haskey(FtpServer::PURE_SETTINGS, "PassivePortRange")) {
-	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil," ");
+	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil,":");
 	         if (size(ports)==2)
 		    return ports[0]:"";
 	      } else {

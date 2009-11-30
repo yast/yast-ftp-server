@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 30 09:36:55 CET 2009 - juhliarik@suse.cz
+
+- added fix for typo (bnc#525007)
+- added fir parsing port range in pure-ftpd (bnc#541557)
+- 2.18.1 
+
+-------------------------------------------------------------------
 Wed Feb 11 14:36:11 CET 2009 - juhliarik@suse.de
 
 - deleted unecessary Back button (bnc#440531)
