@@ -19,9 +19,8 @@ X-SuSE-YaST-AutoInstResource=ftp-server
 X-SuSE-YaST-AutoInstSchema=ftp-server.rnc
 
 Icon=yast-ftp-server
-Exec=/sbin/yast2 ftp-server 
+Exec=xdg-su -c "/sbin/yast2 ftp-server"
 
 Name=FTP Server
 GenericName=Module for configuration FTP daemon (vsftpd or pure-ftpd)
-X-KDE-SubstituteUID=true
 StartupNotify=true
