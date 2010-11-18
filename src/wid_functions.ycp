@@ -159,6 +159,7 @@ boolean StartNowVsftpd () {
   if ((FtpServer::EDIT_SETTINGS["StartDaemon"]:nil == "2") && (Service::Status("pure-ftpd") != 0)) {
 
      SCR::Write(add(.vsftpd, "listen"), nil); 
+     SCR::Write(add(.vsftpd, "listen_ipv6"), nil); 
      SCR::Write(.vsftpd, nil);    
      FtpServer::stop_daemon_xinetd = false;
      result = AskStartXinetd ();
@@ -180,6 +181,7 @@ boolean StartNowVsftpd () {
 
   } else {     
      SCR::Write(add(.vsftpd, "listen"), "YES"); 
+     SCR::Write(add(.vsftpd, "listen_ipv6"), nil); 
      SCR::Write(.vsftpd, nil);    
      string command = "rcvsftpd start";
      map options = (map)SCR::Execute (.target.bash_output, command);

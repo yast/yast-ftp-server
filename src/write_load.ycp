@@ -1096,6 +1096,7 @@ global string ValueUI (string key, boolean write) {
                     Service::Disable("pure-ftpd");
 	         if (FtpServer::vsftpd_edit) {
 		    FtpServer::VS_SETTINGS["listen"]=nil;
+		    FtpServer::VS_SETTINGS["listen_ipv6"]=nil;
 	         } else {
 		    FtpServer::PURE_SETTINGS["Daemonize"]="NO";		    
                  }
@@ -1112,6 +1113,7 @@ global string ValueUI (string key, boolean write) {
                  }
                  if (FtpServer::vsftpd_edit) {
 		    FtpServer::VS_SETTINGS["listen"]="YES";
+		    FtpServer::VS_SETTINGS["listen_ipv6"]=nil;
 		 } else {
 		    FtpServer::PURE_SETTINGS["Daemonize"]="YES";
                  }
@@ -1120,6 +1122,7 @@ global string ValueUI (string key, boolean write) {
 		 Service::Disable("pure-ftpd");
 		 if (FtpServer::vsftpd_edit) {
 		    FtpServer::VS_SETTINGS["listen"]="YES";
+		    FtpServer::VS_SETTINGS["listen_ipv6"]=nil;
 		 } else {
 		    FtpServer::PURE_SETTINGS["Daemonize"]="YES";
                  }

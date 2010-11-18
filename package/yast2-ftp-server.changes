@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 18 09:30:14 CEST 2010 - jsrain@suse.cz
+
+- remove listen_ipv6 from vsftp.conf - it was preventing from
+  running in standalone mode (bnc#632543)
+
+-------------------------------------------------------------------
 Fri Apr 23 16:30:14 CEST 2010 - juhliarik@suse.cz
 
 - added fix for parsing options from xinetd (bnc#597842)
