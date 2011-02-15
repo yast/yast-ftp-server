@@ -252,6 +252,7 @@ boolean FTPdCMDShow (map options) {
 
 
   CommandLine::Print("");
+  return false;
 }
 
 

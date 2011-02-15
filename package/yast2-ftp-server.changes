@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb 15 11:18:37 CET 2011 - jsrain@suse.cz
+
+- fixed command line interface - not polling UI while reading the
+  settings (bnc#660821)
+- 2.20.0
+
+-------------------------------------------------------------------
 Thu Nov 18 09:30:14 CEST 2010 - jsrain@suse.cz
 
 - remove listen_ipv6 from vsftp.conf - it was preventing from

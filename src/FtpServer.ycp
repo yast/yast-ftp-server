@@ -851,6 +851,8 @@ global boolean Abort() {
  * @return boolean true if abort confirmed
  */
 global boolean PollAbort() {
+    if (Mode::commandline())
+	return false;
     if (UI::PollInput() == `abort)
 	return Abort();
 
