@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 15 11:18:37 CET 2011 - jsrain@suse.cz
+
+- fixed command line interface - not polling UI while reading the
+  settings (bnc#660821)
+
+------------------------------------------------------------------
 Mon Nov 30 10:26:55 CET 2009 - juhliarik@suse.cz
 
 - added fix for typo (bnc#525007)
