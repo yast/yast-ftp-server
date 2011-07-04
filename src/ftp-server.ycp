@@ -535,7 +535,7 @@ boolean FTPdCMDAccess (map options) {
 	CommandLine::PrintNoCR(_("Anonymous and authenticated users"));
      } else {
         // TRANSLATORS: CommandLine error message
-        CommandLine::Error(_("Uknown option."));
+        CommandLine::Error(_("Unknown option."));
         CommandLine::Print("");
         return false;
      }

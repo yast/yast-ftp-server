@@ -941,7 +941,7 @@ for
 for
 ") + FtpServer::anon_homedir +_("Upload (allow writing)?");
            yesno_comment = _("If you want anonymous users to be able to create directories,
- you need a directory with write acccess.
+ you need a directory with write access.
 
 ");
            yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");

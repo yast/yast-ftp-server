@@ -869,7 +869,7 @@ map<string,any> SSL () {
   result["items"] = [
     ["disable", _("Disable SSL/&TLS")],
     ["accept", _("Accept &SSL and TLS")],
-    ["refuse", _("&Refuse Conections Without SSL/TLS")],
+    ["refuse", _("&Refuse Connections Without SSL/TLS")],
   ];
   result["opt"] = [`notify];
   result["init"] = InitSSL;

@@ -181,7 +181,7 @@ to upload enable <b>Anonymous Can Upload</b>
 "AnonReadOnly": _("<p><b>Anonymous Can Upload</b><br>
 If enabled anonymous users will be permitted to upload.
 <i>vsftpd only: </i>If you want to allow anonymous users to upload, you 
-need an existing directory with write persmission in the home directory after login.
+need an existing directory with write permission in the home directory after login.
 </p>
 "),
 
@@ -257,7 +257,7 @@ but not validated by a local admin
 "SSL": _("<p><b>Security Settings</b><br>
 <i>Disable SSL/TLS</i> Disable SSL/TLS encryption layer.
 <i>Accept SSL and TLS</i> Accept both, traditional and encrypted sessions.
-<i>Refuse Conections Without SSL/TLS</i> Refuse connections that do not use SSL/TLS security mechanisms, including anonymous sessions.
+<i>Refuse Connections Without SSL/TLS</i> Refuse connections that do not use SSL/TLS security mechanisms, including anonymous sessions.
 </p>"), 
 
 /**

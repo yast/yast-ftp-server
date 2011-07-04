@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul  4 11:21:08 CEST 2011 - snwint@suse.de
+
+- fixed typos (bnc #703104)
+
+-------------------------------------------------------------------
 Tue Feb 15 11:18:37 CET 2011 - jsrain@suse.cz
 
 - fixed command line interface - not polling UI while reading the
