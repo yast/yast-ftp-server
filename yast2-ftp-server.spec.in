@@ -12,7 +12,7 @@ Summary:	YaST2 - FTP configuration
 
 %description
 This package contains the YaST2 component for FTP configuration. It can
-to configure two daemons: pure-ftpd and vsftpd.
+configure two daemons: pure-ftpd and vsftpd.
 
 @PREP@
 
