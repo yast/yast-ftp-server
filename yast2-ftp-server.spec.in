@@ -3,7 +3,9 @@
 @HEADER@
 Group:	System/YaST
 License: GPL v2 or later
-Requires:	yast2 yast2-inetd
+# Wizard::SetDesktopTitleAndIcon
+Requires:       yast2 >= 2.21.22
+Requires:	yast2-inetd
 BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-testsuite yast2-inetd
 
 BuildArchitectures:	noarch
