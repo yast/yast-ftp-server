@@ -2,7 +2,7 @@
 
 @HEADER@
 Group:	System/YaST
-License: GPL v2 or later
+License: GPL-2.0+
 # Wizard::SetDesktopTitleAndIcon
 Requires:       yast2 >= 2.21.22
 Requires:	yast2-inetd
