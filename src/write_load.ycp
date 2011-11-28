@@ -55,6 +55,11 @@ boolean SettingsXinetdPure (list <string> server_args) {
   y2milestone("----------------------------------------------------"); 
 
   //bnc#597842 Yast2-ftp-server module losses the chroot everyone (chroot-local-user) setting
+  //the problem appears to be that after vsftpd settings are parsed,
+  //the correct values are overwritten by parsing the (meaningless)
+  //settings for pure-ftpd.
+
+
   if ((FtpServer::vsftpd_edit) || (size(pure_ftpd_xinet_conf) == 0))
   {
      y2milestone("skip SettingsXinetdPure() -> vsftpd is used or pure_ftpd_xinet_conf is empty");
