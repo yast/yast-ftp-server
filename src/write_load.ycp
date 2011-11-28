@@ -53,7 +53,14 @@ boolean SettingsXinetdPure (list <string> server_args) {
   string option = "";
   y2milestone("---------------boolean SettingsXinetdPure (list <string> server_args)-----------------");  
   y2milestone("----------------------------------------------------"); 
-  
+
+  //bnc#597842 Yast2-ftp-server module losses the chroot everyone (chroot-local-user) setting
+  if ((FtpServer::vsftpd_edit) || (size(pure_ftpd_xinet_conf) == 0))
+  {
+     y2milestone("skip SettingsXinetdPure() -> vsftpd is used or pure_ftpd_xinet_conf is empty");
+     return true;
+  }
+
   //ChrootEnable
   option = find(string opt, pure_ftpd_xinet_conf, ``(opt == "-A"));
   if (option != nil)

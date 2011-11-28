@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 28 15:37:02 CET 2011 - tgoettlicher@suse.de
+
+- backported fix for parsing options from xinetd (bnc#597842)
+- 2.17.7
+
+-------------------------------------------------------------------
 Tue Feb 15 11:18:37 CET 2011 - jsrain@suse.cz
 
 - fixed command line interface - not polling UI while reading the
