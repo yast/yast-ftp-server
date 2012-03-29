@@ -890,8 +890,8 @@ global boolean Read() {
      if ((vsftpd_installed)&&(pureftpd_installed)) {
 	if (CommandLine::Interactive()) {
 	   CommandLine::Print(String::UnderlinedHeader(_("You have installed both daemons:"), 0));
-           CommandLine::Print(_("Please choose one of them for configuration."));
-           CommandLine::Print(_("Do you want to configure vsftpd? Alternatively choose pure-ftpd"));
+           CommandLine::Print(_("Choose one of them for configuration."));
+           CommandLine::Print(_("Do you want to configure vsftpd? Alternatively choose pure-ftpd."));
 	   CommandLine::Print("");
            if (CommandLine::YesNo())
               vsftpd_edit = true;
@@ -980,7 +980,7 @@ global boolean Write() {
   if (PollAbort()) return false;
   Progress::NextStage ();
   // write settings for starting daemon
-  if (!WriteUpload ()) Report::Error (_("Cannot create upload directory for anonymous connections!"));
+  if (!WriteUpload ()) Report::Error (_("Cannot create upload directory for anonymous connections."));
   sleep(sl);
   
 

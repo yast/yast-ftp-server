@@ -44,14 +44,14 @@ boolean FTPdCMDShow (map options) {
   //start-up settings
   CommandLine::PrintNoCR(_("Start-Up:"));
   if (GetStartedViaXinetd ()) {
-     CommandLine::Print(_("Ftp daemon is started via xinetd"));
+     CommandLine::Print(_("FTP daemon is started via xinetd."));
   } else {
      if (GetEnableService()) {
         // TRANSLATORS: CommandLine informative text
-	CommandLine::Print(_("Ftp daemon is enabled in the boot process"));
+	CommandLine::Print(_("FTP daemon is enabled in the boot process."));
      } else {
 	// TRANSLATORS: CommandLine informative text
-	CommandLine::Print(_("Ftp daemon needs manual starting"));
+	CommandLine::Print(_("FTP daemon needs manual starting."));
      }	   
   }
   //logging settings
@@ -80,7 +80,7 @@ boolean FTPdCMDShow (map options) {
 	CommandLine::Print(FtpServer::EDIT_SETTINGS["UmaskAnon"]:nil);
      } else {
         CommandLine::PrintNoCR(_("Umask for Anonymous:"));	   
-	CommandLine::Print(_("Option is not set now!"));
+	CommandLine::Print(_("Option is not set now."));
      }
      if (FtpServer::EDIT_SETTINGS["UmaskLocal"]:nil != "") {
 	CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));
@@ -88,7 +88,7 @@ boolean FTPdCMDShow (map options) {
 	//CommandLine::Print("");
      } else {
 	CommandLine::PrintNoCR(_("Umask for Authenticated Users: "));	   
-	CommandLine::Print(_("Option is not set now!"));
+	CommandLine::Print(_("Option is not set now."));
 	//CommandLine::Print("");
      }     
   } else {     
@@ -98,7 +98,7 @@ boolean FTPdCMDShow (map options) {
 	//CommandLine::Print("");
      } else {
 	CommandLine::PrintNoCR(_("Umask: "));	   
-	CommandLine::Print(_("Option is not set now!"));
+	CommandLine::Print(_("Option is not set now."));
 	//CommandLine::Print("");
      }     
   } // end of if (FtpServer::vsftpd_edit)
@@ -109,7 +109,7 @@ boolean FTPdCMDShow (map options) {
      if (FtpServer::EDIT_SETTINGS["FtpDirLocal"]:nil != "") {
 	CommandLine::Print(FtpServer::EDIT_SETTINGS["FtpDirLocal"]:nil);
      } else {	   
-	CommandLine::Print(_("Option is not set now!"));
+	CommandLine::Print(_("Option is not set now."));
      }
      
     
@@ -119,7 +119,7 @@ boolean FTPdCMDShow (map options) {
   if (FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil != "") {
      CommandLine::Print(FtpServer::EDIT_SETTINGS["FtpDirAnon"]:nil);
   } else {	   
-     CommandLine::Print(_("Option is not set now!"));
+     CommandLine::Print(_("Option is not set now."));
   }
   // port range
   CommandLine::PrintNoCR(_("Port Range: "));
@@ -128,7 +128,7 @@ boolean FTPdCMDShow (map options) {
      CommandLine::PrintNoCR(_(" - "));
      CommandLine::Print(FtpServer::EDIT_SETTINGS["PasMaxPort"]:nil);
   } else {
-     CommandLine::Print(_("Option is not set now!"));
+     CommandLine::Print(_("Option is not set now."));
   }
   
   // idle time
@@ -136,7 +136,7 @@ boolean FTPdCMDShow (map options) {
   if (FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil!="0") {
      CommandLine::Print(FtpServer::EDIT_SETTINGS["MaxIdleTime"]:nil);
   } else {
-     CommandLine::Print(_("Option is not set now!"));
+     CommandLine::Print(_("Option is not set now."));
   }
   
   // maximum clients per IP
@@ -144,7 +144,7 @@ boolean FTPdCMDShow (map options) {
   if (FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil!="0") {
      CommandLine::Print(FtpServer::EDIT_SETTINGS["MaxClientsPerIP"]:nil);
   } else {
-     CommandLine::Print(_("Option is not set now!"));
+     CommandLine::Print(_("Option is not set now."));
   }
 
   // maximum clients
@@ -152,7 +152,7 @@ boolean FTPdCMDShow (map options) {
   if (FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil!="0") {
      CommandLine::Print(FtpServer::EDIT_SETTINGS["MaxClientsNumber"]:nil);
   } else {
-     CommandLine::Print(_("Option is not set now!"));
+     CommandLine::Print(_("Option is not set now."));
   }
   
   // max rate for authenticated users
@@ -160,7 +160,7 @@ boolean FTPdCMDShow (map options) {
   if (FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil!="0") {
      CommandLine::Print(FtpServer::EDIT_SETTINGS["LocalMaxRate"]:nil);
   } else {
-     CommandLine::Print(_("Option is not set now!"));
+     CommandLine::Print(_("Option is not set now."));
   }
 
    // max rate for anonymous users
@@ -168,7 +168,7 @@ boolean FTPdCMDShow (map options) {
   if (FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil!="0") {
      CommandLine::Print(FtpServer::EDIT_SETTINGS["AnonMaxRate"]:nil);
   } else {
-     CommandLine::Print(_("Option is not set now!"));
+     CommandLine::Print(_("Option is not set now."));
   }
 
   // general settings for access
@@ -180,7 +180,7 @@ boolean FTPdCMDShow (map options) {
   } else  if (FtpServer::EDIT_SETTINGS["AnonAuthen"]:nil == "0") {
      CommandLine::Print(_("Anonymous and Authenticated Users"));
   } else {
-     CommandLine::Print(_("Option has wrong value!"));
+     CommandLine::Print(_("Option has wrong value."));
   }
 
   // access permissions for anonymous users
@@ -202,7 +202,7 @@ boolean FTPdCMDShow (map options) {
      if (FtpServer::EDIT_SETTINGS["Banner"]:nil != "") {
         CommandLine::Print(FtpServer::EDIT_SETTINGS["Banner"]:nil);
      } else {
-        CommandLine::Print(_("Option is not set now!"));
+        CommandLine::Print(_("Option is not set now."));
      }
 
      //CommandLine::PrintNoCR(_("Security settings: "));
@@ -266,7 +266,7 @@ boolean FTPdCMDStartup (map options) {
      CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
      CommandLine::Print("");
      // TRANSLATORS: CommandLine progress information
-     CommandLine::Print(_("Enabling ftp daemon in the boot process..."));
+     CommandLine::Print(_("Enabling FTP daemon in the boot process..."));
      CommandLine::Print("");
      SetEnableService(true);
   } else if (options["manual"]:nil!=nil) {
@@ -275,7 +275,7 @@ boolean FTPdCMDStartup (map options) {
      CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
      CommandLine::Print("");
      // TRANSLATORS: CommandLine progress information
-     CommandLine::Print(_("Removing ftp daemon from the boot process..."));
+     CommandLine::Print(_("Removing FTP daemon from the boot process..."));
      CommandLine::Print("");
      SetEnableService(false);
   } else if (options["xinetd"]:nil!=nil) {
@@ -284,7 +284,7 @@ boolean FTPdCMDStartup (map options) {
      CommandLine::Print(String::UnderlinedHeader(_("Start-Up:"), 0));
      CommandLine::Print("");
      // TRANSLATORS: CommandLine progress information
-     CommandLine::Print(_("Start ftp daemon via xinetd"));
+     CommandLine::Print(_("Start FTP daemon via xinetd"));
      CommandLine::Print("");
      SetStartedViaXinetd(true);
      if (options["startxinetd"]:nil == nil) {
@@ -341,12 +341,12 @@ boolean FTPdCMDUmask (map options) {
 	      FtpServer::EDIT_SETTINGS["UmaskAnon"] = temp[0]:nil;
 	      FtpServer::EDIT_SETTINGS["UmaskLocal"] = temp[1]:nil;
 	   } else {
-	      CommandLine::Error(_("Entered umask is not valid!"));
+	      CommandLine::Error(_("Entered umask is not valid."));
 	      CommandLine::Print(_("Example of correct umask <local users>:<anonymous> (177:077)"));
 	      CommandLine::Print("");
 	   }
 	} else {
-	   CommandLine::Error(_("Entered umask is not valid!"));
+	   CommandLine::Error(_("Entered umask is not valid."));
 	   CommandLine::Print(_("Example of correct umask <local users>:<anonymous> (177:077)"));
 	   CommandLine::Print("");
 	}
@@ -362,7 +362,7 @@ boolean FTPdCMDUmask (map options) {
 	   CommandLine::Print("");
 	   FtpServer::EDIT_SETTINGS["Umask"] = value;
 	} else {
-	   CommandLine::Error(_("Entered umask is not valid!"));
+	   CommandLine::Error(_("Entered umask is not valid."));
 	   CommandLine::Print(_("Example of correct umask <files>:<dirs> (set_umask=177:077)"));
 	   CommandLine::Print("");
 	}
@@ -442,12 +442,12 @@ boolean FTPdCMDPassPorts (map options) {
 	   CommandLine::Print("");	   
 	} else {
 	   // TRANSLATORS: CommandLine error message
-     	   CommandLine::Error(_("Please enter minimal port < maximal port."));
+     	   CommandLine::Error(_("Enter minimal port < maximal port."));
      	   CommandLine::Print("");
 	}
      } else {
 	// TRANSLATORS: CommandLine error message
-     	CommandLine::Error(_("Please enter correct numbers."));
+     	CommandLine::Error(_("Enter correct numbers."));
      	CommandLine::Print("");
      }
   } else {
@@ -480,7 +480,7 @@ boolean CommonHandler (map options, string str_key_option,
      }
   } else {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Error(_("Only one parameter is allowed."));
      CommandLine::Print("");
      return false;
   }
@@ -542,7 +542,7 @@ boolean FTPdCMDAccess (map options) {
      CommandLine::Print("");
   } else {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Error(_("Only one parameter is allowed."));
      CommandLine::Print("");
      return false;
   }
@@ -571,7 +571,7 @@ boolean FTPdCMDAnonAccess (map options) {
      } 
   } else {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("Only 1 or 2 parameters are allowed."));
+     CommandLine::Error(_("Only one or two parameters are allowed."));
      CommandLine::Print("");
      return false;
   }
@@ -602,7 +602,7 @@ boolean FTPdCMDWelMessage (map options) {
      }
   } else {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Error(_("Only one parameter is allowed."));
      CommandLine::Print("");
      CommandLine::Print(_("Example of correct input: welcome_message=\"Hello everybody\""));
      CommandLine::Print("");
@@ -645,13 +645,13 @@ boolean CommonHandlerCheckBox (map options, string header, boolean vsftpd_deamon
 
      } else {
         // TRANSLATORS: CommandLine error message
-        CommandLine::Error(_("Wrong option!"));
+        CommandLine::Error(_("Wrong option."));
         CommandLine::Print("");
         return false;
      }
   } else {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Error(_("Only one parameter is allowed."));
      CommandLine::Print("");
      name_option_EDIT_SETTINGS = "Example of correct using: " + name_option_EDIT_SETTINGS + " enable/disable";
      CommandLine::Print(name_option_EDIT_SETTINGS);
@@ -716,13 +716,13 @@ boolean  FTPdCMDSSL_TLS (map options) {
 
      } else {
         // TRANSLATORS: CommandLine error message
-        CommandLine::Error(_("Wrong option!"));
+        CommandLine::Error(_("Wrong option."));
         CommandLine::Print("");
         return false;
      }
   } else {
      // TRANSLATORS: CommandLine error message
-     CommandLine::Error(_("Only 1 parameter is allowed."));
+     CommandLine::Error(_("Only one parameter is allowed."));
      CommandLine::Print("");
      CommandLine::Print(_("Example of correct input: SSL_TLS enable/disable/only"));
      CommandLine::Print("");
@@ -734,7 +734,7 @@ boolean  FTPdCMDSSL_TLS (map options) {
 map cmdline_description = $[
   "id" 	: "ftp-server",
     /* Command line help text for the Xftpd module */
-  "help"	: _("Configuration of ftp server"),
+  "help"	: _("Configuration of FTP server"),
   "guihandler"	: FtpdSequence,
   "initialize"	: FtpServer::Read,
   "finish"	: FtpServer::Write,
@@ -800,7 +800,7 @@ map cmdline_description = $[
 	"authen_dir" : $[
 	"handler" : FTPdCMDAuthenDir,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("Enter the existing directory for authenticated users (pure-ftpd only)"),
+	"help" 	  : _("Enter the existing directory for authenticated users (pure-ftpd only)."),
 	"example" : [
 		   "authen_dir set_authen_dir=/srv/ftp",
 	            ],
@@ -863,7 +863,7 @@ map cmdline_description = $[
         "access" : $[
 	"handler" : FTPdCMDAccess,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("The access permissions"),
+	"help" 	  : _("Access permissions"),
 	"example" : [
 		   "access anon_only",
 		   "access authen_only",
@@ -874,7 +874,7 @@ map cmdline_description = $[
 	"anon_access" : $[
 	"handler" : FTPdCMDAnonAccess,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("The access permissions for anonymous users"),
+	"help" 	  : _("Access permissions for anonymous users"),
 	"example" : [
 		   "access anon_only",
 		   "access authen_only",
@@ -886,7 +886,7 @@ map cmdline_description = $[
 	"welcome_message" : $[
 	"handler" : FTPdCMDWelMessage,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("Welcome message is text to display when someone connects to the server (vsftpd only)"),
+	"help" 	  : _("Welcome message is the text to display when someone connects to the server (vsftpd only)."),
 	"example" : [
 		   "welcome_message=\"hello everybody\"",
 	            ],
@@ -896,7 +896,7 @@ map cmdline_description = $[
 	"SSL" : $[
 	"handler" : FTPdCMDSSL,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("vsftpd support secure connections via SSL (vsftpd only)"),
+	"help" 	  : _("vsftpd supports secure connections via SSL (vsftpd only)."),
 	"example" : [
 		   "SSL enable",
 		   "SSL disable",
@@ -907,7 +907,7 @@ map cmdline_description = $[
 	"SSLv2" : $[
 	"handler" : FTPdCMDSSLv2,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("If enabled, this option will permit SSL v2 protocol connections (vsftpd only)"),
+	"help" 	  : _("If enabled, this option will permit SSL v2 protocol connections (vsftpd only)."),
 	"example" : [
 		   "SSLv2 enable",
 		   "SSLv2 disable",
@@ -918,7 +918,7 @@ map cmdline_description = $[
 	"SSLv3" : $[
 	"handler" : FTPdCMDSSLv3,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("If enabled, this option will permit SSL v3 protocol connections (vsftpd only)"),
+	"help" 	  : _("If enabled, this option will permit SSL v3 protocol connections (vsftpd only)."),
 	"example" : [
 		   "SSLv3 enable",
 		   "SSLv3 disable",
@@ -929,7 +929,7 @@ map cmdline_description = $[
 	"TLS" : $[
 	"handler" : FTPdCMDTLS,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("vsftpd support connections via TLS (vsftpd only)"),
+	"help" 	  : _("vsftpd supports connections via TLS (vsftpd only)."),
 	"example" : [
 		   "TLS enable",
 		   "TLS disable",
@@ -941,7 +941,7 @@ map cmdline_description = $[
 	"antiwarez" : $[
 	"handler" : FTPdCMDAntiwarez,
 	// TRANSLATORS: CommandLine help
-	"help" 	  : _("Disallow downloading of files that were uploaded but not validated by a local admin (pure-ftpd only)"),
+	"help" 	  : _("Disallow downloading of files that were uploaded but not validated by a local admin (pure-ftpd only)."),
 	"example" : [
 		   "antiwarez enable",
 		   "antiwarez disable",
@@ -972,19 +972,19 @@ map cmdline_description = $[
   "options"	: $[
 	"atboot"  : $[
 		// TRANSLATORS: CommandLine help
-		"help" : _("Start ftp daemon in the boot process"),
+		"help" : _("Start FTP daemon in the boot process."),
 	],
 	"manual" : $[
 		// TRANSLATORS: CommandLine help
-		"help" : _("Start ftp daemon manually"),
+		"help" : _("Start FTP daemon manually."),
 	],
         "xinetd": $[
 		// TRANSLATORS: CommandLine help
-		"help" : _("Start ftp daemon via xinetd"),
+		"help" : _("Start FTP daemon via xinetd"),
 	],
 	"startxinetd": $[
 		// TRANSLATORS: CommandLine help
-		"help" : _("Start xinetd if it is not running"),
+		"help" : _("Start xinetd if it is not running."),
 	],
 
 	"enable": $[
@@ -1018,19 +1018,19 @@ map cmdline_description = $[
 	"set_min_port":$[
      		"type" : "integer",
 		// TRANSLATORS: CommandLine help
-		"help" : _("The minimum value for port range for passive connection replies."),
+		"help" : _("The minimum value for port range for passive connection replies"),
 	],
 	
 	"set_max_port":$[
      		"type" : "integer",
 		// TRANSLATORS: CommandLine help
-		"help" : _("The maximum value for port range for passive connection replies."),
+		"help" : _("The maximum value for port range for passive connection replies"),
 	],
 
 	"set_idle_time":$[
      		"type" : "integer",
 		// TRANSLATORS: CommandLine help
-		"help" : _("Maximum Idle Time (in minutes)."),
+		"help" : _("Maximum Idle Time (in minutes)"),
 	],
 
 
@@ -1044,7 +1044,7 @@ map cmdline_description = $[
 	"set_max_rate":$[
      		"type" : "integer",
 		// TRANSLATORS: CommandLine help
-		"help" : _("The maximum data transfer rate for ftp users (KB/s)."),
+		"help" : _("The maximum data transfer rate for ftp users (KB/s)"),
 	],
 
 	"anon_only": $[
@@ -1064,18 +1064,18 @@ map cmdline_description = $[
 
         "can_upload": $[
 		// TRANSLATORS: CommandLine help
-		"help" : _("Anonymous users can upload"),
+		"help" : _("Anonymous users can upload."),
 	],
 
         "create_dirs": $[
 		// TRANSLATORS: CommandLine help
-		"help" : _("Anonymous users can create directories"),
+		"help" : _("Anonymous users can create directories."),
 	],
 	//only vsftd
 	"set_message": $[
 		"type" : "string",
 		// TRANSLATORS: CommandLine help
-		"help" : _("Welcome message is text to display when someone connects to the server"),
+		"help" : _("Welcome message is the text to display when someone connects to the server."),
 	],
 
 	//only vsftd
@@ -1093,7 +1093,7 @@ map cmdline_description = $[
 	//only vsftd
 	"only": $[
 		// TRANSLATORS: CommandLine help
-		"help" : _("Refuse connections that do not  use SSL/TLS security mechanisms"),
+		"help" : _("Refuse connections that do not use SSL/TLS security mechanisms."),
 	],
 
 

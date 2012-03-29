@@ -172,7 +172,7 @@ boolean StartNowVsftpd () {
      if (FtpServer::WriteStartViaXinetd(true,true) && result) {
          FtpServer::vsftp_xinetd_running = true;
          FtpServer::pure_ftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);   
          result = true;
@@ -207,7 +207,7 @@ boolean StopNowVsftpd () {
     FtpServer::stop_daemon_xinetd = true;
      if (FtpServer::WriteStartViaXinetd(true,true)) {
          FtpServer::vsftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is not running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is not running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, true);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false);
          result = true;    
@@ -247,7 +247,7 @@ boolean SaveAndRestartVsftpd () {
      FtpServer::stop_daemon_xinetd = false;
      if (FtpServer::WriteStartViaXinetd(true,false) && result) {
          FtpServer::vsftp_xinetd_running = true;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);   
          result = true; 
@@ -292,7 +292,7 @@ boolean StartNowPure () {
      if (FtpServer::WriteStartViaXinetd(true,true) && result) {
          FtpServer::pure_ftp_xinetd_running = true;
          FtpServer::vsftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
          result = true;    
@@ -328,7 +328,7 @@ boolean StopNowPure () {
      FtpServer::stop_daemon_xinetd = true;
      if (FtpServer::WriteStartViaXinetd(true,true)) {
          FtpServer::pure_ftp_xinetd_running = false;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is not running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is not running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, true);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false); 
          result = true;  
@@ -366,7 +366,7 @@ boolean SaveAndRestartPure () {
      FtpServer::stop_daemon_xinetd = false;
      if (FtpServer::WriteStartViaXinetd(true,false) && result) {
          FtpServer::pure_ftp_xinetd_running = true;
-         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
+         UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
          UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
          UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);  
          result = true;  
@@ -445,14 +445,14 @@ symbol HandleRBVsPure(string key, map event) {
 void InitStartStopRestart (string key) {
 
   if ((FtpServer::pure_ftp_xinetd_running) && (!FtpServer::vsftpd_edit)) {
-     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
+     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
      UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
      UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
      
   }
 
   if ((FtpServer::vsftp_xinetd_running) && (FtpServer::vsftpd_edit)) {
-     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("ftp is running")));
+     UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label(_("FTP is running")));
      UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
      UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, true);
   }
@@ -677,7 +677,7 @@ void StoreFtpDirAnon (string key, map event) {
 symbol HandleBrowseAnon (string key, map event) {
   any button = event["ID"]:nil;
   if (button == "BrowseAnon") {
-     string val = UI::AskForExistingDirectory  ("/",_("Please select directory..."));
+     string val = UI::AskForExistingDirectory  ("/",_("Select directory"));
      UI::ChangeWidget(`id( "FtpDirAnon" ), `Value, val);
   }
   return nil;
@@ -708,7 +708,7 @@ void StoreFtpDirLocal (string key, map event) {
 symbol HandleBrowseLocal (string key, map event) {
   any button = event["ID"]:nil;
   if (button == "BrowseLocal") {
-     string val = UI::AskForExistingDirectory  ("/",_("Please select directory..."));
+     string val = UI::AskForExistingDirectory  ("/",_("Select directory"));
      UI::ChangeWidget(`id( "FtpDirLocal" ), `Value, val);
   }
   return nil;
@@ -915,7 +915,7 @@ symbol HandleEnableUpload (string key, map event) {
            yesno_question = _("Do you want to change permissions
 for
 ") + FtpServer::anon_homedir +_("Upload (allow writing)?");
-           yesno_comment = _("If you want anonymous users to be able to upload, you need a directory with write access.
+           yesno_comment = _("To allow anonymous users to upload, you need a directory with write access.
 
 ");
            yesno_comment = yesno_comment + FtpServer::anon_homedir + _(" is a home directory after the login of anonymous users.");
@@ -928,7 +928,7 @@ for
      if (((button ==  "AnonCreatDirs") || (anon_create_dirs) && (check_upload)) && (ask_again)) {
         if (!FtpServer::create_upload_dir) {  
            yesno_question = _("Do you want to create a directory?\n") + FtpServer::anon_homedir +_("Upload with write access?");
-           yesno_comment = _("If you want anonymous users to be able to create directories,
+           yesno_comment = _("If you want to allow anonymous users to create directories,
  you have to create a directory with write access.
 
 ");
@@ -1364,7 +1364,7 @@ void StoreCertFile (string key, map event) {
 symbol HandleBrowseCertFile (string key, map event) {
   any button = event["ID"]:nil;
   if (button == "BrowseCertFile") {
-     string val = UI::AskForExistingFile  ("/","*.*",_("Please Select File"));
+     string val = UI::AskForExistingFile  ("/","*.*",_("Select File"));
      UI::ChangeWidget(`id( "CertFile" ), `Value, val);
   }
 }

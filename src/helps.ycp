@@ -18,7 +18,7 @@ map HELPS = $[
 
     /* Read dialog help 1/2 */
     "read" : _("<p><b><big>Initializing FTP Server Configuration</big></b><br>
-Please wait...<br></p>
+</p>
 ") +
 
     /* Read dialog help 2/2 */
@@ -28,7 +28,7 @@ Safely abort the configuration utility by pressing <b>Abort</b> now.</p>
 
     /* Write dialog help 1/2 */
     "write" : _("<p><b><big>Saving FTP Server Configuration</big></b><br>
-Please wait...<br></p>
+</p>
 ") +
 
    
@@ -47,9 +47,10 @@ An additional dialog informs whether it is safe to do so.
 
 /*Start widget switching daemons help 1/1 */
 "selected_services": _("<p><b>Selected Service</b><br>
-     Frame shows which daemon is currently configured: <b>vsftpd, pure-ftpd,   
+     The frame shows which daemon is currently configured: <b>vsftpd, pure-ftpd,   
      </b>. If you have installed both daemons you can switch between them.
-</p>"),
+</p>
+"),
 
 /**
  *-----------================= GENERAL SCREEN =============----------
@@ -58,7 +59,7 @@ An additional dialog informs whether it is safe to do so.
 
 /* general welcome message help 1/1 */
 "Banner": _("<p><b>Welcome Message</b><br>
-This option is the name of a file containing 
+Specify the name of a file containing the
 text to display when someone connects to the server.
 </p>
 "),
@@ -69,14 +70,14 @@ text to display when someone connects to the server.
 When enabled, local users will be (by default) placed in a 
 chroot() jail in their home directory after login.
 <b>Warning:</b> This option has security implications, 
-especially if the users have upload permission, 
-or shell access. Only enable if you know what you are doing.
+especially if users have upload permission
+or shell access. Only enable Chroot if you know what you are doing.
 </p>
 "),
 
 /* general logging  help 1/1 */
 "VerboseLogging": _("<p><b>Verbose Logging</b><br>
-When enabled, all ftp requests and responses are logged.
+When enabled, all FTP requests and responses are logged.
 </p>
 "),
 
@@ -89,7 +90,7 @@ File creation mask. (umask for files):(umask for dirs).
 
 /* general umask for anonymous  help - only vsftpd 1/1 */
 "UmaskAnon": _("<p><b>Umask for Anonymous:</b><br>
-The value that the umask for file creation is set to for anonymous users. 
+The value to which the umask for file creation is set for anonymous users. 
 If you want to specify octal values, remember the \"0\" prefix, otherwise 
 the value will be treated as a base 10 integer.
 </p>
@@ -97,7 +98,7 @@ the value will be treated as a base 10 integer.
 
 /* general umask for authenticated users  help - only vsftpd 1/1 */
 "UmaskLocal":  _("<p><b>Umask for Authenticated Users:</b><br>
-The value that the umask for file creation is set to for authenticated users. 
+The value to which the umask for file creation is set for authenticated users. 
 If you want to specify octal values, remember the \"0\" prefix, otherwise 
 the value will be treated as a base 10 integer.
 </p>
@@ -105,16 +106,16 @@ the value will be treated as a base 10 integer.
 
 /* general FTP dir for anonymous help 1/1 */
 "FtpDirAnon": _("<p><b>FTP Directory for Anonymous Users:</b><br>
-Here you can specify a directory which is used for ftp anonymous users. 
-By pressing <b>Browse</b> you can select a directory from the local filesystem.
+Specify a directory which is used for FTP anonymous users. 
+Press <b>Browse</b> to select a directory from the local filesystem.
 </p>
 "),
 
 
 /* general FTP dir for authenticated help 1/1 */
 "FtpDirLocal": _("<p><b>FTP Directory for Authenticated Users:</b><br>
-You can specify a directory which is used for ftp authenticated users. 
-By pressing <b>Browse</b> you can select a directory from the local filesystem.
+Specify a directory which is used for FTP authenticated users. 
+Press <b>Browse</b> to select a directory from the local filesystem.
 </p>
 "),
 
@@ -127,22 +128,24 @@ By pressing <b>Browse</b> you can select a directory from the local filesystem.
 /* performance  Max Idle Time  help 1/1 */
 "MaxIdleTime": _("<p><b>Max Idle Time:</b><br>
 The maximum time (timeout) a remote client 
-may spend between ftp commands.
+may wait between FTP commands.
 </p>
 "),
 
 /* performance max clients per IP  help 1/1 */
 "MaxClientsPerIP": _("<p><b>Max Clients for One IP:</b><br>
-This is the maximum number of clients which may be connected 
+The maximum number of clients allowed to connect
 from the same source internet address. 
-</p>"),
+</p>
+"),
 
 
 /* performance max clients help 1/1 */
 "MaxClientsNumber": _("<p><b>Max Clients:</b><br>
-This is the maximum number of clients which may be connected. 
-Any additional clients connecting will get an error message.
-</p>"),
+The maximum number of clients allowed to connect. 
+Any additional clients trying to connect will get an error message.
+</p>
+"),
 
 /* performance local max rate help 1/1 */
 "LocalMaxRate": _("<p><b>Local Max Rate:</b><br>
@@ -163,16 +166,16 @@ The maximum data transfer rate permitted for anonymous clients.</p>
 
 /* authentication  Enable/Disable Anonymous and Local help 1/1 */
 "AnonAuthen": _("<p><b>Enable/Disable Anonymous and Local Users</b><br>
-<b>Anonymous Only</b> If enabled only anonymous logins are permitted.
-<b>Authenticated Users Only</b> If enabled only authenticated users are permitted.
-<b>Both</b> If enabled authenticated users and anonymous users are permitted.
+<b>Anonymous Only</b>: If enabled, only anonymous logins are permitted.
+<b>Authenticated Users Only</b>: If enabled, only authenticated users are permitted.
+<b>Both</b> If enabled, authenticated users and anonymous users are permitted.
 </p>
 "),
 
 /* authentication  Enable Upload help 1/1 */
 "EnableUpload": _("<p><b>Enable Upload</b><br>
-If enabled ftp users can upload. To allow anonymous users 
-to upload enable <b>Anonymous Can Upload</b>
+If enabled, FTP users can upload. To allow anonymous users 
+to upload, enable <b>Anonymous Can Upload</b>.
 </p>
 "),
 
@@ -187,9 +190,9 @@ need an existing directory with write permission in the home directory after log
 
 /* authentication Anonymous Can Create Dirs help 1/1 */
 "AnonCreatDirs": _("<p><b>Anonymous Can Create Dirs</b><br>
-If enabled anonymous users can create directories.
-<i>vsftpd only: </i>If you want that anonymous users can create directories you 
-need existing directory with allowed writing in home directory after login.</p>
+If enabled, anonymous users can create directories.
+<i>vsftpd only:</i> If you want to allow anonymous users to create directories,
+you need an existing directory with write permission in the home directory after login.</p>
 "),
 
 
@@ -201,7 +204,7 @@ need existing directory with allowed writing in home directory after login.</p>
 
 /* expert settings Enable Passive Mode help 1/1 */
 "PassiveMode": _("<p><b>Enable Passive Mode</b><br>
-If enabled the ftp server will allow passive mode for connections.   
+If enabled, the FTP server will allow passive mode for connections.   
 </p>
 "),
 
@@ -221,36 +224,41 @@ Maximum value for a port range for passive connection replies.
 
 /* expert settings  Enable SSL help 1/1 */
 "SSLEnable": _("<p><b>Enable SSL</b><br>
-If enabled SSL connections are allowed.
-</p>"), 
+If enabled, SSL connections are allowed.
+</p>
+"), 
 
 /* expert settings  Enable SSL v2 help 1/1 */
 "SSLv2": _("<p><b>Enable SSL v2</b><br>
-If enabled SSL version 2 connections are allowed.
-</p>"), 
+If enabled, SSL version 2 connections are allowed.
+</p>
+"), 
 
 /* expert settings  Enable SSL v3 help 1/1 */
 "SSLv3": _("<p><b>Enable SSL v3</b><br>
-If enabled SSL version 3 connections are allowed.
-</p>"), 
+If enabled, SSL version 3 connections are allowed.
+</p>
+"), 
 
 /* expert settings Enable TLS  help 1/1 */
 "TLS": _("<p><b>Enable TLS</b><br>
-If enabled TLS connections are allowed.
-</p>"), 
+If enabled, TLS connections are allowed.
+</p>
+"), 
 
 /* expert settings DSA Certificate to Use for SSL Encrypted Connections help 1/1 */
-"CertFile": _("<p><b>DSA Certificate to Use for SSL Encrypted Connections</b><br>
+"CertFile": _("<p><b>DSA Certificate to Use for SSL-encrypted Connections</b><br>
 This option specifies the location of the DSA certificate to 
-use for SSL encrypted connections. You can select a file by pressing <b>Browse</b>
+use for SSL-encrypted connections. Select a file by pressing <b>Browse</b>.
 </p>
 "), 
 
 /* expert settings Disable Downloading Unvalidated Data help 1/1 */
 "AntiWarez": _("<p><b>Disable Downloading Unvalidated Data</b><br>
 Disallow downloading of files that were uploaded 
-but not validated by a local admin
-</p>"), 
+but not validated by a local admin.
+</p>
+"), 
 
 
 /* expert settings Security Settings help 1/1 */
@@ -268,13 +276,13 @@ but not validated by a local admin
 
    /* Summary dialog help 1/3 */
     "summary" : _("<p><b><big>FTP Server Configuration</big></b><br>
-Configure the ftp server here.<br></p>
+Configure the FTP server.<br></p>
 ")+
 
     /* Summary dialog help 2/3 */
     _("<p><b><big>Adding an FTP Server:</big></b><br>
-Choose an ftp server from the list of detected ftp servers.
-If your ftp server was not detected, use <b>Other (not detected)</b>.
+Choose an FTP server from the list of detected FTP servers.
+If your FTP server was not detected, use <b>Other (not detected)</b>.
 Then press <b>Configure</b>.</p>
 ") +
 
@@ -286,19 +294,20 @@ the configuration opens.</p>
 
     /* Ovreview dialog help 1/3 */
     "overview" : _("<p><b><big>FTP Server Configuration Overview</big></b><br>
-Obtain an overview of the installed ftp servers. Additionally,
+Obtain an overview of the installed FTP servers. Additionally,
 edit their configurations.<br></p>
 ") +
 
     /* Ovreview dialog help 2/3 */
 _("<p><b><big>Adding a FTP Server</big></b><br>
-Press <b>Add</b> to configure a ftp server.</p>
+Press <b>Add</b> to configure a FTP server.</p>
 ") +
 
     /* Ovreview dialog help 3/3 */
 _("<p><b><big>Editing or Deleting</big></b><br>
-Choose a ftp server to change or remove.
-Then press <b>Edit</b> or <b>Delete</b>, respectively.</p>\n"),
+Choose a FTP server to change or remove.
+Then press <b>Edit</b> or <b>Delete</b> respectively.</p>
+"),
 
 
 ];
