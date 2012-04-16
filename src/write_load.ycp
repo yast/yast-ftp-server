@@ -561,7 +561,7 @@ global string ValueUI (string key, boolean write) {
               return "";
            else {
 	      if (haskey(FtpServer::PURE_SETTINGS, "PassivePortRange")) {
-	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil," ");
+	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil,":");
 	         if (size(ports)==2)
 		    return ports[1]:"";
 	      } else {
