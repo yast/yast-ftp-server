@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Apr 16 07:13:41 UTC 2012 - jsrain@suse.cz
+
+- fixed reading of PureFTPD passive port range (bnc#756612)
+
+-------------------------------------------------------------------
 Tue Feb 15 11:18:37 CET 2011 - jsrain@suse.cz
 
 - fixed command line interface - not polling UI while reading the
