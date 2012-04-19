@@ -85,7 +85,7 @@ boolean ReadFTPService () {
 	   `Left(`Label(_("Press Cancel to cancel the configuration of the ftp."))),
 	   `Left(`RadioButton(`id(0), `opt(`notify), _("&vsftpd"), true)),
 	   `Left(`RadioButton(`id(1), `opt(`notify), _("&pure-ftpd"))),
-	   `HBox(
+	   `ButtonBox(
 	     `PushButton(`id(`accept), Label::OKButton()),
 	     `PushButton(`id(`cancel), Label::CancelButton())
            )
@@ -186,7 +186,7 @@ boolean ReadFTPService () {
 	 `Label(_("Choose daemon?")),
 	 `Left(`RadioButton(`id(0), `opt(`notify), _("&vsftpd"), ((FtpServer::vsftpd_edit)? true:false))),
 	 `Left(`RadioButton(`id(1), `opt(`notify), _("&pure-ftpd"), ((FtpServer::vsftpd_edit)? false:true))),
-	 `HBox(
+	 `ButtonBox(
 	   `PushButton(`id(`close), Label::OKButton()),
 	   `PushButton(`id(`abort), Label::CancelButton())
 	 )
