@@ -2,6 +2,7 @@
 Mon Apr 16 07:13:41 UTC 2012 - jsrain@suse.cz
 
 - fixed reading of PureFTPD passive port range (bnc#756612)
+- 2.17.8
 
 -------------------------------------------------------------------
 Mon Nov 28 15:37:02 CET 2011 - tgoettlicher@suse.de
