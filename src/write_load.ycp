@@ -14,7 +14,7 @@ textdomain "ftp-server";
 import "Service";
 import "Popup";
 import "Inetd";
-
+import "Progress";
 
 
 
@@ -346,7 +346,22 @@ global boolean WriteStartViaXinetd (boolean startxinetd, boolean push_star_now) 
 
 }
 
+/**
+ * Returns boundaries defined by PassivePortRange.
+ *
+ * two delimiters are allowed in port range: colon and space. See bnc#782386
+ * numbers in range can be separated by at least one whitespace or just one colon.
+ */
+define list<string> GetPassivePortRangeBoundaries()
+{
+    // this function is specific for pure-ftpd config.
+    if( vsftpd_edit)
+        return nil;
 
+    string port_range = regexpsub( FtpServer::PURE_SETTINGS["PassivePortRange"]:nil, "^([0-9]*)(\\s+|:)([0-9]*)$", "\\1:\\3");
+
+    return port_range != nil ? splitstring( port_range, ":") : nil;
+}
 
 /**
  * Function return init value for UI widgets
@@ -531,7 +546,7 @@ global string ValueUI (string key, boolean write) {
  	   }	
            else {
 	      if (haskey(FtpServer::PURE_SETTINGS, "PassivePortRange")) {
-	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil,":");
+	         ports = GetPassivePortRangeBoundaries();
 	         if (size(ports)==2)
 		    return ports[0]:"";
 	      } else {
@@ -561,7 +576,7 @@ global string ValueUI (string key, boolean write) {
               return "";
            else {
 	      if (haskey(FtpServer::PURE_SETTINGS, "PassivePortRange")) {
-	         ports = splitstring(FtpServer::PURE_SETTINGS["PassivePortRange"]:nil,":");
+	         ports = GetPassivePortRangeBoundaries();
 	         if (size(ports)==2)
 		    return ports[1]:"";
 	      } else {
