@@ -1,0 +1,28 @@
+{
+    import "Assert";
+    import "FtpServer";
+
+    // colon as delimiter
+    FtpServer::PURE_SETTINGS = $[
+        "PassivePortRange" : "1024:4201"
+    ];
+
+    list<string> expected_boundaries = [ "1024", "4201" ];
+
+    Assert::Equal( expected_boundaries, FtpServer::GetPassivePortRangeBoundaries());
+
+    // at least one whitespace as delimiter
+    FtpServer::PURE_SETTINGS = $[
+        "PassivePortRange" : "1024 \t 4201"
+    ];
+
+    Assert::Equal( expected_boundaries, FtpServer::GetPassivePortRangeBoundaries());
+
+    // invalid delimiter
+    FtpServer::PURE_SETTINGS = $[
+        "PassivePortRange" : "1024::4201"
+    ];
+
+    Assert::Equal( nil, FtpServer::GetPassivePortRangeBoundaries());
+
+}
