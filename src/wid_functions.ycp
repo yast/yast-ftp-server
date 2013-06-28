@@ -13,15 +13,12 @@ textdomain "ftp-server";
 
 import "Popup";
 import "Wizard";
-import "Report";
-import "Label";
-import "Inetd";
 import "Service";
-import "Mode";
 import "Users";
 import "Mode";
 import "FileUtils";
 import "Label";
+import "FtpServer";
 
 
 /**
