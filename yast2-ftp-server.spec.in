@@ -10,6 +10,8 @@ BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-devtools yast2-t
 
 BuildArchitectures:	noarch
 
+Requires:       yast2-ruby-bindings >= 1.0.0
+
 Summary:	YaST2 - FTP configuration
 
 %description
@@ -28,8 +30,8 @@ configure two daemons: pure-ftpd and vsftpd.
 %defattr(-,root,root)
 %dir @yncludedir@/ftp-server
 @yncludedir@/ftp-server/*
-@clientdir@/ftp-server.ycp
-@clientdir@/ftp-server_*.ycp
+@clientdir@/ftp-server.rb
+@clientdir@/ftp-server_*.rb
 @moduledir@/FtpServer.*
 @desktopdir@/ftp-server.desktop
 @schemadir@/autoyast/rnc/ftp-server.rnc
