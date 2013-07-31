@@ -1,30 +1,32 @@
-# Makefile.am for ftp-server/src
+# Sources for ftp-server
+
+module_DATA = \
+  modules/FtpServer.rb
+
+client_DATA = \
+  clients/ftp-server_auto.rb \
+  clients/ftp-server.rb
 
 yncludedir = @yncludedir@/ftp-server
+ynclude_DATA = \
+  include/ftp-server/wid_functions.rb \
+  include/ftp-server/wizards.rb \
+  include/ftp-server/dialogs.rb \
+  include/ftp-server/write_load.rb \
+  include/ftp-server/complex.rb \
+  include/ftp-server/helps.rb
 
-client_DATA =			\
-	ftp-server.ycp		\
-	ftp-server_auto.ycp	
+scrconf_DATA = \
+  scrconf/pure-ftpd.scr \
+  scrconf/vsftpd.scr
 
-ynclude_DATA =			\
-	helps.ycp		\
-	wizards.ycp		\
-	dialogs.ycp		\
-	complex.ycp		\
-	wid_functions.ycp	\
-	write_load.ycp
+schemafilesdir = $(schemadir)/autoyast/rnc
+schemafiles_DATA = \
+  autoyast-rnc/ftp-server.rnc
 
-desktop_DATA =			\
-	ftp-server.desktop
+desktop_DATA = \
+  desktop/ftp-server.desktop
 
-module_DATA =			\
-	FtpServer.ycp
-	
-# create a symlink for local build, #145327
-ftp-server:
-	ln -sf . $@
-ycpchook = ftp-server
-
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(schemafiles_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common
