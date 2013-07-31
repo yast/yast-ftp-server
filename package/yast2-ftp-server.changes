@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 31 08:29:17 UTC 2013 - yast-devel@opensuse.org
+
+- converted from YCP to Ruby by YCP Killer
+  (https://github.com/yast/ycp-killer)
+- version 3.0.0
+
+-------------------------------------------------------------------
 Wed Oct 10 14:03:47 UTC 2012 - mfilka@suse.com
 
 - Recognize [: ] as separator for PassivePortRange
