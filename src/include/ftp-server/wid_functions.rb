@@ -452,17 +452,21 @@ module Yast
         UI.ChangeWidget(Id("pure_item"), :Enabled, false)
         UI.ChangeWidget(Id("vs_item"), :Enabled, false)
       else
-        UI.ChangeWidget(Id("pure_item"), :Enable, false)
+        UI.ChangeWidget(Id("pure_item"), :Enabled, false)
         UI.ChangeWidget(Id("vs_item"), :Enabled, false)
       end
 
       if !Mode.normal
-        if FtpServer.vsftpd_edit
+        # Autoyast configuration module does not take care about installed
+        # packages (installed ftp-servers). As we are using vsftpd
+        # in autoyast (SLES) only, we are disabling the selection of
+        # different ftp servers. (bnc#888212)
+        if FtpServer.vsftpd_edit || Mode.config
           UI.ChangeWidget(Id("vs_item"), :Value, true)
         else
           UI.ChangeWidget(Id("pure_item"), :Value, true)
         end
-        UI.ChangeWidget(Id("pure_item"), :Enable, false)
+        UI.ChangeWidget(Id("pure_item"), :Enabled, false)
         UI.ChangeWidget(Id("vs_item"), :Enabled, false)
       end
 
