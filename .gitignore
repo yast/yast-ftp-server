@@ -13,6 +13,7 @@ config.sub
 configure
 configure.ac
 depcomp
+doc/autodocs
 install-sh
 *.pot
 libtool
@@ -27,3 +28,4 @@ Makefile.am.common
 .dep
 tmp.*
 *.log
+.yardoc
