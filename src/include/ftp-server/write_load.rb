@@ -523,7 +523,7 @@ module Yast
             else
               return Builtins.haskey(@VS_SETTINGS, "log_ftp_protocol") ?
                 Builtins.toupper(Ops.get(@VS_SETTINGS, "log_ftp_protocol")) :
-                Ops.get(@DEFAULT_CONFIG, "VerboseLogging")
+                Ops.get(@DEFAULT_CONFIG, "log_ftp_protocol")
             end
           else
             if write
