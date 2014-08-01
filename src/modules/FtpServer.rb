@@ -250,7 +250,6 @@ module Yast
     def ReadPUREFTPDSettings
       Builtins.foreach(SCR.Dir(path(".pure-ftpd"))) do |key|
         val = Convert.to_string(SCR.Read(Builtins.add(path(".pure-ftpd"), key)))
-        #string val = (string) select((list <string>) SCR::Read(add(.pure-ftpd, key)), 0, "");
         Ops.set(@PURE_SETTINGS, key, val) if val != nil
       end
 
@@ -261,18 +260,15 @@ module Yast
       )
       Builtins.y2milestone("---------------------------------------------")
 
-
       true
     end
 
     # Read current vsftpd configuration
     #
     #  @return [Boolean] successfull
-
     def ReadVSFTPDSettings
       Builtins.foreach(SCR.Dir(path(".vsftpd"))) do |key|
         val = Convert.to_string(SCR.Read(Builtins.add(path(".vsftpd"), key)))
-        #string val = (string) select((list <string>) SCR::Read(add(.pure-ftpd, key)), 0, "");
         Ops.set(@VS_SETTINGS, key, val) if val != nil
       end
       Builtins.y2milestone("-------------VS_SETTINGS-------------------")
@@ -282,7 +278,6 @@ module Yast
       )
       Builtins.y2milestone("---------------------------------------------")
 
-
       true
     end
 
@@ -291,8 +286,6 @@ module Yast
     # existing upload file and permissions
     #
     #  @return [Boolean] successfull
-
-
     def ReadVSFTPDUpload
       result = false
       command = ""
@@ -314,7 +307,6 @@ module Yast
           result = false
         end
         if result
-          #Popup::Message("Work ReadVSFTPDUpload");
           @create_upload_dir = true
           permissions = Builtins.substring(
             Builtins.tostring(Ops.get(options, "stdout")),
@@ -326,10 +318,8 @@ module Yast
           if Ops.less_than(Builtins.size(w), 3) ||
               Ops.less_than(Builtins.size(r), 3)
             @upload_good_permission = false 
-            #Popup::Message("good permissions");
           else
             @upload_good_permission = true 
-            #Popup::Message("wrong permissions");
           end
         end
       end
@@ -342,8 +332,6 @@ module Yast
     # checking permissions for upload
     #
     #  @return [Boolean] successfull
-
-
     def ReadPermisionUplaod
       result = false
       command = ""
@@ -368,7 +356,6 @@ module Yast
           Ops.subtract(Builtins.size(directories), 1),
           ""
         )
-        #Popup::Message(upload_dir);
         directory = Ops.add(
           "/",
           Builtins.mergestring(
@@ -379,7 +366,6 @@ module Yast
             "/"
           )
         ) 
-        #Popup::Message(directory);
       else
         @pure_ftp_allowed_permissios_upload = -1
       end
@@ -415,13 +401,10 @@ module Yast
           if Ops.less_than(Builtins.size(w), 3) ||
               Ops.less_than(Builtins.size(r), 3)
             @pure_ftp_allowed_permissios_upload = 0 
-            #Popup::Message("good permissions");
           else
             @pure_ftp_allowed_permissios_upload = 1 
-            #Popup::Message("wrong permissions");
           end
         end 
-        #Popup::Message(tostring(pure_ftp_allowed_permissios_upload));
       end
       result
     end
@@ -430,11 +413,10 @@ module Yast
     # to temporary structure
     #
     # @return [Boolean] successfull
-
     def InitEDIT_SETTINGS
       Builtins.foreach(@UI_keys) do |key|
         val = ValueUI(key, false)
-        Ops.set(@EDIT_SETTINGS, key, val) if val != nil #if (val == nil) Popup::Message(key);;
+        Ops.set(@EDIT_SETTINGS, key, val) if val != nil
       end
 
       Builtins.y2milestone("-------------EDIT_SETTINGS-------------------")
@@ -533,12 +515,10 @@ module Yast
     end
 
 
-
     # Remap UI pure-ftpd or vsftpd configuration
     # to write structure for SCR
     #
     # @return [Boolean] successfull
-
     def WriteToSETTINGS
       Builtins.foreach(@UI_keys) { |key| ValueUI(key, true) }
 
@@ -555,23 +535,9 @@ module Yast
       true
     end
 
-
-    # Restart daemon apply changes
-    # only if daemon running...
-    #
-    # @return [Boolean] successfull
-    #boolean ApplyChanges () {
-
-
-
-
-    #}
-
-
     # Write firewall configuration
     #
     # @return [Boolean] successfull
-
     def WriteFirewallSettings
       port_range = ""
       active_port = ""
@@ -615,7 +581,6 @@ module Yast
     # @param [String] key of EDIT_SETTINGS map
     # @param [String] value of "key" EDIT_SETTINGS map
     # @return [Boolean] successfull
-
     def WriteToEditMap(key, value)
       Ops.set(@EDIT_SETTINGS, key, value)
       true
@@ -762,8 +727,6 @@ module Yast
         else
           result = false
         end 
-
-        #Popup::Message(command);
       else
         result = true
       end
@@ -799,11 +762,11 @@ module Yast
 
       result
     end
+
     # read value from  PURE_EDIT_SETTINGS
     #
     # @param [String] key for edit map (ID of option)
     # @return [String] value of key from edit map
-
     def ValueUIEdit(key)
       Ops.get(@EDIT_SETTINGS, key)
     end
@@ -824,8 +787,6 @@ module Yast
       nil
     end
 
-
-
     # Returns a confirmation popup dialog whether user wants to really abort.
     #
     # @return [Boolean] result of Popup::ReallyAbort(GetModified()
@@ -844,16 +805,12 @@ module Yast
       false
     end
 
-
-
     # Data was modified?
     # @return true if modified
     def Modified
       Builtins.y2debug("modified=%1", @modified)
       @modified
     end
-
-
 
     # Read all FtpServer settings
     # @return true on success
@@ -1065,8 +1022,6 @@ module Yast
       result
     end
 
-
-
     # Dump the FtpServer settings to a single map
     # (For use by autoinstallation.)
     # @return [Hash] Dumped settings (later acceptable by Import ())
@@ -1119,8 +1074,6 @@ module Yast
       _S = _("<p><ul><i>FTP daemon is not configured.</i></ul></p>") if _S == ""
       _S
     end
-
-
 
     # Create a textual summary and a list of unconfigured cards
     # @return summary of the current configuration
