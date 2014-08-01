@@ -254,7 +254,6 @@ module Yast
     # @return `abort if aborted and `next otherwise
     def ReadDialog
       Wizard.RestoreHelp(Ops.get_string(@HELPS, "read", ""))
-      # FtpServer::AbortFunction = PollAbort;
       result = ReadFTPService()
       return :abort if !result
       return :abort if !Confirm.MustBeRoot
@@ -272,7 +271,6 @@ module Yast
     # @return `abort if aborted and `next otherwise
     def WriteDialog
       Wizard.RestoreHelp(Ops.get_string(@HELPS, "write", ""))
-      # FtpServer::AbortFunction = PollAbort;
       ret = FtpServer.Write
       ret ? :next : :abort
     end

@@ -238,10 +238,6 @@ module Yast
       # Write only, used during autoinstallation.
       # Don't run services and SuSEconfig, it's all done at one place.
       @write_only = false
-
-      # Abort function
-      # return boolean return true if abort
-      @AbortFunction = fun_ref(method(:Modified), "boolean ()")
     end
 
     # Read current pure-ftpd configuration
@@ -1096,12 +1092,6 @@ module Yast
       _S
     end
 
-    # Create an overview table with all configured cards
-    # @return table items
-    def Overview
-      []
-    end
-
     #zzz
     # Return packages needed to be installed and removed during
     # Autoinstallation to insure module has all needed software
@@ -1188,7 +1178,6 @@ module Yast
     publish :function => :ValueUIEdit, :type => "string (string)"
     publish_variable :ftps, "boolean"
     publish_variable :write_only, "boolean"
-    publish_variable :AbortFunction, "boolean ()"
     publish :function => :GetModified, :type => "boolean ()"
     publish :function => :Abort, :type => "boolean ()"
     publish :function => :PollAbort, :type => "boolean ()"
@@ -1199,7 +1188,6 @@ module Yast
     publish :function => :Export, :type => "map ()"
     publish :function => :OptionsSummary, :type => "string ()"
     publish :function => :Summary, :type => "string ()"
-    publish :function => :Overview, :type => "list ()"
     publish :function => :AutoPackages, :type => "map ()"
   end
 
