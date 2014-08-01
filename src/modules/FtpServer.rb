@@ -200,7 +200,8 @@ module Yast
 
       @DEFAULT_CONFIG = {
         "ChrootEnable"     => "NO",
-        "VerboseLogging"   => "NO",
+        "VerboseLogging"   => "NO",  # Default value for pure-ftpd.
+        "log_ftp_protocol" => "YES", # Default value for vsftp (bnc#888287). 
         "FtpDirLocal"      => "", #if empty doesn't write this options via SCR
         "FtpDirAnon"       => "", #if empty doesn't write this options via SCR
         "Umask"            => "",
