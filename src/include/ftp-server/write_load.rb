@@ -471,11 +471,20 @@ module Yast
       port_range != nil ? Builtins.splitstring(port_range, ":") : nil
     end
 
-    # Function return init value for UI widgets
-    # and prepare internal data structure for writing
-    # to config file
-    # Example: ValueUI("ChrootEnabled") => "yes"/"no"
-
+    # Convert between the UI (yast), and system (vsftpd, pure_ftpd) settings.
+    #
+    # The system settings are multiplexed by
+    # {FtpServerClass#vsftpd_edit   vsftpd_edit}:
+    # {FtpServerClass#VS_SETTINGS   VS_SETTINGS}   (for vsftpd_edit == true) or
+    # {FtpServerClass#PURE_SETTINGS PURE_SETTINGS} (for vsftpd_edit == false).
+    #
+    # @param [String] key
+    #  in the {FtpServerClass#EDIT_SETTINGS EDIT_SETTINGS} vocabulary
+    # @param write
+    #  - true: write to system settings from UI settings
+    #                ({FtpServerClass#EDIT_SETTINGS EDIT_SETTINGS})
+    #  - false: read the UI settings from the system settings
+    # @return [String] the UI value (for read) or nil (for write)
     def ValueUI(key, write)
       ports = []
       authentic = 0

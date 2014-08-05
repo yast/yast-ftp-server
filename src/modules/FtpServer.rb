@@ -1,17 +1,20 @@
 # encoding: utf-8
 
-# File:	modules/FtpServer.ycp
-# Package:	Configuration of FtpServer
-# Summary:	FtpServer settings, input and output functions
-# Authors:	Jozef Uhliarik <juhliarik@suse.cz>
-#
-# $Id: FtpServer.ycp 27914 2006-02-13 14:32:08Z juhliarik $
-#
-# Representation of the configuration of FtpServer.
-# Input and output routines.
 require "yast"
 
 module Yast
+  # Configure **both** [vsftpd][v] and [pure-ftpd][p] in a single class.
+  #
+  # [v]: https://security.appspot.com/vsftpd.html
+  # [p]: http://www.pureftpd.org/
+  #
+  # For the configuration we have 3 vocabularies,
+  # mapped by {FtpServerWriteLoadInclude#ValueUI}.
+  #
+  # - pure-ftpd uses CamelCase  keys
+  # - vsftpd    uses snake_case keys
+  # - yast      uses CamelCase  keys which are almost(!!1!)
+  #             the same as for pure-ftpd.
   class FtpServerClass < Module
     def main
       Yast.import "UI"
@@ -155,11 +158,6 @@ module Yast
 
       @pure_ftpd_xinet_conf = []
 
-
-      # list of keys from map DEFAULT_CONFIG
-      #
-      # global list <string>
-
       @UI_keys = [
         "ChrootEnable",
         "VerboseLogging",
@@ -193,10 +191,6 @@ module Yast
         "GuestUser",
         "EnableUpload"
       ]
-
-      # map of deafult values for options in UI
-      #
-      # global map <string, string >
 
       @DEFAULT_CONFIG = {
         "ChrootEnable"     => "NO",
@@ -233,35 +227,17 @@ module Yast
         "EnableUpload"     => "NO"
       }
 
-      # map <string, string > of pure-ftpd settings
-      #
       @PURE_SETTINGS = {}
-
-
-      # map <string, string > of vsftpd settings
-      #
       @VS_SETTINGS = {}
-
-      # map <string, string > of vsftpd settings
-      #
       @EDIT_SETTINGS = {}
 
-
-
       Yast.include self, "ftp-server/write_load.rb"
-
-
-
 
       @ftps = true
 
       # Write only, used during autoinstallation.
       # Don't run services and SuSEconfig, it's all done at one place.
       @write_only = false
-
-      # Abort function
-      # return boolean return true if abort
-      @AbortFunction = fun_ref(method(:Modified), "boolean ()")
     end
 
     # Read current pure-ftpd configuration
@@ -270,7 +246,6 @@ module Yast
     def ReadPUREFTPDSettings
       Builtins.foreach(SCR.Dir(path(".pure-ftpd"))) do |key|
         val = Convert.to_string(SCR.Read(Builtins.add(path(".pure-ftpd"), key)))
-        #string val = (string) select((list <string>) SCR::Read(add(.pure-ftpd, key)), 0, "");
         Ops.set(@PURE_SETTINGS, key, val) if val != nil
       end
 
@@ -281,18 +256,15 @@ module Yast
       )
       Builtins.y2milestone("---------------------------------------------")
 
-
       true
     end
 
     # Read current vsftpd configuration
     #
     #  @return [Boolean] successfull
-
     def ReadVSFTPDSettings
       Builtins.foreach(SCR.Dir(path(".vsftpd"))) do |key|
         val = Convert.to_string(SCR.Read(Builtins.add(path(".vsftpd"), key)))
-        #string val = (string) select((list <string>) SCR::Read(add(.pure-ftpd, key)), 0, "");
         Ops.set(@VS_SETTINGS, key, val) if val != nil
       end
       Builtins.y2milestone("-------------VS_SETTINGS-------------------")
@@ -302,7 +274,6 @@ module Yast
       )
       Builtins.y2milestone("---------------------------------------------")
 
-
       true
     end
 
@@ -311,8 +282,6 @@ module Yast
     # existing upload file and permissions
     #
     #  @return [Boolean] successfull
-
-
     def ReadVSFTPDUpload
       result = false
       command = ""
@@ -334,7 +303,6 @@ module Yast
           result = false
         end
         if result
-          #Popup::Message("Work ReadVSFTPDUpload");
           @create_upload_dir = true
           permissions = Builtins.substring(
             Builtins.tostring(Ops.get(options, "stdout")),
@@ -346,10 +314,8 @@ module Yast
           if Ops.less_than(Builtins.size(w), 3) ||
               Ops.less_than(Builtins.size(r), 3)
             @upload_good_permission = false 
-            #Popup::Message("good permissions");
           else
             @upload_good_permission = true 
-            #Popup::Message("wrong permissions");
           end
         end
       end
@@ -362,8 +328,6 @@ module Yast
     # checking permissions for upload
     #
     #  @return [Boolean] successfull
-
-
     def ReadPermisionUplaod
       result = false
       command = ""
@@ -388,7 +352,6 @@ module Yast
           Ops.subtract(Builtins.size(directories), 1),
           ""
         )
-        #Popup::Message(upload_dir);
         directory = Ops.add(
           "/",
           Builtins.mergestring(
@@ -399,7 +362,6 @@ module Yast
             "/"
           )
         ) 
-        #Popup::Message(directory);
       else
         @pure_ftp_allowed_permissios_upload = -1
       end
@@ -435,13 +397,10 @@ module Yast
           if Ops.less_than(Builtins.size(w), 3) ||
               Ops.less_than(Builtins.size(r), 3)
             @pure_ftp_allowed_permissios_upload = 0 
-            #Popup::Message("good permissions");
           else
             @pure_ftp_allowed_permissios_upload = 1 
-            #Popup::Message("wrong permissions");
           end
         end 
-        #Popup::Message(tostring(pure_ftp_allowed_permissios_upload));
       end
       result
     end
@@ -450,11 +409,10 @@ module Yast
     # to temporary structure
     #
     # @return [Boolean] successfull
-
     def InitEDIT_SETTINGS
       Builtins.foreach(@UI_keys) do |key|
         val = ValueUI(key, false)
-        Ops.set(@EDIT_SETTINGS, key, val) if val != nil #if (val == nil) Popup::Message(key);;
+        Ops.set(@EDIT_SETTINGS, key, val) if val != nil
       end
 
       Builtins.y2milestone("-------------EDIT_SETTINGS-------------------")
@@ -553,12 +511,10 @@ module Yast
     end
 
 
-
     # Remap UI pure-ftpd or vsftpd configuration
     # to write structure for SCR
     #
     # @return [Boolean] successfull
-
     def WriteToSETTINGS
       Builtins.foreach(@UI_keys) { |key| ValueUI(key, true) }
 
@@ -575,23 +531,9 @@ module Yast
       true
     end
 
-
-    # Restart daemon apply changes
-    # only if daemon running...
-    #
-    # @return [Boolean] successfull
-    #boolean ApplyChanges () {
-
-
-
-
-    #}
-
-
     # Write firewall configuration
     #
     # @return [Boolean] successfull
-
     def WriteFirewallSettings
       port_range = ""
       active_port = ""
@@ -635,7 +577,6 @@ module Yast
     # @param [String] key of EDIT_SETTINGS map
     # @param [String] value of "key" EDIT_SETTINGS map
     # @return [Boolean] successfull
-
     def WriteToEditMap(key, value)
       Ops.set(@EDIT_SETTINGS, key, value)
       true
@@ -782,8 +723,6 @@ module Yast
         else
           result = false
         end 
-
-        #Popup::Message(command);
       else
         result = true
       end
@@ -819,25 +758,14 @@ module Yast
 
       result
     end
+
     # read value from  PURE_EDIT_SETTINGS
     #
     # @param [String] key for edit map (ID of option)
     # @return [String] value of key from edit map
-
     def ValueUIEdit(key)
       Ops.get(@EDIT_SETTINGS, key)
     end
-
-    #  * Abort function
-    #  * @return boolean return true if abort
-    #  *
-    # global define boolean Abort() ``{
-    #     if(AbortFunction != nil)
-    #     {
-    # 	return AbortFunction () == true;
-    #     }
-    #     return false;
-    # }
 
     # Returns whether the configuration has been modified.
     #
@@ -846,16 +774,14 @@ module Yast
       @modified
     end
 
-    # Function set modified variable.
+    # Function set {#modified} variable.
     #
-    # @param boolean modified
+    # @param [Boolean] set_modified
     def SetModified(set_modified)
       @modified = set_modified
 
       nil
     end
-
-
 
     # Returns a confirmation popup dialog whether user wants to really abort.
     #
@@ -875,16 +801,12 @@ module Yast
       false
     end
 
-
-
     # Data was modified?
     # @return true if modified
     def Modified
       Builtins.y2debug("modified=%1", @modified)
       @modified
     end
-
-
 
     # Read all FtpServer settings
     # @return true on success
@@ -1096,8 +1018,6 @@ module Yast
       result
     end
 
-
-
     # Dump the FtpServer settings to a single map
     # (For use by autoinstallation.)
     # @return [Hash] Dumped settings (later acceptable by Import ())
@@ -1151,8 +1071,6 @@ module Yast
       _S
     end
 
-
-
     # Create a textual summary and a list of unconfigured cards
     # @return summary of the current configuration
     def Summary
@@ -1174,12 +1092,6 @@ module Yast
       _S
     end
 
-    # Create an overview table with all configured cards
-    # @return table items
-    def Overview
-      []
-    end
-
     #zzz
     # Return packages needed to be installed and removed during
     # Autoinstallation to insure module has all needed software
@@ -1193,42 +1105,79 @@ module Yast
       end
     end
 
+    # This helper allows YARD to extract DSL-defined attributes.
+    # Unfortunately YARD has problems with the Capitalized ones,
+    # so those must be done manually.
+    # @!macro [attach] publish_variable
+    #   @!attribute $1
+    #   @return [$2]
+    def self.publish_variable(name, type)
+      publish :variable => name, :type => type
+    end
+
     publish :function => :SetModified, :type => "void (boolean)"
     publish :function => :Modified, :type => "boolean ()"
     publish :function => :WriteToEditMap, :type => "boolean (string, string)"
     publish :function => :WriteSettings, :type => "boolean ()"
     publish :function => :WriteUpload, :type => "boolean ()"
     publish :function => :WriteXinetd, :type => "boolean ()"
-    publish :variable => :modified, :type => "boolean"
-    publish :variable => :proposal_valid, :type => "boolean"
-    publish :variable => :vsftpd_edit, :type => "boolean"
-    publish :variable => :vsftpd_installed, :type => "boolean"
-    publish :variable => :pureftpd_installed, :type => "boolean"
-    publish :variable => :vsftpd_xined_id, :type => "integer"
-    publish :variable => :pureftpd_xined_id, :type => "integer"
-    publish :variable => :start_xinetd, :type => "boolean"
-    publish :variable => :pure_ftp_xinetd_running, :type => "boolean"
-    publish :variable => :vsftp_xinetd_running, :type => "boolean"
-    publish :variable => :stop_daemon_xinetd, :type => "boolean"
-    publish :variable => :create_upload_dir, :type => "boolean"
-    publish :variable => :upload_good_permission, :type => "boolean"
-    publish :variable => :pure_ftp_allowed_permissios_upload, :type => "integer"
-    publish :variable => :change_permissions, :type => "boolean"
-    publish :variable => :anon_homedir, :type => "string"
-    publish :variable => :anon_uid, :type => "integer"
-    publish :variable => :pure_ftpd_xinet_conf, :type => "list <string>"
+    publish_variable :modified, "boolean"
+    publish_variable :proposal_valid, "boolean"
+    publish_variable :vsftpd_edit, "boolean"
+    publish_variable :vsftpd_installed, "boolean"
+    publish_variable :pureftpd_installed, "boolean"
+    publish_variable :vsftpd_xined_id, "integer"
+    publish_variable :pureftpd_xined_id, "integer"
+    publish_variable :start_xinetd, "boolean"
+    publish_variable :pure_ftp_xinetd_running, "boolean"
+    publish_variable :vsftp_xinetd_running, "boolean"
+    publish_variable :stop_daemon_xinetd, "boolean"
+    publish_variable :create_upload_dir, "boolean"
+    publish_variable :upload_good_permission, "boolean"
+    publish_variable :pure_ftp_allowed_permissios_upload, "integer"
+    publish_variable :change_permissions, "boolean"
+    publish_variable :anon_homedir, "string"
+    publish_variable :anon_uid, "integer"
+    publish_variable :pure_ftpd_xinet_conf, "list <string>"
+
+    # @attribute [r] UI_keys
+    # @return [Array<String>]
+    # A list of setting keys yast cares about,
+    # in the {#EDIT_SETTINGS} vocabulary.
+    # It should be made a constant.
     publish :variable => :UI_keys, :type => "list <string>"
+
+    # @attribute DEFAULT_CONFIG
+    # @return [Hash<String,String>]
+    # Defaults for {#EDIT_SETTINGS} in case the value is not found
+    # in the system settings.
     publish :variable => :DEFAULT_CONFIG, :type => "map <string, string>"
+
+    # @attribute PURE_SETTINGS
+    # @return [Hash<String,String>]
+    # Uses CamelCase, {FtpServerWriteLoadInclude#ValueUI ValueUI} maps it
+    # to {#EDIT_SETTINGS} and {#DEFAULT_CONFIG}.
     publish :variable => :PURE_SETTINGS, :type => "map <string, string>"
+
+    # @attribute VS_SETTINGS
+    # @return [Hash<String,String>]
+    # Uses snake_case, {FtpServerWriteLoadInclude#ValueUI ValueUI} maps it
+    # to {#EDIT_SETTINGS} and {#DEFAULT_CONFIG}.
     publish :variable => :VS_SETTINGS, :type => "map <string, string>"
+
+    # @attribute EDIT_SETTINGS
+    # @return [Hash<String,String>]
+    # Uses CamelCase with similar but not the same keys as {#PURE_SETTINGS}.
+    # {FtpServerWriteLoadInclude#ValueUI ValueUI} maps it to {#PURE_SETTINGS}
+    # and {#VS_SETTINGS}.
     publish :variable => :EDIT_SETTINGS, :type => "map <string, string>"
+
     publish :function => :PureSettingsForXinetd, :type => "string ()"
     publish :function => :WriteStartViaXinetd, :type => "boolean (boolean, boolean)"
     publish :function => :ValueUI, :type => "string (string, boolean)"
     publish :function => :ValueUIEdit, :type => "string (string)"
-    publish :variable => :ftps, :type => "boolean"
-    publish :variable => :write_only, :type => "boolean"
-    publish :variable => :AbortFunction, :type => "boolean ()"
+    publish_variable :ftps, "boolean"
+    publish_variable :write_only, "boolean"
     publish :function => :GetModified, :type => "boolean ()"
     publish :function => :Abort, :type => "boolean ()"
     publish :function => :PollAbort, :type => "boolean ()"
@@ -1239,7 +1188,6 @@ module Yast
     publish :function => :Export, :type => "map ()"
     publish :function => :OptionsSummary, :type => "string ()"
     publish :function => :Summary, :type => "string ()"
-    publish :function => :Overview, :type => "list ()"
     publish :function => :AutoPackages, :type => "map ()"
   end
 
