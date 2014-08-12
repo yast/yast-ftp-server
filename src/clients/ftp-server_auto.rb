@@ -81,12 +81,22 @@ module Yast
         FtpServer.InitDaemon
         @ret = FtpServer.Read
         Progress.set(@progress_orig)
-      # Write givven settings
+      # Write given settings
       elsif @func == "Write"
         Yast.import "Progress"
         @progress_orig = Progress.set(false)
         FtpServer.write_only = true
+        old_mode = Mode.mode
+        if old_mode == "autoinst_config"
+           # We are in the autoyast configuration module.
+           # So there is currently no access to the target system.
+           # This has to be done at first. (bnc#888212)
+           Mode.SetMode("normal")
+           FtpServer.InitDaemon
+           FtpServer.InitStartViaXinetd()
+        end
         @ret = FtpServer.Write
+        Mode.SetMode(old_mode)
         Progress.set(@progress_orig)
       else
         Builtins.y2error("Unknown function: %1", @func)
