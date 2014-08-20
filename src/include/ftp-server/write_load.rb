@@ -526,13 +526,13 @@ module Yast
               )
               Ops.set(
                 @VS_SETTINGS,
-                "syslog_enable",
+                "xferlog_enable",
                 Ops.get(@EDIT_SETTINGS, "VerboseLogging")
               )
             else
               return Builtins.haskey(@VS_SETTINGS, "log_ftp_protocol") ?
                 Builtins.toupper(Ops.get(@VS_SETTINGS, "log_ftp_protocol")) :
-                Ops.get(@DEFAULT_CONFIG, "VerboseLogging")
+                Ops.get(@DEFAULT_CONFIG, "log_ftp_protocol")
             end
           else
             if write
