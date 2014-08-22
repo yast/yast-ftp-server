@@ -519,32 +519,16 @@ module Yast
         when "VerboseLogging"
           if @vsftpd_edit
             if write
-              Ops.set(
-                @VS_SETTINGS,
-                "log_ftp_protocol",
-                Ops.get(@EDIT_SETTINGS, "VerboseLogging")
-              )
-              Ops.set(
-                @VS_SETTINGS,
-                "syslog_enable",
-                Ops.get(@EDIT_SETTINGS, "VerboseLogging")
-              )
+              @VS_SETTINGS["log_ftp_protocol"] = @EDIT_SETTINGS["VerboseLogging"]
+              @VS_SETTINGS["xferlog_enable"] = @EDIT_SETTINGS["VerboseLogging"]
             else
-              return Builtins.haskey(@VS_SETTINGS, "log_ftp_protocol") ?
-                Builtins.toupper(Ops.get(@VS_SETTINGS, "log_ftp_protocol")) :
-                Ops.get(@DEFAULT_CONFIG, "VerboseLogging")
+              return (@VS_SETTINGS["log_ftp_protocol"] || @DEFAULT_CONFIG["log_ftp_protocol"]).upcase
             end
           else
             if write
-              Ops.set(
-                @PURE_SETTINGS,
-                "VerboseLog",
-                Ops.get(@EDIT_SETTINGS, "VerboseLogging")
-              )
+              @PURE_SETTINGS["VerboseLog"] = @EDIT_SETTINGS["VerboseLogging"]
             else
-              return Builtins.haskey(@PURE_SETTINGS, "VerboseLog") ?
-                Builtins.toupper(Ops.get(@PURE_SETTINGS, "VerboseLog")) :
-                Ops.get(@DEFAULT_CONFIG, "VerboseLogging")
+              return (@PURE_SETTINGS["VerboseLog"] || @DEFAULT_CONFIG["VerboseLogging"]).upcase
             end
           end
         when "FtpDirLocal"
