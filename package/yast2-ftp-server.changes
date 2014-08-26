@@ -4,7 +4,14 @@ Tue Aug 12 12:08:37 CEST 2014 - schubi@suse.de
 - Autoyast configuration mode: Set installation mode to "normal"
   before writing the settings. So the target system has to be
   set at first. (bnc#888212)
-- 3.1.3
+- 3.1.4
+
+-------------------------------------------------------------------
+Wed Aug 20 09:25:51 UTC 2014 - cwh@suse.com
+
+- Using different defaults about logging for vsftpd/pure-ftpd (bnc#888287)
+- Setting xferlog_enable = YES instead of syslog_enable 
+- 3.1.3 
 
 -------------------------------------------------------------------
 Fri Aug  1 12:51:37 UTC 2014 - mvidner@suse.com
