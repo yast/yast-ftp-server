@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Tue Aug 26 12:08:37 CEST 2014 - schubi@suse.de
+Tue Aug 26 10:01:37 CEST 2014 - schubi@suse.de
 
 - Autoyast configuration mode: Set installation mode to "normal"
   before writing the settings. So the target system has to be
