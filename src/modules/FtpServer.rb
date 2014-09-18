@@ -949,6 +949,9 @@ module Yast
     # @return [Boolean] True on success
     def Import(settings)
       settings = deep_copy(settings)
+      # Evaluate the kind of ftpserver at first.
+      # (bnc#892701)
+      IdFTPXinetd()
       result = true
       Builtins.foreach(@UI_keys) do |key|
         val = Ops.get_string(settings, key)
