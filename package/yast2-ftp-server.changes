@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 18 12:16:09 CEST 2014 - schubi@suse.de
+
+- Autoyast Import:Evaluate the kind of ftpserver at first.
+  (bnc#892701)
+- 3.1.5
+
+-------------------------------------------------------------------
 Tue Aug 26 10:01:37 CEST 2014 - schubi@suse.de
 
 - Autoyast configuration mode: Set installation mode to "normal"
