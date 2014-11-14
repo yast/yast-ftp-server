@@ -67,7 +67,7 @@ PURE_SETTINGS = {
 }
 
 describe "Yast::FtpServer" do
-  describe "#ValueUI" do
+  describe ".ValueUI" do
     context "'VerboseLogging' when getting vsftpd settings" do
       before do
         Yast::FtpServer.vsftpd_edit = true
@@ -122,5 +122,83 @@ describe "Yast::FtpServer" do
       end
     end
 
+    context "using vsftpd" do
+      before do
+        Yast::FtpServer.vsftpd_edit = true
+        # Init values to a known (and invalid) state
+        mock_config(VS_CONFIG_PATH,
+                    VS_SETTINGS.merge("listen" => "", "listen_ipv6" => ""))
+      end
+
+      context "configured to use xinetd" do
+        before do
+          Yast::FtpServer.EDIT_SETTINGS["StartDaemon"] = "2"
+          Yast::FtpServer.EDIT_SETTINGS["StartXinetd"] = "YES"
+        end
+
+        it "disables vsftpd's standalone mode when writing StartXinetd" do
+          allow(Yast::Service).to receive(:Enabled).and_return false
+
+          Yast::FtpServer.ValueUI("StartXinetd", true)
+
+          expect(Yast::FtpServer.VS_SETTINGS["listen"]).to eq("NO")
+          expect(Yast::FtpServer.VS_SETTINGS["listen_ipv6"]).to eq("NO")
+        end
+
+        it "disables vsftpd service when writing StartXinetd" do
+          allow(Yast::Service).to receive(:Enabled).with("pure-ftpd").and_return false
+          allow(Yast::Service).to receive(:Enabled).with("vsftpd").and_return true
+          expect(Yast::Service).to receive(:Disable).with("vsftpd")
+
+          Yast::FtpServer.ValueUI("StartXinetd", true)
+        end
+      end
+
+      context "configured to run at boot" do
+        before do
+          Yast::FtpServer.EDIT_SETTINGS["StartDaemon"] = "1"
+        end
+
+        it "enables vsftpd's standalone mode when writing StartXinetd" do
+          allow(Yast::Service).to receive(:Disable)
+          allow(Yast::Service).to receive(:Enable)
+
+          Yast::FtpServer.ValueUI("StartXinetd", true)
+
+          expect(Yast::FtpServer.VS_SETTINGS["listen"]).to eq("YES")
+          expect(Yast::FtpServer.VS_SETTINGS["listen_ipv6"]).to be_nil
+        end
+
+        it "configures ftp services when writing StartXinetd" do
+          expect(Yast::Service).to receive(:Disable).with("pure-ftpd")
+          expect(Yast::Service).to receive(:Enable).with("vsftpd")
+
+          Yast::FtpServer.ValueUI("StartXinetd", true)
+        end
+      end
+
+      context "configured to run manually" do
+        before do
+          Yast::FtpServer.EDIT_SETTINGS["StartDaemon"] = "0"
+        end
+
+        it "enables vsftpd's standalone mode when writing StartXinetd" do
+          allow(Yast::Service).to receive(:Disable)
+          allow(Yast::Service).to receive(:Enable)
+
+          Yast::FtpServer.ValueUI("StartXinetd", true)
+
+          expect(Yast::FtpServer.VS_SETTINGS["listen"]).to eq("YES")
+          expect(Yast::FtpServer.VS_SETTINGS["listen_ipv6"]).to be_nil
+        end
+
+        it "disables ftp services when writing StartXinetd" do
+          expect(Yast::Service).to receive(:Disable).with("pure-ftpd")
+          expect(Yast::Service).to receive(:Disable).with("vsftpd")
+
+          Yast::FtpServer.ValueUI("StartXinetd", true)
+        end
+      end
+    end
   end
 end
