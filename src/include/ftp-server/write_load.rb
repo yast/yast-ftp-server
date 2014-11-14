@@ -1360,8 +1360,8 @@ module Yast
                 Service.Disable("vsftpd") if Service.Enabled("vsftpd")
                 Service.Disable("pure-ftpd") if Service.Enabled("pure-ftpd")
                 if @vsftpd_edit
-                  Ops.set(@VS_SETTINGS, "listen", nil)
-                  Ops.set(@VS_SETTINGS, "listen_ipv6", nil)
+                  Ops.set(@VS_SETTINGS, "listen", "NO")
+                  Ops.set(@VS_SETTINGS, "listen_ipv6", "NO")
                 else
                   Ops.set(@PURE_SETTINGS, "Daemonize", "NO")
                 end
