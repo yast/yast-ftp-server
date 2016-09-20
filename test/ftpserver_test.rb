@@ -4,6 +4,14 @@ ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
 
 require "yast"
 
+# stub module to prevent its Import
+# Useful for modules from different yast packages, to avoid build dependencies
+def stub_module(name)
+  Yast.const_set name.to_sym, Class.new { def self.fake_method; end }
+end
+
+stub_module("Users")
+
 Yast.import "FtpServer"
 
 VS_CONFIG_PATH = Yast::Path.new(".vsftpd")
@@ -67,30 +75,60 @@ PURE_SETTINGS = {
 }
 
 describe "Yast::FtpServer" do
+  describe ".Modified" do
+    it "returns false if no modification happens" do
+      expect(Yast::FtpServer.Modified).to eq false
+    end
+  end
+
+  describe ".GetPassivePortRangeBoundaries" do
+    it "can read boundaries when separated by colon" do
+      Yast::FtpServer.PURE_SETTINGS = { "PassivePortRange" => "1024:4201" }
+
+      expected_boundaries = ["1024", "4201"]
+
+      expect(Yast::FtpServer.GetPassivePortRangeBoundaries).to eq expected_boundaries
+    end
+
+    it "can read boundaries when separated by whitespace" do
+      Yast::FtpServer.PURE_SETTINGS = { "PassivePortRange" => "1024 \t 4201" }
+
+      expected_boundaries = ["1024", "4201"]
+
+      expect(Yast::FtpServer.GetPassivePortRangeBoundaries).to eq expected_boundaries
+    end
+
+    it "returns nil if boundaries is spearated by invalid delimeter" do
+      Yast::FtpServer.PURE_SETTINGS = { "PassivePortRange" => "1024::4201" }
+
+      expect(Yast::FtpServer.GetPassivePortRangeBoundaries).to eq nil
+    end
+  end
+
   describe ".ValueUI" do
     context "'VerboseLogging' when getting vsftpd settings" do
       before do
         Yast::FtpServer.vsftpd_edit = true
       end
-      
+
       it "returns default value 'YES' if 'log_ftp_protocol' missing in config file" do
         mock_config(VS_CONFIG_PATH, VS_SETTINGS)
         Yast::FtpServer.ReadVSFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "YES"
       end
-      
+
       it "returns value from config file 'NO' if 'log_ftp_protocol = NO' in config file" do
         mock_config(VS_CONFIG_PATH, VS_SETTINGS.merge("log_ftp_protocol" => "NO"))
         Yast::FtpServer.ReadVSFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "NO"
       end
 
       it "returns value from config file 'YES' if 'log_ftp_protocol = YES' in config file" do
         mock_config(VS_CONFIG_PATH, VS_SETTINGS.merge("log_ftp_protocol" => "YES"))
         Yast::FtpServer.ReadVSFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "YES"
       end
     end
@@ -99,25 +137,25 @@ describe "Yast::FtpServer" do
       before do
         Yast::FtpServer.vsftpd_edit = false
       end
-      
+
       it "returns default value 'NO' if config file empty" do
         mock_config(PURE_CONFIG_PATH, {})
         Yast::FtpServer.ReadPUREFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "NO"
       end
 
       it "returns value from config file 'NO' if 'VerboseLog = no' in config file" do
         mock_config(PURE_CONFIG_PATH, PURE_SETTINGS)
         Yast::FtpServer.ReadPUREFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "NO"
       end
-      
+
       it "returns value from config file 'YES' if 'VerboseLog = yes' in config file" do
         mock_config(PURE_CONFIG_PATH, PURE_SETTINGS.merge("VerboseLog" => "YES"))
         Yast::FtpServer.ReadPUREFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "YES"
       end
     end
