@@ -30,6 +30,8 @@ Requires:       yast2 >= 2.21.22
 Requires:	yast2-inetd
 BuildRequires:	update-desktop-files yast2 yast2-testsuite
 BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
+BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
 
 BuildArchitectures:	noarch
 
@@ -44,12 +46,13 @@ configure two daemons: pure-ftpd and vsftpd.
 %prep
 %setup -n %{name}-%{version}
 
+%check
+rake test:unit
+
 %build
-%yast_build
 
 %install
-%yast_install
-
+rake install DESTDIR="%{buildroot}"
 
 %files
 %defattr(-,root,root)
