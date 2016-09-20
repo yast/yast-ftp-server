@@ -9,6 +9,6 @@ before_install:
 script:
     - rake check:syntax
     - rake check:pot
+    - rake test:unit
     - sudo rake install
-    - rake test:unit check
 
