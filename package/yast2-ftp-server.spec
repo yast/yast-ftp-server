@@ -28,7 +28,7 @@ License:        GPL-2.0
 # Wizard::SetDesktopTitleAndIcon
 Requires:       yast2 >= 2.21.22
 Requires:	yast2-inetd
-BuildRequires:	perl-XML-Writer update-desktop-files yast2 yast2-testsuite yast2-inetd
+BuildRequires:	update-desktop-files yast2 yast2-testsuite
 BuildRequires:  yast2-devtools >= 3.1.10
 
 BuildArchitectures:	noarch
