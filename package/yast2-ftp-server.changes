@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 20 10:40:22 UTC 2016 - jreidinger@suse.com
+
+- reduce rpm build time (bnc#999203)
+- 3.1.10
+
+-------------------------------------------------------------------
 Tue Jun  7 11:24:46 UTC 2016 - igonzalezsosa@suse.com
 
 - Stop generating autodocs (fate#320356)
