@@ -4,6 +4,16 @@ ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
 
 require "yast"
 
+# stub module to prevent its Import
+# Useful for modules from different yast packages, to avoid build dependencies
+def stub_module(name)
+  Yast.const_set name.to_sym, Class.new { def self.fake_method; end }
+end
+
+stub_module("Users")
+
+
+
 Yast.import "FtpServer"
 
 VS_CONFIG_PATH = Yast::Path.new(".vsftpd")
@@ -68,8 +78,32 @@ PURE_SETTINGS = {
 
 describe "Yast::FtpServer" do
   describe ".Modified" do
-    it "returns false if no modification happens"
-      expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eq false
+    it "returns false if no modification happens" do
+      expect(Yast::FtpServer.Modified).to eq false
+    end
+  end
+
+  describe ".GetPassivePortRangeBoundaries" do
+    it "can read boundaries when separated by colon" do
+      Yast::FtpServer.PURE_SETTINGS = { "PassivePortRange" => "1024:4201" }
+
+      expected_boundaries = ["1024", "4201"]
+
+      expect(Yast::FtpServer.GetPassivePortRangeBoundaries).to eq expected_boundaries
+    end
+
+    it "can read boundaries when separated by whitespace" do
+      Yast::FtpServer.PURE_SETTINGS = { "PassivePortRange" => "1024 \t 4201" }
+
+      expected_boundaries = ["1024", "4201"]
+
+      expect(Yast::FtpServer.GetPassivePortRangeBoundaries).to eq expected_boundaries
+    end
+
+    it "returns nil if boundaries is spearated by invalid delimeter" do
+      Yast::FtpServer.PURE_SETTINGS = { "PassivePortRange" => "1024::4201" }
+
+      expect(Yast::FtpServer.GetPassivePortRangeBoundaries).to eq nil
     end
   end
 
