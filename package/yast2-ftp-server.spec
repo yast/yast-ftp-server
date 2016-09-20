@@ -1,7 +1,7 @@
 #
 # spec file for package yast2-ftp-server
 #
-# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2016 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -23,21 +23,22 @@ Release:        0
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
-Group:          System/YaST
-License:        GPL-2.0
 # Wizard::SetDesktopTitleAndIcon
 Requires:       yast2 >= 2.21.22
-Requires:	yast2-inetd
-BuildRequires:	update-desktop-files yast2 yast2-testsuite
+Requires:       yast2-inetd
+BuildRequires:  update-desktop-files
+BuildRequires:  yast2
 BuildRequires:  yast2-devtools >= 3.1.10
-BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
+BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 
-BuildArchitectures:	noarch
+BuildArch:      noarch
 
 Requires:       yast2-ruby-bindings >= 1.0.0
 
-Summary:	YaST2 - FTP configuration
+Summary:        YaST2 - FTP configuration
+License:        GPL-2.0
+Group:          System/YaST
 
 %description
 This package contains the YaST2 component for FTP configuration. It can
@@ -65,3 +66,5 @@ rake install DESTDIR="%{buildroot}"
 %{yast_schemadir}/autoyast/rnc/ftp-server.rnc
 %{yast_scrconfdir}/*.scr
 %doc %{yast_docdir}
+
+%changelog
