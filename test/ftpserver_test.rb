@@ -67,30 +67,36 @@ PURE_SETTINGS = {
 }
 
 describe "Yast::FtpServer" do
+  describe ".Modified" do
+    it "returns false if no modification happens"
+      expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eq false
+    end
+  end
+
   describe ".ValueUI" do
     context "'VerboseLogging' when getting vsftpd settings" do
       before do
         Yast::FtpServer.vsftpd_edit = true
       end
-      
+
       it "returns default value 'YES' if 'log_ftp_protocol' missing in config file" do
         mock_config(VS_CONFIG_PATH, VS_SETTINGS)
         Yast::FtpServer.ReadVSFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "YES"
       end
-      
+
       it "returns value from config file 'NO' if 'log_ftp_protocol = NO' in config file" do
         mock_config(VS_CONFIG_PATH, VS_SETTINGS.merge("log_ftp_protocol" => "NO"))
         Yast::FtpServer.ReadVSFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "NO"
       end
 
       it "returns value from config file 'YES' if 'log_ftp_protocol = YES' in config file" do
         mock_config(VS_CONFIG_PATH, VS_SETTINGS.merge("log_ftp_protocol" => "YES"))
         Yast::FtpServer.ReadVSFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "YES"
       end
     end
@@ -99,25 +105,25 @@ describe "Yast::FtpServer" do
       before do
         Yast::FtpServer.vsftpd_edit = false
       end
-      
+
       it "returns default value 'NO' if config file empty" do
         mock_config(PURE_CONFIG_PATH, {})
         Yast::FtpServer.ReadPUREFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "NO"
       end
 
       it "returns value from config file 'NO' if 'VerboseLog = no' in config file" do
         mock_config(PURE_CONFIG_PATH, PURE_SETTINGS)
         Yast::FtpServer.ReadPUREFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "NO"
       end
-      
+
       it "returns value from config file 'YES' if 'VerboseLog = yes' in config file" do
         mock_config(PURE_CONFIG_PATH, PURE_SETTINGS.merge("VerboseLog" => "YES"))
         Yast::FtpServer.ReadPUREFTPDSettings()
-        
+
         expect(Yast::FtpServer.ValueUI("VerboseLogging", false)).to eql "YES"
       end
     end
