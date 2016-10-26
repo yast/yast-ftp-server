@@ -1161,15 +1161,15 @@ module Yast
               if Ops.get(@EDIT_SETTINGS, "CertFile") != ""
                 Ops.set(
                   @VS_SETTINGS,
-                  "dsa_cert_file",
+                  "rsa_cert_file",
                   Ops.get(@EDIT_SETTINGS, "CertFile")
                 )
               else
-                Ops.set(@VS_SETTINGS, "dsa_cert_file", nil)
+                Ops.set(@VS_SETTINGS, "rsa_cert_file", nil)
               end
             else
-              return Builtins.haskey(@VS_SETTINGS, "dsa_cert_file") ?
-                Ops.get(@VS_SETTINGS, "dsa_cert_file") :
+              return Builtins.haskey(@VS_SETTINGS, "rsa_cert_file") ?
+                Ops.get(@VS_SETTINGS, "rsa_cert_file") :
                 Ops.get(@DEFAULT_CONFIG, "CertFile")
             end
           else

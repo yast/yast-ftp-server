@@ -1616,7 +1616,7 @@ module Yast
       nil
     end
 
-    # Init function of "DSA Certificate to Use for SSL Encrypted Connections"
+    # Init function of "RSA Certificate to Use for SSL Encrypted Connections"
     # intfield
     #
     def InitCertFile(key)
@@ -1625,7 +1625,7 @@ module Yast
       nil
     end
 
-    # Valid function of "DSA Certificate to Use for SSL Encrypted Connections"
+    # Valid function of "RSA Certificate to Use for SSL Encrypted Connections"
     # check value if user enable SSL Certificate (textentry) doesn't be empty
     #
     def ValidCertFile(key, event)
@@ -1634,7 +1634,7 @@ module Yast
       ssl_enable = Convert.to_boolean(UI.QueryWidget(Id("SSLEnable"), :Value))
 
       if (rsa_cert == "" || rsa_cert == nil) && ssl_enable
-        Popup.Error(_("DSA certificate is missing."))
+        Popup.Error(_("RSA certificate is missing."))
         UI.SetFocus(Id("CertFile"))
         return false
       end
@@ -1642,7 +1642,7 @@ module Yast
       true
     end
 
-    # Store function of "DSA Certificate to Use for SSL Encrypted Connections"
+    # Store function of "RSA Certificate to Use for SSL Encrypted Connections"
     # save value to temporary structure
     #
     def StoreCertFile(key, event)
@@ -1656,7 +1656,7 @@ module Yast
     end
 
     # Handle function of "Browse"
-    # handling value in textentry of "DSA Certificate to Use for SSL Encrypted Connections"
+    # handling value in textentry of "RSA Certificate to Use for SSL Encrypted Connections"
     def HandleBrowseCertFile(key, event)
       event = deep_copy(event)
       button = Ops.get(event, "ID")
