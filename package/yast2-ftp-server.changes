@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 26 13:58:05 UTC 2016 - cwh@suse.com
+
+- Switch to RSA certificates to match yast2-ca-management (bsc#694167)
+- 3.2.0
+
+-------------------------------------------------------------------
 Tue Sep 20 10:40:22 UTC 2016 - jreidinger@suse.com
 
 - reduce rpm build time (bsc#999203)
