@@ -1168,7 +1168,7 @@ module Yast
     end
 
 
-    # DSA Certificate to Use for SSL Encrypted Connections
+    # RSA Certificate to Use for SSL Encrypted Connections
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
@@ -1201,7 +1201,7 @@ module Yast
     end
 
 
-    # "Browse" button for DSA Certificate
+    # "Browse" button for RSA Certificate
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen

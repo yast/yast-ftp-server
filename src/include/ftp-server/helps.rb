@@ -221,10 +221,10 @@ module Yast
             "If enabled, TLS connections are allowed.\n" +
             "</p>\n"
         ),
-        # expert settings DSA Certificate to Use for SSL Encrypted Connections help 1/1
+        # expert settings RSA Certificate to Use for SSL Encrypted Connections help 1/1
         "CertFile"          => _(
-          "<p><b>DSA Certificate to Use for SSL-encrypted Connections</b><br>\n" +
-            "This option specifies the location of the DSA certificate to \n" +
+          "<p><b>RSA Certificate to Use for SSL-encrypted Connections</b><br>\n" +
+            "This option specifies the location of the RSA certificate to \n" +
             "use for SSL-encrypted connections. Select a file by pressing <b>Browse</b>.\n" +
             "</p>\n"
         ),
