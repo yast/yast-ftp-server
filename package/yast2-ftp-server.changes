@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan  4 17:00:41 UTC 2017 - mvidner@suse.com
+
+- Stub out yast2-inetd in our tests (bsc#932331)
+- 3.2.1
+
+-------------------------------------------------------------------
 Wed Oct 26 13:58:05 UTC 2016 - cwh@suse.com
 
 - Switch to RSA certificates to match yast2-ca-management (bsc#694167)

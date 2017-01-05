@@ -11,6 +11,7 @@ def stub_module(name)
 end
 
 stub_module("Users")
+stub_module("Inetd")
 
 Yast.import "FtpServer"
 
