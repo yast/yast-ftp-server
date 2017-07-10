@@ -958,7 +958,11 @@ module Yast
       InitDaemon()
 
       result = true
-      Builtins.foreach(@UI_keys) do |key|
+
+      # StartDaemon setting is not a part of the general UI but is needed
+      # for the AutoYaST installation and is set in the AY configuration
+      # file. So we have to add it here too. (bnc#1047232)
+      Builtins.foreach(@UI_keys + ["StartDaemon"]) do |key|
         val = Ops.get_string(settings, key)
         Ops.set(@EDIT_SETTINGS, key, val) if val != nil
         if val == nil
