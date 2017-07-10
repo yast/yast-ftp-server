@@ -949,7 +949,6 @@ module Yast
     # @return [Boolean] True on success
     def Import(settings)
       settings = deep_copy(settings)
-
       # Evaluate the kind of ftpserver at first via xinetd....
       # (bnc#892701)
       IdFTPXinetd()
@@ -960,7 +959,7 @@ module Yast
 
       result = true
 
-      # This setting is not a part of the general UI but is needed
+      # StartDaemon setting is not a part of the general UI but is needed
       # for the AutoYaST installation and is set in the AY configuration
       # file. So we have to add it here too. (bnc#1047232)
       Builtins.foreach(@UI_keys + ["StartDaemon"]) do |key|
