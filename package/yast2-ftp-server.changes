@@ -3,7 +3,7 @@ Mon Jul 10 14:20:16 CEST 2017 - schubi@suse.de
 
 - Added missing StartDaemon flag to internal data structure in
   order to read it from the AY configuration file. (bnc#1047232)
-- 3.2.2
+- 3.3.0
 
 -------------------------------------------------------------------
 Wed Jan  4 17:00:41 UTC 2017 - mvidner@suse.com
