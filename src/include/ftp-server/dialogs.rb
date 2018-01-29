@@ -25,10 +25,6 @@ module Yast
       Yast.include include_target, "ftp-server/helps.rb"
       Yast.include include_target, "ftp-server/wid_functions.rb"
 
-
-
-
-
       # map for description of widget later in CWNTree
       # widget_descr (vsftpd)
       #
@@ -1513,19 +1509,15 @@ module Yast
       deep_copy(result)
     end
 
-
     # Init function where are added firewall
     #
     # @return [Hash{String => Object}] map for firewall settings
 
-
     def FirewallSettingsPure
-      result = {}
-
-      Ops.set(result, "services", ["service:pure-ftpd"])
-      Ops.set(result, "display_details", true)
-
-      deep_copy(result)
+      {
+        "services"        => ["pure-ftpd"],
+        "display_details" => true
+      }
     end
 
     # Init function where are added firewall
@@ -1534,12 +1526,10 @@ module Yast
 
 
     def FirewallSettingsVs
-      result = {}
-
-      Ops.set(result, "services", ["service:vsftpd"])
-      Ops.set(result, "display_details", true)
-
-      deep_copy(result)
+      {
+        "services"        => ["vsftpd"],
+        "display_details" => true
+      }
     end
 
 
