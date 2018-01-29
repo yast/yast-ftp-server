@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 29 19:35:29 UTC 2018 - knut.anderssen@suse.com
+
+- SuSEFirewall2 replaced by firewalld (fate#323460)
+- 4.0.0
+
+-------------------------------------------------------------------
 Mon Jul 10 14:20:16 CEST 2017 - schubi@suse.de
 
 - Added missing StartDaemon flag to internal data structure in
