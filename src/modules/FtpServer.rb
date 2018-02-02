@@ -30,8 +30,6 @@ module Yast
       Yast.import "Package"
       Yast.import "CommandLine"
       Yast.import "Users"
-      Yast.import "SuSEFirewall"
-      Yast.import "SuSEFirewallServices"
       Yast.import "PortAliases"
 
       # Data was modified?
@@ -239,6 +237,10 @@ module Yast
       # Write only, used during autoinstallation.
       # Don't run services and SuSEconfig, it's all done at one place.
       @write_only = false
+    end
+
+    def firewalld
+      @firewalld ||= Y2Firewall::Firewalld.instance
     end
 
     # Read current pure-ftpd configuration
@@ -472,7 +474,7 @@ module Yast
       end
       #read firewall settings
       progress_orig = Progress.set(false)
-      SuSEFirewall.Read
+      firewalld.read
       Progress.set(progress_orig)
       #read existing upload directory for vsftpd
       result = ReadVSFTPDUpload() if @vsftpd_edit
@@ -539,36 +541,29 @@ module Yast
       port_range = ""
       active_port = ""
 
-      if SuSEFirewall.IsStarted
-        if Ops.get(@EDIT_SETTINGS, "PassiveMode") == "YES"
-          port_range = Ops.add(
-            Ops.add(Ops.get(@EDIT_SETTINGS, "PasMinPort"), ":"),
-            Ops.get(@EDIT_SETTINGS, "PasMaxPort")
-          )
-        else
-          active_port = PortAliases.IsKnownPortName("ftp-data") ? "ftp-data" : "20"
-        end
+      return true if !firewalld.running?
 
-        suse_config = {
-          "tcp_ports" => [
-            PortAliases.IsKnownPortName("ftp") ? "ftp" : "21",
-            active_port != "" ? active_port : port_range
-          ]
-        }
-
-        if @vsftpd_edit
-          return SuSEFirewallServices.SetNeededPortsAndProtocols(
-            "service:vsftpd",
-            suse_config
-          )
-        else
-          return SuSEFirewallServices.SetNeededPortsAndProtocols(
-            "service:pure-ftpd",
-            suse_config
-          )
-        end
+      if Ops.get(@EDIT_SETTINGS, "PassiveMode") == "YES"
+        port_range = Ops.add(
+          Ops.add(Ops.get(@EDIT_SETTINGS, "PasMinPort"), ":"),
+          Ops.get(@EDIT_SETTINGS, "PasMaxPort")
+        )
       else
-        return true
+        active_port = PortAliases.IsKnownPortName("ftp-data") ? "ftp-data" : "20"
+      end
+
+      tcp_ports = [
+          PortAliases.IsKnownPortName("ftp") ? "ftp" : "21",
+          active_port != "" ? active_port : port_range
+        ]
+
+      service = @vsftpd_edit ? "pure-ftpd" : "vsftpd"
+
+      begin
+        return Y2Firewall::Firewalld::Service.modify_ports(name: service, tcp_ports: tcp_ports)
+      rescue Y2Firewall::Firewalld::Service::NotFound
+        y2error("Firewalld 'cluster' service is not available.")
+        return false
       end
     end
 
@@ -630,7 +625,7 @@ module Yast
       if result
         # write configuration to the firewall
         progress_orig = Progress.set(false)
-        result = SuSEFirewall.Write
+        result = firewalld.write
         Progress.set(progress_orig)
       end
       result
