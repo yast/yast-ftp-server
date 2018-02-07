@@ -20,5 +20,5 @@ Icon=yast-ftp-server
 Exec=xdg-su -c "/sbin/yast2 ftp-server"
 
 Name=FTP Server
-GenericName=Module for configuration FTP daemon (vsftpd or pure-ftpd)
+GenericName=Module for configuration FTP daemon (vsftpd)
 StartupNotify=true

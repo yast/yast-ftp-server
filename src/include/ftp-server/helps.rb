@@ -32,17 +32,6 @@ module Yast
               "An additional dialog informs whether it is safe to do so.\n" +
               "</p>\n"
           ),
-        #-----------================= START_UP SCREEN =============----------
-        #
-
-
-        #Start widget switching daemons help 1/1
-        "selected_services" => _(
-          "<p><b>Selected Service</b><br>\n" +
-            "     The frame shows which daemon is currently configured: <b>vsftpd, pure-ftpd,   \n" +
-            "     </b>. If you have installed both daemons you can switch between them.\n" +
-            "</p>\n"
-        ),
         #-----------================= GENERAL SCREEN =============----------
         #
 
@@ -69,14 +58,7 @@ module Yast
             "When enabled, all FTP requests and responses are logged.\n" +
             "</p>\n"
         ),
-        # general umask  help - only pure-ftpd 1/1
-        "Umask"             => _(
-          "<p><b>Umask</b><br>\n" +
-            "File creation mask. (umask for files):(umask for dirs). \n" +
-            "177:077 if you feel paranoid.\n" +
-            "</p>\n"
-        ),
-        # general umask for anonymous  help - only vsftpd 1/1
+        # general umask for anonymous  help
         "UmaskAnon"         => _(
           "<p><b>Umask for Anonymous:</b><br>\n" +
             "The value to which the umask for file creation is set for anonymous users. \n" +
@@ -84,7 +66,7 @@ module Yast
             "the value will be treated as a base 10 integer.\n" +
             "</p>\n"
         ),
-        # general umask for authenticated users  help - only vsftpd 1/1
+        # general umask for authenticated users  help
         "UmaskLocal"        => _(
           "<p><b>Umask for Authenticated Users:</b><br>\n" +
             "The value to which the umask for file creation is set for authenticated users. \n" +

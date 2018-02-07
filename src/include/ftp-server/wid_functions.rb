@@ -150,8 +150,7 @@ module Yast
 
       UpdateInfoAboutStartingFTP()
 
-      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2" &&
-          Service.Status("pure-ftpd") != 0
+      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2"
         SCR.Write(Builtins.add(path(".vsftpd"), "listen"), nil)
         SCR.Write(Builtins.add(path(".vsftpd"), "listen_ipv6"), nil)
         SCR.Write(path(".vsftpd"), nil)
@@ -167,7 +166,6 @@ module Yast
 
         if FtpServer.WriteStartViaXinetd(true, true) && result
           FtpServer.vsftp_xinetd_running = true
-          FtpServer.pure_ftp_xinetd_running = false
           UI.ReplaceWidget(
             Id("_cwm_service_status_rp"),
             Label(_("FTP is running"))
@@ -243,8 +241,7 @@ module Yast
       result = StopNowVsftpd()
       UpdateInfoAboutStartingFTP()
 
-      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2" &&
-          Service.Status("pure-ftpd") != 0
+      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2"
         result = AskStartXinetd()
         #write settings to disk...
         FtpServer.WriteSettings
@@ -287,225 +284,11 @@ module Yast
       result
     end
 
-
-
-
-    # Function start pure-ftpd
-
-    def StartNowPure
-      result = false
-
-      UpdateInfoAboutStartingFTP()
-
-      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2" &&
-          Service.Status("vsftpd") != 0
-        FtpServer.stop_daemon_xinetd = false
-        result = AskStartXinetd()
-
-        if !result
-          if Service.Status("xinetd") == 0 ||
-              Ops.get(FtpServer.EDIT_SETTINGS, "StartXinetd") == "YES"
-            result = true
-          end
-        end
-
-        if FtpServer.WriteStartViaXinetd(true, true) && result
-          FtpServer.pure_ftp_xinetd_running = true
-          FtpServer.vsftp_xinetd_running = false
-          UI.ReplaceWidget(
-            Id("_cwm_service_status_rp"),
-            Label(_("FTP is running"))
-          )
-          UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
-          UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
-          result = true
-        end
-      else
-        SCR.Write(Builtins.add(path(".pure-ftpd"), "Daemonize"), "YES")
-        SCR.Write(path(".pure-ftpd"), nil)
-        command = "rcpure-ftpd start"
-
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
-
-        Builtins.y2milestone(
-          "[ftp-server] (StartNowPure) command for start pure-ftpd:  %1  output: %2",
-          command,
-          options
-        )
-
-        if Ops.get(options, "exit") == 0
-          result = true
-        else
-          result = false
-        end
-      end
-      result
-    end
-
-    # Function stop pure-ftpd
-    def StopNowPure
-      result = false
-
-      if FtpServer.pure_ftp_xinetd_running
-        #Popup::Message(_("This is not supported via xinetd now."));
-
-        FtpServer.stop_daemon_xinetd = true
-        if FtpServer.WriteStartViaXinetd(true, true)
-          FtpServer.pure_ftp_xinetd_running = false
-          UI.ReplaceWidget(
-            Id("_cwm_service_status_rp"),
-            Label(_("FTP is not running"))
-          )
-          UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, true)
-          UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, false)
-          result = true
-        end
-      else
-        command = "rcpure-ftpd stop"
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
-        Builtins.y2milestone(
-          "[ftp-server] (StopNowPure) command for stop pure-ftpd:  %1  output: %2",
-          command,
-          options
-        )
-        if Ops.get(options, "exit") == 0
-          result = true
-        else
-          result = false
-        end
-      end
-      result
-    end
-
-    # Function saves configuration and restarts pure-ftpd
-    def SaveAndRestartPure
-      result = false
-
-      result = StopNowPure()
-      UpdateInfoAboutStartingFTP()
-
-      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2" &&
-          Service.Status("vsftpd") != 0
-        result = AskStartXinetd()
-        #write settings to disk...
-        FtpServer.WriteSettings
-
-        if !result
-          if Service.Status("xinetd") == 0 ||
-              Ops.get(FtpServer.EDIT_SETTINGS, "StartXinetd") == "YES"
-            result = true
-          end
-        end
-        FtpServer.stop_daemon_xinetd = false
-        if FtpServer.WriteStartViaXinetd(true, false) && result
-          FtpServer.pure_ftp_xinetd_running = true
-          UI.ReplaceWidget(
-            Id("_cwm_service_status_rp"),
-            Label(_("FTP is running"))
-          )
-          UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
-          UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
-          result = true
-        end
-      else
-        #write settings to disk...
-        FtpServer.WriteSettings
-        command = "rcpure-ftpd start"
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
-        Builtins.y2milestone(
-          "[ftp-server] (StopNowPure) command for save and restart pure-ftpd:  %1  output: %2",
-          command,
-          options
-        )
-        if Ops.get(options, "exit") == 0
-          result = true
-        else
-          result = false
-        end
-      end
-      result = FtpServer.WriteUpload
-      result
-    end
-
-
-    # Init function for general settings
-    # save values to temporary structure
-    def InitRBVsPure(key)
-      if FtpServer.vsftpd_installed && FtpServer.pureftpd_installed
-        if FtpServer.vsftpd_edit
-          UI.ChangeWidget(Id("vs_item"), :Value, true)
-        else
-          UI.ChangeWidget(Id("pure_item"), :Value, true)
-        end
-      elsif FtpServer.vsftpd_installed && !FtpServer.pureftpd_installed
-        UI.ChangeWidget(Id("vs_item"), :Value, true)
-        UI.ChangeWidget(Id("pure_item"), :Enabled, false)
-        UI.ChangeWidget(Id("vs_item"), :Enabled, false)
-      elsif !FtpServer.vsftpd_installed && FtpServer.pureftpd_installed
-        UI.ChangeWidget(Id("pure_item"), :Value, true)
-        UI.ChangeWidget(Id("pure_item"), :Enabled, false)
-        UI.ChangeWidget(Id("vs_item"), :Enabled, false)
-      else
-        UI.ChangeWidget(Id("pure_item"), :Enabled, false)
-        UI.ChangeWidget(Id("vs_item"), :Enabled, false)
-      end
-
-      if !Mode.normal
-        # Autoyast configuration module does not take care about installed
-        # packages (installed ftp-servers). As we are using vsftpd
-        # in autoyast (SLES) only, we are disabling the selection of
-        # different ftp servers. (bnc#888212)
-        if FtpServer.vsftpd_edit || Mode.config
-          UI.ChangeWidget(Id("vs_item"), :Value, true)
-        else
-          UI.ChangeWidget(Id("pure_item"), :Value, true)
-        end
-        UI.ChangeWidget(Id("pure_item"), :Enabled, false)
-        UI.ChangeWidget(Id("vs_item"), :Enabled, false)
-      end
-
-      nil
-    end
-
-
-    def HandleRBVsPure(key, event)
-      event = deep_copy(event)
-      if FtpServer.vsftpd_edit &&
-          Convert.to_boolean(UI.QueryWidget(Id("pure_item"), :Value)) &&
-          FtpServer.vsftpd_installed
-        FtpServer.vsftpd_edit = false
-        return :pureftpd
-      end
-      if !FtpServer.vsftpd_edit &&
-          Convert.to_boolean(UI.QueryWidget(Id("vs_item"), :Value)) &&
-          FtpServer.pureftpd_installed
-        FtpServer.vsftpd_edit = true
-        return :vsftpd
-      end
-
-      nil
-    end
-
     # Init function for start-up
     #
     # init starting via xinetd and update status
     def InitStartStopRestart(key)
-      if FtpServer.pure_ftp_xinetd_running && !FtpServer.vsftpd_edit
-        UI.ReplaceWidget(
-          Id("_cwm_service_status_rp"),
-          Label(_("FTP is running"))
-        )
-        UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
-        UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
-      end
-
-      if FtpServer.vsftp_xinetd_running && FtpServer.vsftpd_edit
+      if FtpServer.vsftp_xinetd_running
         UI.ReplaceWidget(
           Id("_cwm_service_status_rp"),
           Label(_("FTP is running"))
@@ -600,48 +383,6 @@ module Yast
       nil
     end
 
-    # Init function "Umask (umask files:umask dirs)" for general settings
-    # change ValidChars for textentry
-    # only pure-ftpd
-    def InitUmask(key)
-      UI.ChangeWidget(Id("Umask"), :ValidChars, "01234567:")
-      UI.ChangeWidget(Id("Umask"), :Value, FtpServer.ValueUIEdit("Umask"))
-
-      nil
-    end
-
-    # Valid function of "Umask (umask files:umask dirs)"
-    # check value of textentry
-    # only pure-ftpd
-    def ValidUmask(key, event)
-      event = deep_copy(event)
-      new_umask = Convert.to_string(UI.QueryWidget(Id("Umask"), :Value))
-      if Ops.greater_than(Builtins.size(new_umask), 0)
-        l = Builtins.splitstring(new_umask, ":")
-        l = Builtins.filter(l) { |s| s != "" }
-        if Ops.less_than(Builtins.size(l), 2)
-          Popup.Message(_("Not a valid umask."))
-          UI.SetFocus(Id("Umask"))
-          return false
-        end
-      end
-      true
-    end
-
-
-    # Store function of "Umask (umask files:umask dirs)"
-    # save values to temporary structure
-    # only pure-ftpd
-    def StoreUmask(key, event)
-      event = deep_copy(event)
-      FtpServer.WriteToEditMap(
-        "Umask",
-        Builtins.tostring(UI.QueryWidget(Id("Umask"), :Value))
-      )
-
-      nil
-    end
-
     # Init function "Umask for Anonymous" for general settings
     # change ValidChars for textentry
     # only vsftpd
@@ -721,43 +462,6 @@ module Yast
     # check value of textentry
     #
     def ValidFtpDirAnon(key, event)
-      event = deep_copy(event)
-      if !FtpServer.vsftpd_edit
-        if Ops.get(FtpServer.EDIT_SETTINGS, "VirtualUser") == "NO"
-          _AnonHomeDir = Convert.to_string(
-            UI.QueryWidget(Id("FtpDirAnon"), :Value)
-          )
-          #checking correct homedir for anonymous user
-          if _AnonHomeDir != "" && Mode.normal
-            if _AnonHomeDir != FtpServer.anon_homedir
-              error = Users.EditUser({ "homeDirectory" => _AnonHomeDir })
-              if error != nil && error != ""
-                Popup.Error(error)
-                UI.SetFocus(Id("FtpDirAnon"))
-                return false
-              end
-              uid = FtpServer.anon_uid
-              failed = false
-              ui_map = {}
-              error_map = {}
-              begin
-                error_map = Users.CheckHomeUI(uid, _AnonHomeDir, ui_map)
-                if error_map != {}
-                  if !Popup.YesNo(Ops.get_string(error_map, "question", ""))
-                    failed = true
-                  else
-                    Ops.set(
-                      ui_map,
-                      Ops.get_string(error_map, "question_id", ""),
-                      _AnonHomeDir
-                    )
-                  end
-                end
-              end while error_map != {} && !failed
-            end #end of if (AnonHomeDir != FtpServer::anon_homedir) {
-          end #end of if ((AnonHomeDir != "") && (Mode::normal())) {
-        end #end of if (FtpServer::EDIT_SETTINGS["VirtualUser"]:nil != "NO") {
-      end #end of if (!FtpServer::vsftpd_edit) {
       true
     end
 
@@ -1197,47 +901,25 @@ module Yast
       enable = Convert.to_boolean(UI.QueryWidget(Id("AnonReadOnly"), :Value))
 
       if enable
-        if !FtpServer.vsftpd_edit
-          if FtpServer.pure_ftp_allowed_permissios_upload == 0
-            yesno_question = Builtins.sformat(
-              _("Change permissions of %1 ?\n"),
-              FtpServer.anon_homedir
+        if FtpServer.pure_ftp_allowed_permissios_upload == 1
+          yesno_question = Builtins.sformat(
+            _("Change permissions of %1 ?\n"),
+            FtpServer.anon_homedir
+          )
+          yesno_comment = Builtins.sformat(
+            _(
+              "For anonymous connections the home directory of an anonymous user should have no write access.\n"
             )
-            yesno_comment = Builtins.sformat(
-              _(
-                "If you want to allow uploads for \"anonymous\" users, \nyou need a directory with write access for them."
-              )
-            )
-            result = Popup.YesNoHeadline(yesno_question, yesno_comment)
-            if result
-              FtpServer.pure_ftp_allowed_permissios_upload = 1
-              FtpServer.change_permissions = true
-            else
-              FtpServer.pure_ftp_allowed_permissios_upload = -1
-              FtpServer.change_permissions = false
-            end
-          end #end of if (FtpServer::pure_ftp_allowed_permissios_upload == 0)
-        else
-          if FtpServer.pure_ftp_allowed_permissios_upload == 1
-            yesno_question = Builtins.sformat(
-              _("Change permissions of %1 ?\n"),
-              FtpServer.anon_homedir
-            )
-            yesno_comment = Builtins.sformat(
-              _(
-                "For anonymous connections the home directory of an anonymous user should have no write access.\n"
-              )
-            )
-            result = Popup.YesNoHeadline(yesno_question, yesno_comment)
-            if result
-              FtpServer.pure_ftp_allowed_permissios_upload = 0
-              FtpServer.change_permissions = true
-            else
-              FtpServer.pure_ftp_allowed_permissios_upload = -1
-              FtpServer.change_permissions = false
-            end
-          end #end of if (FtpServer::pure_ftp_allowed_permissios_upload == 1)
-        end #end else for if if (!FtpServer::vsftpd_edit) {
+          )
+          result = Popup.YesNoHeadline(yesno_question, yesno_comment)
+          if result
+            FtpServer.pure_ftp_allowed_permissios_upload = 0
+            FtpServer.change_permissions = true
+          else
+            FtpServer.pure_ftp_allowed_permissios_upload = -1
+            FtpServer.change_permissions = false
+          end
+        end
       end # end of if (enable) {
       # modified
       if Ops.get_string(event, "EventReason", "") == "ValueChanged"
@@ -1284,47 +966,25 @@ module Yast
       enable = Convert.to_boolean(UI.QueryWidget(Id("AnonReadOnly"), :Value))
 
       if enable
-        if !FtpServer.vsftpd_edit
-          if FtpServer.pure_ftp_allowed_permissios_upload == 0
-            yesno_question = Builtins.sformat(
-              _("Change permissions of %1 ?\n"),
-              FtpServer.anon_homedir
+        if FtpServer.pure_ftp_allowed_permissios_upload == 1
+          yesno_question = Builtins.sformat(
+            _("Change permissions of %1 ?\n"),
+            FtpServer.anon_homedir
+          )
+          yesno_comment = Builtins.sformat(
+            _(
+              "For anonymous connections the home directory of an anonymous user should have no write access."
             )
-            yesno_comment = Builtins.sformat(
-              _(
-                "If you want to allow uploads for \"anonymous\" users, \nyou need a directory with write access for them."
-              )
-            )
-            result = Popup.YesNoHeadline(yesno_question, yesno_comment)
-            if result
-              FtpServer.pure_ftp_allowed_permissios_upload = 1
-              FtpServer.change_permissions = true
-            else
-              FtpServer.pure_ftp_allowed_permissios_upload = -1
-              FtpServer.change_permissions = false
-            end
-          end #end of if (FtpServer::pure_ftp_allowed_permissios_upload == 0)
-        else
-          if FtpServer.pure_ftp_allowed_permissios_upload == 1
-            yesno_question = Builtins.sformat(
-              _("Change permissions of %1 ?\n"),
-              FtpServer.anon_homedir
-            )
-            yesno_comment = Builtins.sformat(
-              _(
-                "For anonymous connections the home directory of an anonymous user should have no write access."
-              )
-            )
-            result = Popup.YesNoHeadline(yesno_question, yesno_comment)
-            if result
-              FtpServer.pure_ftp_allowed_permissios_upload = 0
-              FtpServer.change_permissions = true
-            else
-              FtpServer.pure_ftp_allowed_permissios_upload = -1
-              FtpServer.change_permissions = false
-            end
-          end #end of if (FtpServer::pure_ftp_allowed_permissios_upload == 1)
-        end #end else for if if (!FtpServer::vsftpd_edit) {
+          )
+          result = Popup.YesNoHeadline(yesno_question, yesno_comment)
+          if result
+            FtpServer.pure_ftp_allowed_permissios_upload = 0
+            FtpServer.change_permissions = true
+          else
+            FtpServer.pure_ftp_allowed_permissios_upload = -1
+            FtpServer.change_permissions = false
+          end
+        end
       end # end of if (enable) {
       # modified
       if Ops.get_string(event, "EventReason", "") == "ValueChanged"
@@ -1714,17 +1374,6 @@ module Yast
     # check of existing certificate
     #
     def ValidSSL(key, event)
-      event = deep_copy(event)
-      current = Convert.to_string(UI.QueryWidget(Id("SSL"), :Value))
-      if !FileUtils.Exists("/etc/ssl/private/pure-ftpd.pem") &&
-          (current == "accept" || current == "refuse")
-        Popup.Error(
-          _(
-            "The <tt>/etc/ssl/private/pure-ftpd.pem</tt> certificate for the SSL connection is missing."
-          )
-        )
-        return false
-      end
       true
     end
 

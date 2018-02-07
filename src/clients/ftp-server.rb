@@ -84,7 +84,7 @@ module Yast
             "handler" => fun_ref(method(:FTPdCMDUmask), "boolean (map)"),
             # TRANSLATORS: CommandLine help
             "help"    => _(
-              "Umask vsftpd: <local users>:<anonymous>, pure-ftpd: <files>:<dirs>"
+              "Umask <local users>:<anonymous>"
             ),
             "example" => ["umask set_umask=177:077"]
           },
@@ -95,14 +95,6 @@ module Yast
               "Enter the existing directory for anonymous users."
             ),
             "example" => ["anon_dir set_anon_dir=/srv/ftp"]
-          },
-          "authen_dir"      => {
-            "handler" => fun_ref(method(:FTPdCMDAuthenDir), "boolean (map)"),
-            # TRANSLATORS: CommandLine help
-            "help"    => _(
-              "Enter the existing directory for authenticated users (pure-ftpd only)."
-            ),
-            "example" => ["authen_dir set_authen_dir=/srv/ftp"]
           },
           "port_range"      => {
             "handler" => fun_ref(method(:FTPdCMDPassPorts), "boolean (map)"),
@@ -210,33 +202,14 @@ module Yast
             ),
             "example" => ["SSLv3 enable", "SSLv3 disable"]
           },
-          # only vsftpd
           "TLS"             => {
             "handler" => fun_ref(method(:FTPdCMDTLS), "boolean (map)"),
             # TRANSLATORS: CommandLine help
             "help"    => _(
-              "vsftpd supports connections via TLS (vsftpd only)."
+              "Allow connections via TLS."
             ),
             "example" => ["TLS enable", "TLS disable"]
           },
-          # only pure-ftp-server
-          "antiwarez"       => {
-            "handler" => fun_ref(method(:FTPdCMDAntiwarez), "boolean (map)"),
-            # TRANSLATORS: CommandLine help
-            "help"    => _(
-              "Disallow downloading of files that were uploaded but not validated by a local admin (pure-ftpd only)."
-            ),
-            "example" => ["antiwarez enable", "antiwarez disable"]
-          },
-          # only pure-ftp-server
-          "SSL_TLS"         => {
-            "handler" => fun_ref(method(:FTPdCMDSSL_TLS), "boolean (map)"),
-            # TRANSLATORS: CommandLine help
-            "help"    => _(
-              "Security settings for SSL and TLS protocol (pure-ftpd only)"
-            ),
-            "example" => ["SSL_TLS enable", "SSL_TLS disable", "SSL_TLS only"]
-          }
         },
         "options"    => {
           "atboot"          => {
@@ -397,24 +370,11 @@ module Yast
           "max_rate_anon"   => ["set_max_rate"],
           "access"          => ["anon_only", "authen_only", "anon_and_authen"],
           "anon_access"     => ["can_upload", "create_dirs"],
-          #only vsftpd
           "welcome_message" => ["set_message"],
-          #only vsftpd
           "SSL"             => ["enable", "disable"],
-          #only vsftpd
           "SSLv2"           => ["enable", "disable"],
-          #only vsftpd
           "SSLv3"           => ["enable", "disable"],
-          #only vsftpd
           "TLS"             => ["enable", "disable"],
-          #only pure-ftp-server
-          "antiwarez"       => ["enable", "disable"],
-          #only pure-ftp-server
-          "SSL_TLS"         => [
-            "enable",
-            "disable",
-            "only"
-          ]
         }
       }
 
@@ -486,43 +446,29 @@ module Yast
       end
 
       # UMASK settings
-      if FtpServer.vsftpd_edit
-        if Ops.get(FtpServer.EDIT_SETTINGS, "UmaskAnon") != ""
-          CommandLine.PrintNoCR(_("Umask for Anonymous: "))
-          CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "UmaskAnon"))
-        else
-          CommandLine.PrintNoCR(_("Umask for Anonymous:"))
-          CommandLine.Print(_("Option is not set now."))
-        end
-        if Ops.get(FtpServer.EDIT_SETTINGS, "UmaskLocal") != ""
-          CommandLine.PrintNoCR(_("Umask for Authenticated Users: "))
-          CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "UmaskLocal")) 
-          #CommandLine::Print("");
-        else
-          CommandLine.PrintNoCR(_("Umask for Authenticated Users: "))
-          CommandLine.Print(_("Option is not set now.")) 
-          #CommandLine::Print("");
-        end
+      if Ops.get(FtpServer.EDIT_SETTINGS, "UmaskAnon") != ""
+        CommandLine.PrintNoCR(_("Umask for Anonymous: "))
+        CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "UmaskAnon"))
       else
-        if Ops.get(FtpServer.EDIT_SETTINGS, "Umask") != ""
-          CommandLine.PrintNoCR(_("Umask: "))
-          CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "Umask")) 
-          #CommandLine::Print("");
-        else
-          CommandLine.PrintNoCR(_("Umask: "))
-          CommandLine.Print(_("Option is not set now.")) 
-          #CommandLine::Print("");
-        end
-      end # end of if (FtpServer::vsftpd_edit)
+        CommandLine.PrintNoCR(_("Umask for Anonymous:"))
+        CommandLine.Print(_("Option is not set now."))
+      end
+      if Ops.get(FtpServer.EDIT_SETTINGS, "UmaskLocal") != ""
+        CommandLine.PrintNoCR(_("Umask for Authenticated Users: "))
+        CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "UmaskLocal")) 
+        #CommandLine::Print("");
+      else
+        CommandLine.PrintNoCR(_("Umask for Authenticated Users: "))
+        CommandLine.Print(_("Option is not set now.")) 
+        #CommandLine::Print("");
+      end
 
       #authenticated and anonymous dirs
-      if FtpServer.vsftpd_edit
-        CommandLine.PrintNoCR(_("Authenticated dir: "))
-        if Ops.get(FtpServer.EDIT_SETTINGS, "FtpDirLocal") != ""
-          CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "FtpDirLocal"))
-        else
-          CommandLine.Print(_("Option is not set now."))
-        end
+      CommandLine.PrintNoCR(_("Authenticated dir: "))
+      if Ops.get(FtpServer.EDIT_SETTINGS, "FtpDirLocal") != ""
+        CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "FtpDirLocal"))
+      else
+        CommandLine.Print(_("Option is not set now."))
       end
 
       CommandLine.PrintNoCR(_("Anonymous dir: "))
@@ -607,59 +553,39 @@ module Yast
       end
 
       # welcome message vsftpd only
-      if FtpServer.vsftpd_edit
-        CommandLine.PrintNoCR(_("Welcome message: "))
-        if Ops.get(FtpServer.EDIT_SETTINGS, "Banner") != ""
-          CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "Banner"))
-        else
-          CommandLine.Print(_("Option is not set now."))
-        end
-
-        #CommandLine::PrintNoCR(_("Security settings: "));
-
-        # SSL options (SSL version and TLS)
-        if Ops.get(FtpServer.EDIT_SETTINGS, "SSLEnable") != "YES"
-          CommandLine.Print(_("SSL is disabled"))
-        else
-          CommandLine.Print(_("SSL is enabled"))
-        end
-
-        if Ops.get(FtpServer.EDIT_SETTINGS, "SSLv2") != "YES"
-          CommandLine.Print(_("SSL version 2 is disabled"))
-        else
-          CommandLine.Print(_("SSL version 2 is enabled"))
-        end
-
-        if Ops.get(FtpServer.EDIT_SETTINGS, "SSLv3") != "YES"
-          CommandLine.Print(_("SSL version 3 is disabled"))
-        else
-          CommandLine.Print(_("SSL version 3 is enabled"))
-        end
-
-        if Ops.get(FtpServer.EDIT_SETTINGS, "TLS") != "YES"
-          CommandLine.Print(_("TLS is disabled"))
-        else
-          CommandLine.Print(_("TLS is enabled"))
-        end
+      CommandLine.PrintNoCR(_("Welcome message: "))
+      if Ops.get(FtpServer.EDIT_SETTINGS, "Banner") != ""
+        CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "Banner"))
       else
-        # AntiWarez option
-        CommandLine.PrintNoCR(_("Antiwarez: "))
-        if Ops.get(FtpServer.EDIT_SETTINGS, "AntiWarez") == "YES"
-          CommandLine.Print(_("Antiwarez enabled"))
-        else
-          CommandLine.Print(_("Antiwarez disabled"))
-        end
-        # SSL/TLS settings
-        CommandLine.PrintNoCR(_("SSL/TLS settings: "))
-        if Ops.get(FtpServer.EDIT_SETTINGS, "SSL") == "0"
-          CommandLine.Print(_("SSL/TLS disabled"))
-        elsif Ops.get(FtpServer.EDIT_SETTINGS, "SSL") == "1"
-          CommandLine.Print(_("SSL/TLS enabled"))
-        else
-          CommandLine.Print(_("Refuse connections without SSL/TLS"))
-        end
+        CommandLine.Print(_("Option is not set now."))
       end
 
+      #CommandLine::PrintNoCR(_("Security settings: "));
+
+      # SSL options (SSL version and TLS)
+      if Ops.get(FtpServer.EDIT_SETTINGS, "SSLEnable") != "YES"
+        CommandLine.Print(_("SSL is disabled"))
+      else
+        CommandLine.Print(_("SSL is enabled"))
+      end
+
+      if Ops.get(FtpServer.EDIT_SETTINGS, "SSLv2") != "YES"
+        CommandLine.Print(_("SSL version 2 is disabled"))
+      else
+        CommandLine.Print(_("SSL version 2 is enabled"))
+      end
+
+      if Ops.get(FtpServer.EDIT_SETTINGS, "SSLv3") != "YES"
+        CommandLine.Print(_("SSL version 3 is disabled"))
+      else
+        CommandLine.Print(_("SSL version 3 is enabled"))
+      end
+
+      if Ops.get(FtpServer.EDIT_SETTINGS, "TLS") != "YES"
+        CommandLine.Print(_("TLS is disabled"))
+      else
+        CommandLine.Print(_("TLS is enabled"))
+      end
 
       CommandLine.Print("")
       false
@@ -737,13 +663,12 @@ module Yast
 
     def FTPdCMDUmask(options)
       options = deep_copy(options)
-      temp = []
       CommandLine.Print(String.UnderlinedHeader(_("Umask:"), 0))
       CommandLine.Print("")
       if Ops.greater_than(Builtins.size(options), 1)
         # TRANSLATORS: CommandLine error message
         CommandLine.Error(_("Only one parameter (show/set_umask) is allowed."))
-      elsif FtpServer.vsftpd_edit
+      else
         if Ops.get(options, "set_umask") != nil
           value = Ops.get_string(options, "set_umask")
           value = Builtins.filterchars(value, "01234567:")
@@ -774,25 +699,7 @@ module Yast
             CommandLine.Print("")
           end
         end
-      else
-        #part for pure-fptd
-        if Ops.get(options, "set_umask") != nil
-          value = Ops.get_string(options, "set_umask")
-          value = Builtins.filterchars(value, "01234567:")
-          if value != ""
-            CommandLine.PrintNoCR(_("Umask: "))
-            CommandLine.Print(value)
-            CommandLine.Print("")
-            Ops.set(FtpServer.EDIT_SETTINGS, "Umask", value)
-          else
-            CommandLine.Error(_("Entered umask is not valid."))
-            CommandLine.Print(
-              _("Example of correct umask <files>:<dirs> (set_umask=177:077)")
-            )
-            CommandLine.Print("")
-          end
-        end # end of if (options["set_umask"]:nil!=nil)
-      end #end of if (vsftpd_edit)
+      end
 
       nil
     end
@@ -831,31 +738,25 @@ module Yast
       options = deep_copy(options)
       CommandLine.Print(String.UnderlinedHeader(_("Authenticated users:"), 0))
       CommandLine.Print("")
-      if FtpServer.vsftpd_edit
-        if Builtins.size(options) == 1
-          if Ops.get(options, "set_authen_dir") != nil
-            value = Ops.get_string(options, "set_authen_dir")
-            if value != nil
-              CommandLine.PrintNoCR(_("Authenticated directory:"))
-              CommandLine.Print(value)
-              CommandLine.Print("")
-              Ops.set(FtpServer.EDIT_SETTINGS, "FtpDirLocal", value)
-            else
-              CommandLine.Error(_("Option is empty."))
-              CommandLine.Print(
-                _("Example of correct input set_authen_dir=/srv/ftp")
-              )
-              CommandLine.Print("")
-            end
+      if Builtins.size(options) == 1
+        if Ops.get(options, "set_authen_dir") != nil
+          value = Ops.get_string(options, "set_authen_dir")
+          if value != nil
+            CommandLine.PrintNoCR(_("Authenticated directory:"))
+            CommandLine.Print(value)
+            CommandLine.Print("")
+            Ops.set(FtpServer.EDIT_SETTINGS, "FtpDirLocal", value)
+          else
+            CommandLine.Error(_("Option is empty."))
+            CommandLine.Print(
+              _("Example of correct input set_authen_dir=/srv/ftp")
+            )
+            CommandLine.Print("")
           end
-        else
-          # TRANSLATORS: CommandLine error message
-          CommandLine.Error(_("Only one parameter is allowed."))
-          CommandLine.Print("")
         end
       else
         # TRANSLATORS: CommandLine error message
-        CommandLine.Error(_("Option is not supported in pure-ftpd server."))
+        CommandLine.Error(_("Only one parameter is allowed."))
         CommandLine.Print("")
       end
 
@@ -1074,12 +975,7 @@ module Yast
       CommandLine.Print("")
       CommandLine.Print(String.UnderlinedHeader(_("Welcome Message:"), 0))
       CommandLine.Print("")
-      if !FtpServer.vsftpd_edit
-        # TRANSLATORS: CommandLine error message
-        CommandLine.Error(_("This option is allowed only in vsftpd."))
-        CommandLine.Print("")
-        return false
-      end
+
       if Builtins.size(options) == 1
         if Ops.get(options, "set_message") != nil
           Ops.set(
@@ -1115,19 +1011,6 @@ module Yast
       CommandLine.Print("")
       CommandLine.Print(String.UnderlinedHeader(header, 0))
       CommandLine.Print("")
-      if !FtpServer.vsftpd_edit && vsftpd_deamon
-        # TRANSLATORS: CommandLine error message
-        CommandLine.Error(_("This option is allowed only in vsftpd."))
-        CommandLine.Print("")
-        return false
-      end
-
-      if FtpServer.vsftpd_edit && !vsftpd_deamon
-        # TRANSLATORS: CommandLine error message
-        CommandLine.Error(_("This option is allowed only in pure-ftpd."))
-        CommandLine.Print("")
-        return false
-      end
       if Builtins.size(options) == 1
         if Ops.get(options, "enable") != nil
           Ops.set(FtpServer.EDIT_SETTINGS, name_option_EDIT_SETTINGS, "YES")
@@ -1210,12 +1093,6 @@ module Yast
       CommandLine.Print("")
       CommandLine.Print(String.UnderlinedHeader(_("Security Settings:"), 0))
       CommandLine.Print("")
-      if FtpServer.vsftpd_edit
-        # TRANSLATORS: CommandLine error message
-        CommandLine.Error(_("This option is allowed only in pure-ftp-server."))
-        CommandLine.Print("")
-        return false
-      end
       if Builtins.size(options) == 1
         if Ops.get(options, "enable") != nil
           Ops.set(FtpServer.EDIT_SETTINGS, "SSL", "0")

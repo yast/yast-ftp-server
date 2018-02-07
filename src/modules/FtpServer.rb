@@ -3,18 +3,7 @@
 require "yast"
 
 module Yast
-  # Configure **both** [vsftpd][v] and [pure-ftpd][p] in a single class.
-  #
-  # [v]: https://security.appspot.com/vsftpd.html
-  # [p]: http://www.pureftpd.org/
-  #
-  # For the configuration we have 3 vocabularies,
-  # mapped by {FtpServerWriteLoadInclude#ValueUI}.
-  #
-  # - pure-ftpd uses CamelCase  keys
-  # - vsftpd    uses snake_case keys
-  # - yast      uses CamelCase  keys which are almost(!!1!)
-  #             the same as for pure-ftpd.
+  # Configure vsftpd: https://security.appspot.com/vsftpd.html
   class FtpServerClass < Module
     def main
       Yast.import "UI"
@@ -39,20 +28,10 @@ module Yast
       #
       @proposal_valid = false
 
-      # variable signifies if vsftpd is selected and
-      # edited via ftp-server (YaST module)
-      # global boolean variable
-      @vsftpd_edit = false
-
       # variable signifies if vsftpd is installed and
       #
       # global boolean variable
       @vsftpd_installed = false
-
-      # variable signifies if pure-ftpd is installed and
-      #
-      # global boolean variable
-      @pureftpd_installed = false
 
       # variable signifies position vsftpd record
       # in structur Inetd::netd_conf
@@ -61,28 +40,12 @@ module Yast
       # global integer variable
       @vsftpd_xined_id = -1
 
-      # variable signifies if pure-ftpd is installed and
-      # in structur Inetd::netd_conf
-      # -1 init value before calling Inetd::Read()
-      #
-      # global integer variable
-      @pureftpd_xined_id = -1
-
       # variable signifies if daemon will be started via xinetd
       #
       # global boolean variable
 
       @start_xinetd = false
 
-      # variable signifies if daemon is running via xinetd
-      #
-      # global boolean variable
-
-      @pure_ftp_xinetd_running = false
-
-
-      # variable signifies if daemon is running via xinetd
-      #
       # global boolean variable
 
       @vsftp_xinetd_running = false
@@ -108,16 +71,6 @@ module Yast
       # global boolean variable
 
       @upload_good_permission = false
-
-      # variable signifies if upload dir for anonymous has good permissions
-      # it is only for pure-ftpd
-      #
-      # -1 == home dir is "/"
-      #  0 == writting access disallow
-      #  1 == writting allowed
-      # global integer variable
-
-      @pure_ftp_allowed_permissios_upload = 0
 
       # variable signifies if user choose change permissions for home dir
       # for anonymous connections with allowed upload
@@ -149,12 +102,6 @@ module Yast
       #
       # internal map variable
       @userinfo = {}
-
-      # list includes xinetd server_args for pure-ftpd
-      #
-      # global lis <string> variable
-
-      @pure_ftpd_xinet_conf = []
 
       @UI_keys = [
         "ChrootEnable",
@@ -215,7 +162,7 @@ module Yast
         "SSLv3"            => "NO", #enable/disable SSL version 3 (vsftpd only)
         "TLS"              => "YES",
         "AntiWarez"        => "YES",
-        "SSL"              => "0", #0 - disable SSL, 1-accept SSL, 2 - refuse connection withou SSL (pure-ftpd only)
+        "SSL"              => "0", #0 - disable SSL, 1-accept SSL
         "StartXinetd"      => "NO",
         "StartDaemon"      => "0", #0 = start manually, 1 = start when booting, 2 = start via xinetd
         "PassiveMode"      => "YES",
@@ -241,25 +188,6 @@ module Yast
 
     def firewalld
       @firewalld ||= Y2Firewall::Firewalld.instance
-    end
-
-    # Read current pure-ftpd configuration
-    #
-    #  @return [Boolean] successfull
-    def ReadPUREFTPDSettings
-      Builtins.foreach(SCR.Dir(path(".pure-ftpd"))) do |key|
-        val = Convert.to_string(SCR.Read(Builtins.add(path(".pure-ftpd"), key)))
-        Ops.set(@PURE_SETTINGS, key, val) if val != nil
-      end
-
-      Builtins.y2milestone("-------------PURE_SETTINGS-------------------")
-      Builtins.y2milestone(
-        "pure-ftpd configuration has been read: %1",
-        @PURE_SETTINGS
-      )
-      Builtins.y2milestone("---------------------------------------------")
-
-      true
     end
 
     # Read current vsftpd configuration
@@ -436,19 +364,14 @@ module Yast
     # @return [Boolean] successfull
     def ReadSettings
       result = false
-      if @vsftpd_edit
-        result = ReadVSFTPDSettings()
-      else
-        result = ReadPUREFTPDSettings()
-      end
+      result = ReadVSFTPDSettings()
       result = InitEDIT_SETTINGS() if result
 
       #read info about anonymous user "ftp"
       Users.SetGUI(false)
       if Users.Read == "" && Ops.get(@EDIT_SETTINGS, "VirtualUser") == "NO"
-        if @vsftpd_edit && Ops.get(@EDIT_SETTINGS, "GuestUser") != "" &&
+        if Ops.get(@EDIT_SETTINGS, "GuestUser") != "" &&
             Ops.get(@EDIT_SETTINGS, "FtpDirLocal") == ""
-          #Popup::Message("if ((vsftpd_edit) && (EDIT_SETTINGS");
           Users.SelectUserByName(Ops.get(@EDIT_SETTINGS, "GuestUser"))
           @userinfo = Users.GetCurrentUser
           guest_home_dir = Ops.get_string(@userinfo, "homeDirectory")
@@ -477,25 +400,10 @@ module Yast
       firewalld.read
       Progress.set(progress_orig)
       #read existing upload directory for vsftpd
-      result = ReadVSFTPDUpload() if @vsftpd_edit
+      result = ReadVSFTPDUpload()
 
       result = ReadPermisionUplaod()
       result
-    end
-
-
-    # Write pure-ftpd configuration to config file
-    #
-    # @return [Boolean] successfull
-    def WritePUREFTPDSettings
-      Builtins.foreach(@PURE_SETTINGS) do |option_key, option_val|
-        SCR.Write(Builtins.add(path(".pure-ftpd"), option_key), option_val)
-      end
-      # This is very important
-      # it flushes the cache, and stores the configuration on the disk
-      SCR.Write(path(".pure-ftpd"), nil)
-
-      true
     end
 
 
@@ -557,7 +465,7 @@ module Yast
           active_port != "" ? active_port : port_range
         ]
 
-      service = @vsftpd_edit ? "pure-ftpd" : "vsftpd"
+      service = "vsftpd"
 
       begin
         return Y2Firewall::Firewalld::Service.modify_ports(name: service, tcp_ports: tcp_ports)
@@ -585,43 +493,9 @@ module Yast
     #
     # @return [Boolean] successfull
     def WriteSettings
-      result = false
-      result = WriteToSETTINGS()
-      if @vsftpd_edit
-        result = WriteVSFTPDSettings() if result
-      else
-        result = WritePUREFTPDSettings() if result
-        # write homedirectory for anonymous user (ftp)
-        # fto user will be change only for pure-ftpd
-        # vsftpd change option anon_root
-        if Ops.get(@EDIT_SETTINGS, "VirtualUser") == "NO" && !@vsftpd_edit
-          if result
-            if Ops.get(@EDIT_SETTINGS, "FtpDirAnon") != @anon_homedir &&
-                @anon_homedir != "" &&
-                @anon_homedir != nil
-              error = Users.EditUser(
-                { "homeDirectory" => Ops.get(@EDIT_SETTINGS, "FtpDirAnon") }
-              )
-              if error != nil && error != ""
-                result = false
-                Popup.Error(error)
-              end
-              if result
-                if Users.CommitUser
-                  Users.SetGUI(false)
-                  error = Users.Write
-                  if error != nil && error != ""
-                    Popup.Error(error)
-                    result = false
-                  end
-                end
-              end #end of if (Users::CommitUser ()) {
-            end #end of if ((EDIT_SETTINGS["FtpDirAnon"]:nil != anon_homedir) &&
-          end #end of if (result) {
-        end #end of if (EDIT_SETTINGS["VirtualUser"]:nil == "NO") {
-      end # end of } else {
+      result = WriteToSETTINGS() && WriteVSFTPDSettings()
 
-      result = WriteFirewallSettings() if result
+      result &&= WriteFirewallSettings()
       if result
         # write configuration to the firewall
         progress_orig = Progress.set(false)
@@ -651,7 +525,7 @@ module Yast
       upload = ""
       options = {}
       authentication = Builtins.tointeger(Ops.get(@EDIT_SETTINGS, "AnonAuthen"))
-      if @vsftpd_edit && authentication != 1 && @create_upload_dir && @upload_good_permission
+      if authentication != 1 && @create_upload_dir && @upload_good_permission
         write_enable = Ops.get(@EDIT_SETTINGS, "EnableUpload") == "YES" ? true : false
         anon_upload = Ops.get(@EDIT_SETTINGS, "AnonReadOnly") == "NO" ? true : false
         anon_create_dirs = Ops.get(@EDIT_SETTINGS, "AnonCreatDirs") == "YES" ? true : false
@@ -723,33 +597,18 @@ module Yast
         result = true
       end
       #restart/reaload daemons...
-      if @vsftpd_edit
-        if Service.Status("vsftpd") == 0
-          options = Convert.to_map(
-            SCR.Execute(path(".target.bash_output"), "rcvsftpd restart")
-          )
-        end
-      else
-        if Service.Status("pure-ftpd") == 0
-          options = Convert.to_map(
-            SCR.Execute(path(".target.bash_output"), "rcpure-ftpd restart")
-          )
-        end
+      if Service.Status("vsftpd") == 0
+        options = Convert.to_map(
+          SCR.Execute(path(".target.bash_output"), "rcvsftpd restart")
+        )
       end
 
       #update permissions for home directory if upload is enabled...
       if @pure_ftp_allowed_permissios_upload != -1 && @change_permissions
-        if @vsftpd_edit
-          command = Ops.add("chmod 755 ", @anon_homedir)
-          options = Convert.to_map(
-            SCR.Execute(path(".target.bash_output"), command)
-          )
-        else
-          command = Ops.add("chmod 777 ", @anon_homedir)
-          options = Convert.to_map(
-            SCR.Execute(path(".target.bash_output"), command)
-          )
-        end
+        command = Ops.add("chmod 755 ", @anon_homedir)
+        options = Convert.to_map(
+          SCR.Execute(path(".target.bash_output"), command)
+        )
       end
 
       result
@@ -807,6 +666,7 @@ module Yast
     # Read all FtpServer settings
     # @return true on success
     def Read
+      Package.InstallAll("vsftp") # ensure it is there
       # FtpServer read dialog caption
       caption = _("Initializing FTP Configuration")
       steps = 2
@@ -814,33 +674,6 @@ module Yast
       # Part for commandline - it is necessary choose daemon if both are installed
       if Mode.commandline
         @vsftpd_installed = Package.Installed("vsftpd")
-        @pureftpd_installed = Package.Installed("pure-ftpd")
-
-        if @vsftpd_installed && @pureftpd_installed
-          if CommandLine.Interactive
-            CommandLine.Print(
-              String.UnderlinedHeader(_("You have installed both daemons:"), 0)
-            )
-            CommandLine.Print(_("Choose one of them for configuration."))
-            CommandLine.Print(
-              _(
-                "Do you want to configure vsftpd? Alternatively choose pure-ftpd."
-              )
-            )
-            CommandLine.Print("")
-            @vsftpd_edit = true if CommandLine.YesNo
-          else
-            CommandLine.Error(
-              _(
-                "You have installed both daemons. Therefore you have to run the configuration in interactive mode."
-              )
-            )
-            return false
-          end
-        end
-        @vsftpd_edit = true if @vsftpd_installed && !@pureftpd_installed
-
-        return false if !@vsftpd_installed && !@pureftpd_installed
       end
 
       # We do not set help text here, because it was set outside
@@ -963,7 +796,7 @@ module Yast
         if val == nil
           Ops.set(@EDIT_SETTINGS, key, Ops.get(@DEFAULT_CONFIG, key))
         end
-      end 
+      end
 
       result
     end
@@ -973,57 +806,11 @@ module Yast
     #
     # @return [Boolean] True on success
     def InitDaemon
-      result = true
-      #Checking if ftp daemons are installed
-      rad_but = 0
-      vsftpd_init_count = 0
-      pureftpd_init_count = 0
-      ret = nil
       if Package.Installed("vsftpd")
-        vsftpd_init_count = Ops.add(vsftpd_init_count, 1)
         @vsftpd_installed = true
       end
-      if Package.Installed("pure-ftpd")
-        pureftpd_init_count = Ops.add(pureftpd_init_count, 1)
-        @pureftpd_installed = true
-      end
-      if @pureftpd_installed && @vsftpd_installed
-        if Service.Enabled("pure-ftpd")
-          pureftpd_init_count = Ops.add(pureftpd_init_count, 1)
-        end
 
-        if Service.Enabled("vsftpd")
-          vsftpd_init_count = Ops.add(vsftpd_init_count, 1)
-        end
-
-        #Checking status of ftp daemons
-
-        if Service.Status("vsftpd") == 0
-          vsftpd_init_count = Ops.add(vsftpd_init_count, 1)
-        end
-
-        if Service.Status("pure-ftpd") == 0
-          pureftpd_init_count = Ops.add(pureftpd_init_count, 1)
-        end
-
-        if pureftpd_init_count == vsftpd_init_count
-          @vsftpd_edit = false
-        elsif Ops.less_than(pureftpd_init_count, vsftpd_init_count)
-          @vsftpd_edit = false
-        else
-          @vsftpd_edit = true
-        end
-      elsif @pureftpd_installed && !@vsftpd_installed
-        result = true
-        @vsftpd_edit = false
-      elsif !@pureftpd_installed && @vsftpd_installed
-        result = true
-        @vsftpd_edit = true
-      else
-        result = true
-        @vsftpd_edit = false
-      end
-      result
+      true
     end
 
     # Dump the FtpServer settings to a single map
@@ -1091,7 +878,7 @@ module Yast
         # Translators: Summary head, if something configured
         head = Builtins.sformat(
           _("FTP daemon %1"),
-          @vsftpd_edit ? "vsftpd" : "pure-ftpd"
+          "vsftpd"
         )
         _S = Summary.AddHeader(_S, head)
         _S = Summary.AddHeader(_S, _("These options will be configured"))
@@ -1106,11 +893,7 @@ module Yast
     # installed.
     # @return [Hash] with 2 lists.
     def AutoPackages
-      if @vsftpd_edit
-        return { "install" => ["vsftpd"], "remove" => [] }
-      else
-        return { "install" => ["pure-ftpd"], "remove" => [] }
-      end
+      return { "install" => ["vsftpd"], "remove" => [] }
     end
 
     # This helper allows YARD to extract DSL-defined attributes.
@@ -1131,7 +914,6 @@ module Yast
     publish :function => :WriteXinetd, :type => "boolean ()"
     publish_variable :modified, "boolean"
     publish_variable :proposal_valid, "boolean"
-    publish_variable :vsftpd_edit, "boolean"
     publish_variable :vsftpd_installed, "boolean"
     publish_variable :pureftpd_installed, "boolean"
     publish_variable :vsftpd_xined_id, "integer"

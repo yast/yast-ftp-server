@@ -20,31 +20,18 @@ module Yast
       Yast.include include_target, "ftp-server/dialogs.rb"
     end
 
-    def RunDaemonSwitch
-      if FtpServer.vsftpd_edit
-        return :vsftpd
-      else
-        return :pureftpd
-      end
-    end
-
     # Main workflow of the ftp-server configuration
     # @return sequence result
     def MainSequence
       aliases = {
-        "init"     => [lambda { RunDaemonSwitch() }, false],
-        "vsftpd"   => lambda { RunFTPDialogsVsftpd() },
-        "pureftpd" => lambda { RunFTPDialogsPureftpd() }
+        "vsftpd"   => lambda { RunFTPDialogsVsftpd() }
       }
 
       sequence = {
-        "ws_start" => "init",
-        "init"     => { :pureftpd => "pureftpd", :vsftpd => "vsftpd" },
-        "pureftpd" => { :abort => :abort, :next => :next, :vsftpd => "vsftpd" },
+        "ws_start" => "vsftpd",
         "vsftpd"   => {
           :abort    => :abort,
-          :next     => :next,
-          :pureftpd => "pureftpd"
+          :next     => :next
         }
       }
       temp = Empty()

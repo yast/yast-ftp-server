@@ -86,54 +86,6 @@ module Yast
       # abort functions for confirm abort
       #
       @functions = { :abort => fun_ref(method(:AbortDialog), "boolean ()") }
-
-      # map for description of widget later in CWNTree
-      # widget_descr (pure-ftpd)
-      #
-      # @return [Hash{String,map<String => Object>}]
-
-      @wid_handling_pureftpd = {
-        "StartStopRestart" => StartStopRestart(),
-        "StartMode"        => CWMServiceStart.CreateAutoStartWidget(StartMode()),
-        "StartStop"        => CWMServiceStart.CreateStartStopWidget(
-          StartStopPure()
-        ),
-        "RBVsPureFTPd"     => RBVsftpdPureftpd(),
-        "ChrootEnable"     => ChrootEnable(),
-        "VerboseLogging"   => VerboseLogging(),
-        "Umask"            => Umask(),
-        "FtpDirAnon"       => FtpDirAnon(),
-        "BrowseAnon"       => BrowseAnon(),
-        "MaxIdleTime"      => MaxIdleTime(),
-        "MaxClientsPerIP"  => MaxClientsPerIP(),
-        "MaxClientsNumber" => MaxClientsNumber(),
-        "LocalMaxRate"     => LocalMaxRate(),
-        "AnonMaxRate"      => AnonMaxRate(),
-        "AnonAuthen"       => AnonAuthen(),
-        "AnonReadOnly"     => AnonReadOnly(),
-        "AnonCreatDirs"    => AnonCreatDirs(),
-        "PasMinPort"       => PasMinPort(),
-        "PasMaxPort"       => PasMaxPort(),
-        "AntiWarez"        => AntiWarez(),
-        "SSL"              => SSL(),
-        "Firewall"         => CWMFirewallInterfaces.CreateOpenFirewallWidget(
-          FirewallSettingsPure()
-        )
-      }
-
-
-      # map for screens of widget later in CWNTree
-      # screens (pure-ftpd)
-      #
-      # @return [Hash{String,map<String => Object>}]
-
-      @tabs_pureftpd = {
-        "start_up"        => start_up,
-        "gen_settings"    => gen_settings_pure,
-        "perfor_settings" => perfor_settings,
-        "anon_settings"   => anon_settings,
-        "addit_settings"  => addit_settings_pure
-      }
     end
 
     # Returns whether user confirmed aborting the configuration.
@@ -247,82 +199,6 @@ module Yast
     end
 
     # Init function where are added UI hadle functions
-    # Start widget (pure-ftpd)
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def StartStopPure
-      result = {}
-      Ops.set(result, "service_id", "pure-ftpd")
-      Ops.set(result, "service_running_label", _("FTP is running"))
-      Ops.set(result, "service_not_running_label", _("FTP is not running"))
-      Ops.set(result, "start_now_button", _("&Start FTP Now"))
-      Ops.set(result, "stop_now_button", _("S&top FTP Now"))
-      Ops.set(
-        result,
-        "save_now_action",
-        fun_ref(method(:SaveAndRestartPure), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "save_now_button",
-        _("Sa&ve Settings and Restart FTP Now")
-      )
-      Ops.set(
-        result,
-        "start_now_action",
-        fun_ref(method(:StartNowPure), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "stop_now_action",
-        fun_ref(method(:StopNowPure), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "help",
-        Builtins.sformat(
-          CWMServiceStart.StartStopHelpTemplate(true),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Start FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Stop FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Save Settings and Restart FTP Daemon Now")
-        )
-      )
-
-      deep_copy(result)
-    end
-
-
-    # Init function where are added UI hadle functions
-    # Start widget radiobuttons for switching daemons
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def RBVsftpdPureftpd
-      result = {}
-      Ops.set(result, "label", _("Selected Service"))
-      Ops.set(result, "widget", :radio_buttons)
-      Ops.set(
-        result,
-        "items",
-        [["vs_item", _("&vsftpd")], ["pure_item", _("p&ure-ftpd")]]
-      )
-      Ops.set(result, "init", fun_ref(method(:InitRBVsPure), "void (string)"))
-      Ops.set(
-        result,
-        "handle",
-        fun_ref(method(:HandleRBVsPure), "symbol (string, map)")
-      )
-      Ops.set(result, "help", DialogHelpText("selected_services"))
-
-      deep_copy(result)
-    end
-
-
-    # Init function where are added UI hadle functions
     # special hack widget where is handlig Start/Stop button
     #
     # @return [Hash{String => Object}] map for start-stop widget
@@ -434,40 +310,6 @@ module Yast
         fun_ref(method(:StoreVerboseLogging), "void (string, map)")
       )
       Ops.set(result, "help", DialogHelpText("VerboseLogging"))
-
-      deep_copy(result)
-    end
-
-    # Umask (umask files:umask dirs) only pure-ftpd
-    # General Settings widget
-    #
-    # @return [Hash{String => Object}] map for General screen
-
-
-    def Umask
-      result = {}
-
-      Ops.set(result, "label", _("&Umask (umask files:umask dirs)"))
-      Ops.set(result, "widget", :textentry)
-      Ops.set(result, "opt", [:notify])
-      Ops.set(result, "init", fun_ref(method(:InitUmask), "void (string)"))
-      Ops.set(
-        result,
-        "handle",
-        fun_ref(method(:HandleUniversal), "symbol (string, map)")
-      )
-      Ops.set(
-        result,
-        "store",
-        fun_ref(method(:StoreUmask), "void (string, map)")
-      )
-      Ops.set(result, "validate_type", :function)
-      Ops.set(
-        result,
-        "validate_function",
-        fun_ref(method(:ValidUmask), "boolean (string, map)")
-      )
-      Ops.set(result, "help", DialogHelpText("Umask"))
 
       deep_copy(result)
     end
@@ -1293,7 +1135,7 @@ module Yast
 
     # Init function where are added UI hadle functions
     # Start widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for start_up widget
     def start_up
@@ -1307,8 +1149,6 @@ module Yast
           VSpacing(1),
           # disabling start/stop buttons when it doesn't make sense
           Mode.normal ? "StartStop" : Empty(),
-          VSpacing(1),
-          "RBVsPureFTPd",
           VStretch()
         )
       )
@@ -1319,7 +1159,7 @@ module Yast
       Ops.set(
         result,
         "widget_names",
-        ["StartMode", "StartStop", "RBVsPureFTPd", "StartStopRestart"]
+        ["StartMode", "StartStop", "StartStopRestart"]
       )
 
       deep_copy(result)
@@ -1400,60 +1240,8 @@ module Yast
     end
 
     # Init function where are added UI hadle functions
-    # General Settings widget (pure-ftpd)
-    # define for tabs_pureftpd necessary later in screens (CWNTree)
-    #
-    # @return [Hash{String => Object}] map for General Settings widget
-
-    def gen_settings_pure
-      result = {}
-
-      Ops.set(
-        result,
-        "contents",
-        VBox(
-          Frame(
-            _("General Settings"),
-            HBox(
-              HSpacing(1),
-              VBox(Left("ChrootEnable"), Left("VerboseLogging"), Left("Umask"))
-            )
-          ),
-          VSpacing(1),
-          Frame(
-            _("FTP Directories"),
-            HBox(
-              HSpacing(1),
-              VBox(
-                Left(
-                  HBox(
-                    HSpacing(1),
-                    Left("FtpDirAnon"),
-                    VBox(Left(Label("")), Left("BrowseAnon"))
-                  )
-                )
-              )
-            )
-          ),
-          VStretch()
-        )
-      )
-      # TRANSLATORS: part of dialog caption
-      Ops.set(result, "caption", _("FTP General Settings"))
-      # TRANSLATORS: tree menu item
-      Ops.set(result, "tree_item_label", _("General"))
-      Ops.set(
-        result,
-        "widget_names",
-        ["ChrootEnable", "VerboseLogging", "Umask", "FtpDirAnon", "BrowseAnon"]
-      )
-
-      deep_copy(result)
-    end
-
-    # Init function where are added UI hadle functions
     # Performance Settings widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for Performance Settings widget
 
@@ -1512,19 +1300,6 @@ module Yast
     # Init function where are added firewall
     #
     # @return [Hash{String => Object}] map for firewall settings
-
-    def FirewallSettingsPure
-      {
-        "services"        => ["pure-ftpd"],
-        "display_details" => true
-      }
-    end
-
-    # Init function where are added firewall
-    #
-    # @return [Hash{String => Object}] map for firewall settings
-
-
     def FirewallSettingsVs
       {
         "services"        => ["vsftpd"],
@@ -1535,7 +1310,7 @@ module Yast
 
     # Init function where are added UI hadle functions
     # Anonymous Settings widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for Anonymous Settings widget
 
@@ -1570,7 +1345,7 @@ module Yast
 
     # Init function where are added UI hadle functions
     # Anonymous Settings widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for Anonymous Settings widget
 
@@ -1685,59 +1460,11 @@ module Yast
 
       deep_copy(result)
     end
-    # Init function where are added UI hadle functions
-    # Expert Settings widget (pure-ftpd)
-    # define for tabs_pureftpd necessary later in screens (CWNTree)
-    #
-    # @return [Hash{String => Object}] map for Expert Settings widget
-
-    def addit_settings_pure
-      result = {}
-
-      Ops.set(
-        result,
-        "contents",
-        VBox(
-          Frame(
-            _("Passive Mode"),
-            HBox(
-              HSpacing(1),
-              Left(HSquash(HBox("PasMinPort", "PasMaxPort", HStretch())))
-            )
-          ),
-          VSpacing(1),
-          Frame(
-            _("Additional Settings"),
-            HBox(HSpacing(1), VBox(Left("AntiWarez")))
-          ), #end of `Frame ( _("Additional Settings")
-          VSpacing(1),
-          "SSL",
-          VSpacing(1),
-          Frame(_("SUSEfirewall Settings"), HBox(HSpacing(1), "Firewall")),
-          VStretch()
-        )
-      )
-      # TRANSLATORS: part of dialog caption
-      Ops.set(result, "caption", _("FTP Expert Settings"))
-      # TRANSLATORS: tree menu item
-      Ops.set(result, "tree_item_label", _("Expert Settings"))
-      Ops.set(
-        result,
-        "widget_names",
-        ["Firewall", "PasMinPort", "PasMaxPort", "AntiWarez", "SSL"]
-      )
-
-      deep_copy(result)
-    end
-
 
     # function for running CWNTree
     # vsftpd
     #
     # @return [Symbol] return value of DialogTree::ShowAndRun
-
-
-
     def RunFTPDialogsVsftpd
       sim_dialogs = [
         "start_up",
@@ -1753,34 +1480,6 @@ module Yast
           "initial_screen" => "start_up",
           "screens"        => @tabs_vsftpd,
           "widget_descr"   => @wid_handling_vsftpd,
-          "back_button"    => "",
-          "abort_button"   => Label.CancelButton,
-          "next_button"    => Label.FinishButton,
-          "functions"      => @functions
-        }
-      )
-    end
-
-    # function for running CWNTree
-    # vsftpd
-    #
-    # @return [Symbol] return value of DialogTree::ShowAndRun
-
-    def RunFTPDialogsPureftpd
-      sim_dialogs = [
-        "start_up",
-        "gen_settings",
-        "perfor_settings",
-        "anon_settings",
-        "addit_settings"
-      ]
-
-      DialogTree.ShowAndRun(
-        {
-          "ids_order"      => sim_dialogs,
-          "initial_screen" => "start_up",
-          "screens"        => @tabs_pureftpd,
-          "widget_descr"   => @wid_handling_pureftpd,
           "back_button"    => "",
           "abort_button"   => Label.CancelButton,
           "next_button"    => Label.FinishButton,
