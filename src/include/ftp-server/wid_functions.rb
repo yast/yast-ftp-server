@@ -52,7 +52,6 @@ module Yast
 
       if enable_service
         Ops.set(FtpServer.EDIT_SETTINGS, "StartDaemon", "1")
-        Ops.set(FtpServer.EDIT_SETTINGS, "StartXinetd", "NO")
       end
 
       nil
@@ -72,64 +71,17 @@ module Yast
       result
     end
 
-
-    def AskStartXinetd
-      result = false
-
-      if Service.Status("xinetd") != 0 &&
-          Ops.get(FtpServer.EDIT_SETTINGS, "StartXinetd") == "NO"
-        if Mode.normal
-          UI.OpenDialog(
-            VBox(
-              Label(_("Xinetd is not running.")),
-              Label(_("Start it now?")),
-              ButtonBox(
-                PushButton(Id(:accept), Label.OKButton),
-                PushButton(Id(:cancel), Label.CancelButton)
-              )
-            )
-          ) # end of UI::OpenDialog(
-          while true
-            ret = UI.UserInput
-            if ret == :accept
-              result = true
-              break
-            elsif ret == :cancel
-              result = false
-              break
-            end
-          end
-          UI.CloseDialog
-        end # end of if (Mode::normal()) {
-      end # end of if ((Service::Status("xinetd") != 0)...
-
-      result
-    end
-
     # CWMServiceStart function with one boolean parameter
     # returning boolean value that says if the service will be started at boot.
     def SetStartedViaXinetd(enable_service)
-      result = true
-      if enable_service
-        Ops.set(FtpServer.EDIT_SETTINGS, "StartDaemon", "2")
-        result = AskStartXinetd()
-        result = true if Service.Status("xinetd") == 0 if !result
-        if result
-          Ops.set(FtpServer.EDIT_SETTINGS, "StartXinetd", "YES")
-        else
-          Ops.set(FtpServer.EDIT_SETTINGS, "StartXinetd", "NO")
-        end
-      else
-        Ops.set(FtpServer.EDIT_SETTINGS, "StartDaemon", "0")
-        Ops.set(FtpServer.EDIT_SETTINGS, "StartXinetd", "NO")
-      end
+      FtpServer.EDIT_SETTINGS["StartDaemon"] = enable_service ? "2" : "0"
 
       nil
     end
 
 
     def UpdateInfoAboutStartingFTP
-      #which radiobutton is selected for starting "when booting", "via xinetd" or "manually"
+      #which radiobutton is selected for starting "when booting", "via socket" or "manually"
       value = UI.QueryWidget(Id("_cwm_service_startup"), :Value)
 
       if Builtins.tostring(value) == "_cwm_startup_manual"
@@ -146,7 +98,6 @@ module Yast
 
     # Function start vsftpd
     def StartNowVsftpd
-      result = false
 
       UpdateInfoAboutStartingFTP()
 
@@ -154,59 +105,30 @@ module Yast
         SCR.Write(Builtins.add(path(".vsftpd"), "listen"), nil)
         SCR.Write(Builtins.add(path(".vsftpd"), "listen_ipv6"), nil)
         SCR.Write(path(".vsftpd"), nil)
-        FtpServer.stop_daemon_xinetd = false
-        result = AskStartXinetd()
 
-        if !result
-          if Service.Status("xinetd") == 0 ||
-              Ops.get(FtpServer.EDIT_SETTINGS, "StartXinetd") == "YES"
-            result = true
-          end
-        end
-
-        if FtpServer.WriteStartViaXinetd(true, true) && result
-          FtpServer.vsftp_xinetd_running = true
+        if FtpServer.WriteStartViaSocket(true)
           UI.ReplaceWidget(
             Id("_cwm_service_status_rp"),
             Label(_("FTP is running"))
           )
           UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
           UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
-          result = true
         end
       else
         SCR.Write(Builtins.add(path(".vsftpd"), "listen"), "YES")
         SCR.Write(Builtins.add(path(".vsftpd"), "listen_ipv6"), nil)
         SCR.Write(path(".vsftpd"), nil)
-        command = "rcvsftpd start"
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
-        Builtins.y2milestone(
-          "[ftp-server] (StartNowVsftpd) command for starting vsftpd:  %1  output: %2",
-          command,
-          options
-        )
-        if Ops.get(options, "exit") == 0
-          result = true
-        else
-          result = false
-        end
+        Service.enable("vsftp")
+        Service.start("vsftp")
       end
-      result
+      true
     end
 
 
     # Function stop vsftpd
     def StopNowVsftpd
-      result = false
-
-      #UpdateInfoAboutStartingFTP ();
-
-      if FtpServer.vsftp_xinetd_running
-        FtpServer.stop_daemon_xinetd = true
-        if FtpServer.WriteStartViaXinetd(true, true)
-          FtpServer.vsftp_xinetd_running = false
+      if FtpServer.InitStartViaSocket
+        if FtpServer.WriteStartViaSocket(false)
           UI.ReplaceWidget(
             Id("_cwm_service_status_rp"),
             Label(_("FTP is not running"))
@@ -216,79 +138,29 @@ module Yast
           result = true
         end
       else
-        command = "rcvsftpd stop"
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
-        Builtins.y2milestone(
-          "[ftp-server] (StopNowVsftpd) command for stop vsftpd:  %1  output: %2",
-          command,
-          options
-        )
-        if Ops.get(options, "exit") == 0
-          result = true
-        else
-          result = false
-        end
+        Service.enable("vsftp")
+        Service.start("vsftp")
       end
-      result
+
+      true
     end
 
     # Function saves configuration and restarts vsftpd
     def SaveAndRestartVsftpd
       result = false
 
-      result = StopNowVsftpd()
-      UpdateInfoAboutStartingFTP()
-
-      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2"
-        result = AskStartXinetd()
-        #write settings to disk...
-        FtpServer.WriteSettings
-
-        if !result
-          if Service.Status("xinetd") == 0 ||
-              Ops.get(FtpServer.EDIT_SETTINGS, "StartXinetd") == "YES"
-            result = true
-          end
-        end
-        FtpServer.stop_daemon_xinetd = false
-        if FtpServer.WriteStartViaXinetd(true, false) && result
-          FtpServer.vsftp_xinetd_running = true
-          UI.ReplaceWidget(
-            Id("_cwm_service_status_rp"),
-            Label(_("FTP is running"))
-          )
-          UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
-          UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
-          result = true
-        end
-      else
-        FtpServer.WriteSettings
-        command = "rcvsftpd start"
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
-        Builtins.y2milestone(
-          "[ftp-server] (SaveAndRestartVsftpd) command for save and restart vsftpd:  %1  output: %2",
-          command,
-          options
-        )
-        if Ops.get(options, "exit") == 0
-          result = true
-        else
-          result = false
-        end
-      end
+      StopNowVsftpd()
+      FtpServer.WriteSettings
+      result = StartNowVsftpd()
       FtpServer.WriteUpload
       result
     end
 
     # Init function for start-up
     #
-    # init starting via xinetd and update status
+    # init starting via socket and update status
     def InitStartStopRestart(key)
-      if FtpServer.vsftp_xinetd_running
+      if FtpServer.InitStartViaSocket || Service.active?("vsftp")
         UI.ReplaceWidget(
           Id("_cwm_service_status_rp"),
           Label(_("FTP is running"))

@@ -93,7 +93,7 @@ module Yast
            # This has to be done at first. (bnc#888212)
            Mode.SetMode("normal")
            FtpServer.InitDaemon
-           FtpServer.InitStartViaXinetd()
+           FtpServer.InitStartViaSocket
         end
         @ret = FtpServer.Write
         Mode.SetMode(old_mode)
@@ -107,7 +107,7 @@ module Yast
       Builtins.y2milestone("FtpServer auto finished")
       Builtins.y2milestone("----------------------------------------")
 
-      deep_copy(@ret) 
+      deep_copy(@ret)
 
       # EOF
     end

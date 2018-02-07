@@ -60,8 +60,7 @@ module Yast
             "example" => [
               "startup atboot",
               "startup manual",
-              "startup xinetd",
-              "startup xinetd startxinetd"
+              "startup socket",
             ]
           },
           "chroot"          => {
@@ -218,22 +217,16 @@ module Yast
               "Start FTP daemon in the boot process."
             )
           },
+          "socket"          => {
+            # TRANSLATORS: CommandLine help
+            "help" => _(
+              "Start FTP daemon via systemd socket."
+            )
+          }
           "manual"          => {
             # TRANSLATORS: CommandLine help
             "help" => _(
               "Start FTP daemon manually."
-            )
-          },
-          "xinetd"          => {
-            # TRANSLATORS: CommandLine help
-            "help" => _(
-              "Start FTP daemon via xinetd"
-            )
-          },
-          "startxinetd"     => {
-            # TRANSLATORS: CommandLine help
-            "help" => _(
-              "Start xinetd if it is not running."
             )
           },
           "enable"          => {
@@ -356,7 +349,7 @@ module Yast
         },
         "mappings"   => {
           "show"            => [],
-          "startup"         => ["atboot", "manual", "xinetd", "startxinetd"],
+          "startup"         => ["atboot", "manual", "socket"],
           "logging"         => ["enable", "disable"],
           "chroot"          => ["enable", "disable"],
           "umask"           => ["set_umask"],
@@ -416,7 +409,7 @@ module Yast
       #start-up settings
       CommandLine.PrintNoCR(_("Start-Up:"))
       if GetStartedViaXinetd()
-        CommandLine.Print(_("FTP daemon is started via xinetd."))
+        CommandLine.Print(_("FTP daemon is started via socket."))
       else
         if GetEnableService()
           # TRANSLATORS: CommandLine informative text
@@ -615,18 +608,15 @@ module Yast
         CommandLine.Print(_("Removing FTP daemon from the boot process..."))
         CommandLine.Print("")
         SetEnableService(false)
-      elsif Ops.get(options, "xinetd") != nil
+      elsif Ops.get(options, "socket") != nil
         CommandLine.Print("")
         # TRANSLATORS: CommandLine header
         CommandLine.Print(String.UnderlinedHeader(_("Start-Up:"), 0))
         CommandLine.Print("")
         # TRANSLATORS: CommandLine progress information
-        CommandLine.Print(_("Start FTP daemon via xinetd"))
+        CommandLine.Print(_("Start FTP daemon via scoket"))
         CommandLine.Print("")
         SetStartedViaXinetd(true)
-        if Ops.get(options, "startxinetd") == nil
-          Ops.set(FtpServer.EDIT_SETTINGS, "StartXinetd", "NO")
-        end
       end
       true
     end

@@ -143,7 +143,7 @@ module Yast
           CWMServiceStart.AutoStartHelpXinetdTemplate,
           _("When Booting"),
           _("Manually"),
-          _("Via xinetd")
+          _("Via Socket")
         )
       )
       deep_copy(result)

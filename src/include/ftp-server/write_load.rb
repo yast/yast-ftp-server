@@ -14,75 +14,37 @@ module Yast
     def initialize_ftp_server_write_load(include_target)
       textdomain "ftp-server"
 
-      Yast.import "Service"
       Yast.import "Popup"
-      Yast.import "Inetd"
       Yast.import "Progress"
+      Yast.import "Service"
+      Yast.import "SystemdService"
+      Yast.import "SystemdSocket"
     end
 
-    def IdFTPXinetd
-      old_progress = Progress.set(false)
-      ret = Inetd.Read
-      Progress.set(old_progress)
-      if ret
-        value = ""
-        i = 0
-        ids = ""
-        while Ops.greater_than(Builtins.size(Inetd.netd_conf), i)
-          ids = Builtins.tostring(Ops.get(Inetd.netd_conf, [i, "iid"]))
-          if Builtins.regexpmatch(ids, "vsftpd")
-            @vsftpd_xined_id = i
-          end
-          i = Ops.add(i, 1)
-        end # while (size(Inetd::netd_conf) > i) {
-        return true
-      else
-        return false
-      end
-    end
+    def InitStartViaSocket
+      socket = SystemdSocket.find("vsftpd")
+      return false unless socket
 
-    def InitStartViaXinetd
-      xinetd_running = false
-      if IdFTPXinetd()
-        if Service.Status("xinetd") == 0
-          xinetd_running = true
-          Ops.set(@EDIT_SETTINGS, "StartXinetd", "YES")
-        end
-        if Ops.get(Inetd.netd_conf, [@vsftpd_xined_id, "enabled"]) == true
-          Ops.set(@EDIT_SETTINGS, "StartDaemon", "2")
-          @vsftp_xinetd_running = true if xinetd_running
-          return true
-        end
-      else
-        return false
-      end
-
-      nil
+      socket.enabled?
     end
 
 
-    def WriteStartViaXinetd(startxinetd, push_star_now)
-      pure_options = ""
-      result = false
+    def WriteStartViaSocket(start)
+      socket = SystemdSocket.find("vsftpd")
+      return false unless socket
 
-      if Ops.get(@EDIT_SETTINGS, "StartDaemon") == "2" && !@stop_daemon_xinetd
-        Ops.set(Inetd.netd_conf, [@vsftpd_xined_id, "enabled"], true)
-        Ops.set(Inetd.netd_conf, [@pureftpd_xined_id, "enabled"], false)
-        @pure_ftp_xinetd_running = false
-        Inetd.netd_status = 0 if startxinetd #start xinetd if not running else reload
+      if Ops.get(@EDIT_SETTINGS, "StartDaemon") == "2"
+        socket.enable
+        socket.start
       else
-        Inetd.netd_status = 0
-        Ops.set(Inetd.netd_conf, [@vsftpd_xined_id, "enabled"], false)
-        @vsftp_xinetd_running = false
+        socket.disable
+        socket.stop
       end
+      # stop service so socket can start new one with newly written configuration
+      # or stop it completelly
+      SystemdService.find!("vsftpd").stop
 
-      Ops.set(Inetd.netd_conf, [@vsftpd_xined_id, "changed"], true)
-      # writing changes into xinetd
-      status_progress = Progress.set(false)
-      result = Inetd.Write
-      Progress.set(status_progress)
-
-      result
+      true
     end
 
     # Convert between the UI (yast), and system (vsftpd, pure_ftpd) settings.
@@ -570,11 +532,10 @@ module Yast
             return ""
           end
         when "StartXinetd"
-          @result = false
+          result = false
           if write
             if Ops.get(@EDIT_SETTINGS, "StartDaemon") == "2"
               if Ops.get(@EDIT_SETTINGS, "StartXinetd") == "YES"
-                @start_xinetd = true
                 Service.Disable("vsftpd") if Service.Enabled("vsftpd")
                 Ops.set(@VS_SETTINGS, "listen", "NO")
                 Ops.set(@VS_SETTINGS, "listen_ipv6", "NO")
@@ -589,18 +550,16 @@ module Yast
                 Ops.set(@VS_SETTINGS, "listen", "YES")
                 Ops.set(@VS_SETTINGS, "listen_ipv6", nil)
               end
-              @start_xinetd = false
-            end 
-            #FtpServer::EDIT_SETTINGS = remove(FtpServer::EDIT_SETTINGS, "StartXinetd");
+            end
           else
             Ops.set(@EDIT_SETTINGS, "StartDaemon", "0")
-            @result = InitStartViaXinetd()
-            if !@result
+            result = InitStartViaSocket()
+            if !result
               if Service.Enabled("vsftpd")
                 Ops.set(@EDIT_SETTINGS, "StartDaemon", "1")
               end
             end
-            return Service.Status("xinetd") == 0 ? "YES" : "NO"
+            return result ? "YES" : "NO"
           end
         else
           Builtins.y2milestone(

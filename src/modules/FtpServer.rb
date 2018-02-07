@@ -33,30 +33,8 @@ module Yast
       # global boolean variable
       @vsftpd_installed = false
 
-      # variable signifies position vsftpd record
-      # in structur Inetd::netd_conf
-      # -1 init value before calling Inetd::Read()
-      #
-      # global integer variable
-      @vsftpd_xined_id = -1
-
-      # variable signifies if daemon will be started via xinetd
-      #
-      # global boolean variable
-
-      @start_xinetd = false
-
-      # global boolean variable
-
-      @vsftp_xinetd_running = false
-
-      # variable signifies if daemon will be stoped in xinetd
-      #
-      # global boolean variable
-
-      @stop_daemon_xinetd = false
-
-
+      # how to start ftp server. Possibilities are :no, :service and :socket
+      @start = :no;
 
       # variable signifies if it is create upload dir
       # only for vsftpd and anonymous connections with allowed upload
@@ -163,8 +141,7 @@ module Yast
         "TLS"              => "YES",
         "AntiWarez"        => "YES",
         "SSL"              => "0", #0 - disable SSL, 1-accept SSL
-        "StartXinetd"      => "NO",
-        "StartDaemon"      => "0", #0 = start manually, 1 = start when booting, 2 = start via xinetd
+        "StartDaemon"      => "0", #0 = start manually, 1 = start when booting, 2 = start via socket
         "PassiveMode"      => "YES",
         "CertFile"         => "", #cert file for SSL connections
         "VirtualUser"      => "NO",
@@ -173,7 +150,6 @@ module Yast
         "EnableUpload"     => "NO"
       }
 
-      @PURE_SETTINGS = {}
       @VS_SETTINGS = {}
       @EDIT_SETTINGS = {}
 
@@ -429,13 +405,6 @@ module Yast
     def WriteToSETTINGS
       Builtins.foreach(@UI_keys) { |key| ValueUI(key, true) }
 
-      Builtins.y2milestone("-------------PURE_SETTINGS-------------------")
-      Builtins.y2milestone(
-        "pure-ftpd writing configuration : %1",
-        @PURE_SETTINGS
-      )
-      Builtins.y2milestone("---------------------------------------------")
-
       Builtins.y2milestone("-------------VS_SETTINGS-------------------")
       Builtins.y2milestone("Vsftpd writing configuration : %1", @VS_SETTINGS)
       Builtins.y2milestone("---------------------------------------------")
@@ -501,17 +470,6 @@ module Yast
         progress_orig = Progress.set(false)
         result = firewalld.write
         Progress.set(progress_orig)
-      end
-      result
-    end
-
-    # Write current configuration
-    #
-    # @return [Boolean] result of function (true/false)
-    def WriteXinetd
-      result = false
-      if @vsftpd_xined_id != -1
-        result = WriteStartViaXinetd(@start_xinetd, false)
       end
       result
     end
@@ -745,11 +703,6 @@ module Yast
       Report.Error(_("Cannot write settings!")) if !WriteSettings()
       Builtins.sleep(@sl)
 
-      return false if PollAbort()
-      Progress.NextStage
-      # write settings for starting daemon
-      Report.Error(_("Cannot write settings for xinetd!")) if !WriteXinetd()
-      Builtins.sleep(@sl)
 
       return false if PollAbort()
       Progress.NextStage
@@ -777,9 +730,6 @@ module Yast
     # @return [Boolean] True on success
     def Import(settings)
       settings = deep_copy(settings)
-      # Evaluate the kind of ftpserver at first via xinetd....
-      # (bnc#892701)
-      IdFTPXinetd()
       # ...and check/initialize the correct ftpserver which will
       # be used for configuration.
       # (bnc#907354)
@@ -830,9 +780,9 @@ module Yast
       if value == "0"
         option = "manually"
       elsif value == "1"
-        option = "via xinetd"
+        option = "via service"
       else
-        option = "via inetd"
+        option = "via socket"
       end
       _S = Builtins.sformat("%1<li>Start Deamon: <i>(%2)</i>", _S, option)
       value = Ops.get(@EDIT_SETTINGS, "AnonAuthen")
@@ -911,24 +861,18 @@ module Yast
     publish :function => :WriteToEditMap, :type => "boolean (string, string)"
     publish :function => :WriteSettings, :type => "boolean ()"
     publish :function => :WriteUpload, :type => "boolean ()"
-    publish :function => :WriteXinetd, :type => "boolean ()"
     publish_variable :modified, "boolean"
     publish_variable :proposal_valid, "boolean"
     publish_variable :vsftpd_installed, "boolean"
     publish_variable :pureftpd_installed, "boolean"
     publish_variable :vsftpd_xined_id, "integer"
     publish_variable :pureftpd_xined_id, "integer"
-    publish_variable :start_xinetd, "boolean"
-    publish_variable :pure_ftp_xinetd_running, "boolean"
-    publish_variable :vsftp_xinetd_running, "boolean"
-    publish_variable :stop_daemon_xinetd, "boolean"
     publish_variable :create_upload_dir, "boolean"
     publish_variable :upload_good_permission, "boolean"
     publish_variable :pure_ftp_allowed_permissios_upload, "integer"
     publish_variable :change_permissions, "boolean"
     publish_variable :anon_homedir, "string"
     publish_variable :anon_uid, "integer"
-    publish_variable :pure_ftpd_xinet_conf, "list <string>"
 
     # @attribute [r] UI_keys
     # @return [Array<String>]
@@ -943,12 +887,6 @@ module Yast
     # in the system settings.
     publish :variable => :DEFAULT_CONFIG, :type => "map <string, string>"
 
-    # @attribute PURE_SETTINGS
-    # @return [Hash<String,String>]
-    # Uses CamelCase, {FtpServerWriteLoadInclude#ValueUI ValueUI} maps it
-    # to {#EDIT_SETTINGS} and {#DEFAULT_CONFIG}.
-    publish :variable => :PURE_SETTINGS, :type => "map <string, string>"
-
     # @attribute VS_SETTINGS
     # @return [Hash<String,String>]
     # Uses snake_case, {FtpServerWriteLoadInclude#ValueUI ValueUI} maps it
@@ -957,13 +895,8 @@ module Yast
 
     # @attribute EDIT_SETTINGS
     # @return [Hash<String,String>]
-    # Uses CamelCase with similar but not the same keys as {#PURE_SETTINGS}.
-    # {FtpServerWriteLoadInclude#ValueUI ValueUI} maps it to {#PURE_SETTINGS}
-    # and {#VS_SETTINGS}.
     publish :variable => :EDIT_SETTINGS, :type => "map <string, string>"
 
-    publish :function => :PureSettingsForXinetd, :type => "string ()"
-    publish :function => :WriteStartViaXinetd, :type => "boolean (boolean, boolean)"
     publish :function => :ValueUI, :type => "string (string, boolean)"
     publish :function => :ValueUIEdit, :type => "string (string)"
     publish_variable :ftps, "boolean"
