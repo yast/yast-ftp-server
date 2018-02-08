@@ -42,7 +42,7 @@ Group:          System/YaST
 
 %description
 This package contains the YaST2 component for FTP configuration. It can
-configure two daemons: pure-ftpd and vsftpd.
+configure vsftpd.
 
 %prep
 %setup -n %{name}-%{version}
