@@ -17,7 +17,7 @@
 
 
 Name:           yast2-ftp-server
-Version:        4.0.0
+Version:        4.0.1
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -25,7 +25,6 @@ Source0:        %{name}-%{version}.tar.bz2
 
 # SuSEFirewall2 replace by firewalld (fate#323460)
 Requires:       yast2 >= 4.0.39
-Requires:       yast2-inetd
 BuildRequires:  update-desktop-files
 # SuSEFirewall2 replace by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
@@ -43,7 +42,7 @@ Group:          System/YaST
 
 %description
 This package contains the YaST2 component for FTP configuration. It can
-configure two daemons: pure-ftpd and vsftpd.
+configure vsftpd.
 
 %prep
 %setup -n %{name}-%{version}

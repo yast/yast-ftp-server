@@ -47,8 +47,8 @@ module Yast
 
       # Create a summary
       if @func == "Summary"
-        @ret = FtpServer.Summary 
-        #ret = select(FtpServer::Summary(), 0, "");
+        @ret = FtpServer.Summary
+      # ret = select(FtpServer::Summary(), 0, "");
       # Reset configuration
       elsif @func == "Reset"
         FtpServer.Import({})
@@ -88,12 +88,12 @@ module Yast
         FtpServer.write_only = true
         old_mode = Mode.mode
         if old_mode == "autoinst_config"
-           # We are in the autoyast configuration module.
-           # So there is currently no access to the target system.
-           # This has to be done at first. (bnc#888212)
-           Mode.SetMode("normal")
-           FtpServer.InitDaemon
-           FtpServer.InitStartViaXinetd()
+          # We are in the autoyast configuration module.
+          # So there is currently no access to the target system.
+          # This has to be done at first. (bnc#888212)
+          Mode.SetMode("normal")
+          FtpServer.InitDaemon
+          FtpServer.read_daemon
         end
         @ret = FtpServer.Write
         Mode.SetMode(old_mode)
@@ -107,7 +107,7 @@ module Yast
       Builtins.y2milestone("FtpServer auto finished")
       Builtins.y2milestone("----------------------------------------")
 
-      deep_copy(@ret) 
+      deep_copy(@ret)
 
       # EOF
     end

@@ -33,7 +33,6 @@ module Yast
       @wid_handling_vsftpd = {
         "StartMode"        => CWMServiceStart.CreateAutoStartWidget(StartMode()),
         "StartStop"        => CWMServiceStart.CreateStartStopWidget(StartStop()),
-        "RBVsPureFTPd"     => RBVsftpdPureftpd(),
         "StartStopRestart" => StartStopRestart(),
         "Banner"           => Banner(),
         "ChrootEnable"     => ChrootEnable(),
@@ -67,7 +66,6 @@ module Yast
         )
       }
 
-
       # map for screens of widget later in CWNTree
       # screens (vsftpd)
       #
@@ -85,55 +83,7 @@ module Yast
       #
       # abort functions for confirm abort
       #
-      @functions = { :abort => fun_ref(method(:AbortDialog), "boolean ()") }
-
-      # map for description of widget later in CWNTree
-      # widget_descr (pure-ftpd)
-      #
-      # @return [Hash{String,map<String => Object>}]
-
-      @wid_handling_pureftpd = {
-        "StartStopRestart" => StartStopRestart(),
-        "StartMode"        => CWMServiceStart.CreateAutoStartWidget(StartMode()),
-        "StartStop"        => CWMServiceStart.CreateStartStopWidget(
-          StartStopPure()
-        ),
-        "RBVsPureFTPd"     => RBVsftpdPureftpd(),
-        "ChrootEnable"     => ChrootEnable(),
-        "VerboseLogging"   => VerboseLogging(),
-        "Umask"            => Umask(),
-        "FtpDirAnon"       => FtpDirAnon(),
-        "BrowseAnon"       => BrowseAnon(),
-        "MaxIdleTime"      => MaxIdleTime(),
-        "MaxClientsPerIP"  => MaxClientsPerIP(),
-        "MaxClientsNumber" => MaxClientsNumber(),
-        "LocalMaxRate"     => LocalMaxRate(),
-        "AnonMaxRate"      => AnonMaxRate(),
-        "AnonAuthen"       => AnonAuthen(),
-        "AnonReadOnly"     => AnonReadOnly(),
-        "AnonCreatDirs"    => AnonCreatDirs(),
-        "PasMinPort"       => PasMinPort(),
-        "PasMaxPort"       => PasMaxPort(),
-        "AntiWarez"        => AntiWarez(),
-        "SSL"              => SSL(),
-        "Firewall"         => CWMFirewallInterfaces.CreateOpenFirewallWidget(
-          FirewallSettingsPure()
-        )
-      }
-
-
-      # map for screens of widget later in CWNTree
-      # screens (pure-ftpd)
-      #
-      # @return [Hash{String,map<String => Object>}]
-
-      @tabs_pureftpd = {
-        "start_up"        => start_up,
-        "gen_settings"    => gen_settings_pure,
-        "perfor_settings" => perfor_settings,
-        "anon_settings"   => anon_settings,
-        "addit_settings"  => addit_settings_pure
-      }
+      @functions = { abort: fun_ref(method(:AbortDialog), "boolean ()") }
     end
 
     # Returns whether user confirmed aborting the configuration.
@@ -157,7 +107,6 @@ module Yast
     #
     # @return [Hash{String => Object}] map for start-up widget
 
-
     def StartMode
       result = {}
       Ops.set(
@@ -173,14 +122,14 @@ module Yast
       Ops.set(
         result,
         "get_service_start_via_xinetd",
-        fun_ref(method(:GetStartedViaXinetd), "boolean ()")
+        fun_ref(method(:"started_via_socket?"), "boolean ()")
       )
       Ops.set(
         result,
         "set_service_start_via_xinetd",
-        fun_ref(method(:SetStartedViaXinetd), "void (boolean)")
+        fun_ref(method(:"start_via_socket="), "void (boolean)")
       )
-      #TRANSLATORS: Radio selection
+      # TRANSLATORS: Radio selection
       Ops.set(result, "start_auto_button", _("&When booting"))
       Ops.set(result, "start_manual_button", _("&Manually"))
       Ops.set(result, "start_xinetd_button", _("Via &xinetd"))
@@ -191,7 +140,7 @@ module Yast
           CWMServiceStart.AutoStartHelpXinetdTemplate,
           _("When Booting"),
           _("Manually"),
-          _("Via xinetd")
+          _("Via Socket")
         )
       )
       deep_copy(result)
@@ -247,82 +196,6 @@ module Yast
     end
 
     # Init function where are added UI hadle functions
-    # Start widget (pure-ftpd)
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def StartStopPure
-      result = {}
-      Ops.set(result, "service_id", "pure-ftpd")
-      Ops.set(result, "service_running_label", _("FTP is running"))
-      Ops.set(result, "service_not_running_label", _("FTP is not running"))
-      Ops.set(result, "start_now_button", _("&Start FTP Now"))
-      Ops.set(result, "stop_now_button", _("S&top FTP Now"))
-      Ops.set(
-        result,
-        "save_now_action",
-        fun_ref(method(:SaveAndRestartPure), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "save_now_button",
-        _("Sa&ve Settings and Restart FTP Now")
-      )
-      Ops.set(
-        result,
-        "start_now_action",
-        fun_ref(method(:StartNowPure), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "stop_now_action",
-        fun_ref(method(:StopNowPure), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "help",
-        Builtins.sformat(
-          CWMServiceStart.StartStopHelpTemplate(true),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Start FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Stop FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Save Settings and Restart FTP Daemon Now")
-        )
-      )
-
-      deep_copy(result)
-    end
-
-
-    # Init function where are added UI hadle functions
-    # Start widget radiobuttons for switching daemons
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def RBVsftpdPureftpd
-      result = {}
-      Ops.set(result, "label", _("Selected Service"))
-      Ops.set(result, "widget", :radio_buttons)
-      Ops.set(
-        result,
-        "items",
-        [["vs_item", _("&vsftpd")], ["pure_item", _("p&ure-ftpd")]]
-      )
-      Ops.set(result, "init", fun_ref(method(:InitRBVsPure), "void (string)"))
-      Ops.set(
-        result,
-        "handle",
-        fun_ref(method(:HandleRBVsPure), "symbol (string, map)")
-      )
-      Ops.set(result, "help", DialogHelpText("selected_services"))
-
-      deep_copy(result)
-    end
-
-
-    # Init function where are added UI hadle functions
     # special hack widget where is handlig Start/Stop button
     #
     # @return [Hash{String => Object}] map for start-stop widget
@@ -339,15 +212,11 @@ module Yast
       )
       Ops.set(result, "help", " ")
 
-
-
       deep_copy(result)
     end
 
-
     #-----------================= GENERAL SCREEN =============----------
     #
-
 
     # Wellcome Message for vsftpd
     # General Settings widget
@@ -438,45 +307,10 @@ module Yast
       deep_copy(result)
     end
 
-    # Umask (umask files:umask dirs) only pure-ftpd
-    # General Settings widget
-    #
-    # @return [Hash{String => Object}] map for General screen
-
-
-    def Umask
-      result = {}
-
-      Ops.set(result, "label", _("&Umask (umask files:umask dirs)"))
-      Ops.set(result, "widget", :textentry)
-      Ops.set(result, "opt", [:notify])
-      Ops.set(result, "init", fun_ref(method(:InitUmask), "void (string)"))
-      Ops.set(
-        result,
-        "handle",
-        fun_ref(method(:HandleUniversal), "symbol (string, map)")
-      )
-      Ops.set(
-        result,
-        "store",
-        fun_ref(method(:StoreUmask), "void (string, map)")
-      )
-      Ops.set(result, "validate_type", :function)
-      Ops.set(
-        result,
-        "validate_function",
-        fun_ref(method(:ValidUmask), "boolean (string, map)")
-      )
-      Ops.set(result, "help", DialogHelpText("Umask"))
-
-      deep_copy(result)
-    end
-
     # Umask for Anonynous for vsftpd
     # General Settings widget
     #
     # @return [Hash{String => Object}] map for General screen
-
 
     def UmaskAnon
       result = {}
@@ -500,14 +334,10 @@ module Yast
       deep_copy(result)
     end
 
-
-
-
     # Umask for Authenticated Users for vsftpd
     # General Settings widget
     #
     # @return [Hash{String => Object}] map for General screen
-
 
     def UmaskLocal
       result = {}
@@ -535,7 +365,6 @@ module Yast
     # General Settings widget
     #
     # @return [Hash{String => Object}] map for General screen
-
 
     def FtpDirAnon
       result = {}
@@ -565,12 +394,10 @@ module Yast
       deep_copy(result)
     end
 
-
     # "Browse" button for FTP Dir Anon
     # General Settings widget
     #
     # @return [Hash{String => Object}] map for General screen
-
 
     def BrowseAnon
       result = {}
@@ -587,12 +414,10 @@ module Yast
       deep_copy(result)
     end
 
-
     # Ftp Directory for Authenticated Users
     # General Settings widget
     #
     # @return [Hash{String => Object}] map for General screen
-
 
     def FtpDirLocal
       result = {}
@@ -620,12 +445,10 @@ module Yast
       deep_copy(result)
     end
 
-
     # "Browse" button for FTP Dir Local/Authenticated
     # General Settings widget
     #
     # @return [Hash{String => Object}] map for General screen
-
 
     def BrowseLocal
       result = {}
@@ -642,16 +465,13 @@ module Yast
       deep_copy(result)
     end
 
-
     #-----------================= PERFORMANCE SCREEN =============----------
     #
-
 
     # Max Idle Time [minutes]
     # Performance Settings widget
     #
     # @return [Hash{String => Object}] map for Performance screen
-
 
     def MaxIdleTime
       result = {}
@@ -681,13 +501,10 @@ module Yast
       deep_copy(result)
     end
 
-
-
     # Max Clients for One IP
     # Performance Settings widget
     #
     # @return [Hash{String => Object}] map for Performance screen
-
 
     def MaxClientsPerIP
       result = {}
@@ -716,7 +533,6 @@ module Yast
 
       deep_copy(result)
     end
-
 
     # Max Clients
     # Performance Settings widget
@@ -750,7 +566,6 @@ module Yast
       deep_copy(result)
     end
 
-
     # Local Max Rate [KB/s]
     # Performance Settings widget
     #
@@ -782,7 +597,6 @@ module Yast
 
       deep_copy(result)
     end
-
 
     # Anonymous Max Rate [KB/s]
     # Performance Settings widget
@@ -819,12 +633,10 @@ module Yast
     #-----------================= Authentication SCREEN =============----------
     #
 
-
     # Enable/Disable Anonymous and Local Users
     # Authentication Settings widget
     #
     # @return [Hash{String => Object}] map for Performance screen
-
 
     def AnonAuthen
       result = {}
@@ -887,7 +699,6 @@ module Yast
       deep_copy(result)
     end
 
-
     # Anonymous Can Upload
     # Authentication Settings widget
     #
@@ -917,8 +728,6 @@ module Yast
 
       deep_copy(result)
     end
-
-
 
     # Anonymous Can Create Directories
     # Authentication Settings widget
@@ -950,7 +759,6 @@ module Yast
       deep_copy(result)
     end
 
-
     #-----------================= EXPERT SETTINGS SCREEN =============----------
     #
 
@@ -958,7 +766,6 @@ module Yast
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def PassiveMode
       result = {}
@@ -984,8 +791,6 @@ module Yast
 
       deep_copy(result)
     end
-
-
 
     # Min Port for Pas. Mode
     # Expert Settings widget
@@ -1015,13 +820,10 @@ module Yast
       deep_copy(result)
     end
 
-
-
     # Max Port for Pas. Mode
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def PasMaxPort
       result = {}
@@ -1053,13 +855,10 @@ module Yast
       deep_copy(result)
     end
 
-
-
     # Enable SSL
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def SSLEnable
       result = {}
@@ -1081,7 +880,6 @@ module Yast
 
       deep_copy(result)
     end
-
 
     # Enable SSL v2
     # Expert Settings widget
@@ -1109,12 +907,10 @@ module Yast
       deep_copy(result)
     end
 
-
     # Enable SSL v3
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def SSLv3
       result = {}
@@ -1138,12 +934,10 @@ module Yast
       deep_copy(result)
     end
 
-
     # Enable TLS
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def TLS
       result = {}
@@ -1163,12 +957,10 @@ module Yast
       deep_copy(result)
     end
 
-
     # RSA Certificate to Use for SSL Encrypted Connections
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def CertFile
       result = {}
@@ -1196,12 +988,10 @@ module Yast
       deep_copy(result)
     end
 
-
     # "Browse" button for RSA Certificate
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def BrowseCertFile
       result = {}
@@ -1218,14 +1008,10 @@ module Yast
       deep_copy(result)
     end
 
-
-
-
     # Disable Downloading Unvalidated Data
     # Expert Settings widget
     #
     # @return [Hash{String => Object}] map for Expert screen
-
 
     def AntiWarez
       result = {}
@@ -1248,7 +1034,6 @@ module Yast
 
       deep_copy(result)
     end
-
 
     # Security Settings
     # Expert Settings widget
@@ -1290,10 +1075,9 @@ module Yast
     #-----------================= SCREENS OF FTP_SERVER =============----------
     #
 
-
     # Init function where are added UI hadle functions
     # Start widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for start_up widget
     def start_up
@@ -1307,8 +1091,6 @@ module Yast
           VSpacing(1),
           # disabling start/stop buttons when it doesn't make sense
           Mode.normal ? "StartStop" : Empty(),
-          VSpacing(1),
-          "RBVsPureFTPd",
           VStretch()
         )
       )
@@ -1319,7 +1101,7 @@ module Yast
       Ops.set(
         result,
         "widget_names",
-        ["StartMode", "StartStop", "RBVsPureFTPd", "StartStopRestart"]
+        ["StartMode", "StartStop", "StartStopRestart"]
       )
 
       deep_copy(result)
@@ -1400,63 +1182,10 @@ module Yast
     end
 
     # Init function where are added UI hadle functions
-    # General Settings widget (pure-ftpd)
-    # define for tabs_pureftpd necessary later in screens (CWNTree)
-    #
-    # @return [Hash{String => Object}] map for General Settings widget
-
-    def gen_settings_pure
-      result = {}
-
-      Ops.set(
-        result,
-        "contents",
-        VBox(
-          Frame(
-            _("General Settings"),
-            HBox(
-              HSpacing(1),
-              VBox(Left("ChrootEnable"), Left("VerboseLogging"), Left("Umask"))
-            )
-          ),
-          VSpacing(1),
-          Frame(
-            _("FTP Directories"),
-            HBox(
-              HSpacing(1),
-              VBox(
-                Left(
-                  HBox(
-                    HSpacing(1),
-                    Left("FtpDirAnon"),
-                    VBox(Left(Label("")), Left("BrowseAnon"))
-                  )
-                )
-              )
-            )
-          ),
-          VStretch()
-        )
-      )
-      # TRANSLATORS: part of dialog caption
-      Ops.set(result, "caption", _("FTP General Settings"))
-      # TRANSLATORS: tree menu item
-      Ops.set(result, "tree_item_label", _("General"))
-      Ops.set(
-        result,
-        "widget_names",
-        ["ChrootEnable", "VerboseLogging", "Umask", "FtpDirAnon", "BrowseAnon"]
-      )
-
-      deep_copy(result)
-    end
-
-    # Init function where are added UI hadle functions
     # Performance Settings widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for Performance Settings widget
-
 
     def perfor_settings
       result = {}
@@ -1512,19 +1241,6 @@ module Yast
     # Init function where are added firewall
     #
     # @return [Hash{String => Object}] map for firewall settings
-
-    def FirewallSettingsPure
-      {
-        "services"        => ["pure-ftpd"],
-        "display_details" => true
-      }
-    end
-
-    # Init function where are added firewall
-    #
-    # @return [Hash{String => Object}] map for firewall settings
-
-
     def FirewallSettingsVs
       {
         "services"        => ["vsftpd"],
@@ -1532,10 +1248,9 @@ module Yast
       }
     end
 
-
     # Init function where are added UI hadle functions
     # Anonymous Settings widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for Anonymous Settings widget
 
@@ -1570,7 +1285,7 @@ module Yast
 
     # Init function where are added UI hadle functions
     # Anonymous Settings widget
-    # define for tabs_vsftpd/tabs_pureftpd necessary later in screens (CWNTree)
+    # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for Anonymous Settings widget
 
@@ -1636,11 +1351,11 @@ module Yast
                 )
               )
             )
-          ), #end of `Frame ( "Passiv Mode Settings"
+          ), # end of `Frame ( "Passiv Mode Settings"
           VSpacing(1),
           Frame(
             _("Enab&le SSL"), # end of `HBox(`HSpacing(1),`VBox (
-            #`CheckBoxFrame(`id("SSLEnable"), _("Enab&le SSL"), true,
+            # `CheckBoxFrame(`id("SSLEnable"), _("Enab&le SSL"), true,
             HBox(
               HSpacing(1),
               VBox(
@@ -1656,7 +1371,7 @@ module Yast
                 )
               )
             )
-          ), #end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true
+          ), # end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true
           VSpacing(1),
           Frame(_("SUSEfirewall Settings"), HBox(HSpacing(1), "Firewall")),
           VStretch()
@@ -1685,59 +1400,11 @@ module Yast
 
       deep_copy(result)
     end
-    # Init function where are added UI hadle functions
-    # Expert Settings widget (pure-ftpd)
-    # define for tabs_pureftpd necessary later in screens (CWNTree)
-    #
-    # @return [Hash{String => Object}] map for Expert Settings widget
-
-    def addit_settings_pure
-      result = {}
-
-      Ops.set(
-        result,
-        "contents",
-        VBox(
-          Frame(
-            _("Passive Mode"),
-            HBox(
-              HSpacing(1),
-              Left(HSquash(HBox("PasMinPort", "PasMaxPort", HStretch())))
-            )
-          ),
-          VSpacing(1),
-          Frame(
-            _("Additional Settings"),
-            HBox(HSpacing(1), VBox(Left("AntiWarez")))
-          ), #end of `Frame ( _("Additional Settings")
-          VSpacing(1),
-          "SSL",
-          VSpacing(1),
-          Frame(_("SUSEfirewall Settings"), HBox(HSpacing(1), "Firewall")),
-          VStretch()
-        )
-      )
-      # TRANSLATORS: part of dialog caption
-      Ops.set(result, "caption", _("FTP Expert Settings"))
-      # TRANSLATORS: tree menu item
-      Ops.set(result, "tree_item_label", _("Expert Settings"))
-      Ops.set(
-        result,
-        "widget_names",
-        ["Firewall", "PasMinPort", "PasMaxPort", "AntiWarez", "SSL"]
-      )
-
-      deep_copy(result)
-    end
-
 
     # function for running CWNTree
     # vsftpd
     #
     # @return [Symbol] return value of DialogTree::ShowAndRun
-
-
-
     def RunFTPDialogsVsftpd
       sim_dialogs = [
         "start_up",
@@ -1748,44 +1415,14 @@ module Yast
       ]
 
       DialogTree.ShowAndRun(
-        {
-          "ids_order"      => sim_dialogs,
-          "initial_screen" => "start_up",
-          "screens"        => @tabs_vsftpd,
-          "widget_descr"   => @wid_handling_vsftpd,
-          "back_button"    => "",
-          "abort_button"   => Label.CancelButton,
-          "next_button"    => Label.FinishButton,
-          "functions"      => @functions
-        }
-      )
-    end
-
-    # function for running CWNTree
-    # vsftpd
-    #
-    # @return [Symbol] return value of DialogTree::ShowAndRun
-
-    def RunFTPDialogsPureftpd
-      sim_dialogs = [
-        "start_up",
-        "gen_settings",
-        "perfor_settings",
-        "anon_settings",
-        "addit_settings"
-      ]
-
-      DialogTree.ShowAndRun(
-        {
-          "ids_order"      => sim_dialogs,
-          "initial_screen" => "start_up",
-          "screens"        => @tabs_pureftpd,
-          "widget_descr"   => @wid_handling_pureftpd,
-          "back_button"    => "",
-          "abort_button"   => Label.CancelButton,
-          "next_button"    => Label.FinishButton,
-          "functions"      => @functions
-        }
+        "ids_order"      => sim_dialogs,
+        "initial_screen" => "start_up",
+        "screens"        => @tabs_vsftpd,
+        "widget_descr"   => @wid_handling_vsftpd,
+        "back_button"    => "",
+        "abort_button"   => Label.CancelButton,
+        "next_button"    => Label.FinishButton,
+        "functions"      => @functions
       )
     end
   end

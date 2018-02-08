@@ -20,31 +20,18 @@ module Yast
       Yast.include include_target, "ftp-server/dialogs.rb"
     end
 
-    def RunDaemonSwitch
-      if FtpServer.vsftpd_edit
-        return :vsftpd
-      else
-        return :pureftpd
-      end
-    end
-
     # Main workflow of the ftp-server configuration
     # @return sequence result
     def MainSequence
       aliases = {
-        "init"     => [lambda { RunDaemonSwitch() }, false],
-        "vsftpd"   => lambda { RunFTPDialogsVsftpd() },
-        "pureftpd" => lambda { RunFTPDialogsPureftpd() }
+        "vsftpd" => -> { RunFTPDialogsVsftpd() }
       }
 
       sequence = {
-        "ws_start" => "init",
-        "init"     => { :pureftpd => "pureftpd", :vsftpd => "vsftpd" },
-        "pureftpd" => { :abort => :abort, :next => :next, :vsftpd => "vsftpd" },
+        "ws_start" => "vsftpd",
         "vsftpd"   => {
-          :abort    => :abort,
-          :next     => :next,
-          :pureftpd => "pureftpd"
+          abort: :abort,
+          next:  :next
         }
       }
       temp = Empty()
@@ -53,21 +40,20 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Whole configuration of ftp-server
     # @return sequence result
     def FtpdSequence
       aliases = {
-        "read"  => [lambda { ReadDialog() }, true],
-        "main"  => lambda { MainSequence() },
-        "write" => [lambda { WriteDialog() }, true]
+        "read"  => [-> { ReadDialog() }, true],
+        "main"  => -> { MainSequence() },
+        "write" => [-> { WriteDialog() }, true]
       }
 
       sequence = {
         "ws_start" => "read",
-        "read"     => { :abort => :abort, :next => "main" },
-        "main"     => { :abort => :abort, :next => "write" },
-        "write"    => { :abort => :abort, :next => :next }
+        "read"     => { abort: :abort, next: "main" },
+        "main"     => { abort: :abort, next: "write" },
+        "write"    => { abort: :abort, next: :next }
       }
 
       Wizard.CreateDialog
@@ -82,11 +68,11 @@ module Yast
     # For use with autoinstallation.
     # @return sequence result
     def FtpServerAutoSequence
-      aliases = { "main" => lambda { MainSequence() } }
+      aliases = { "main" => -> { MainSequence() } }
 
       sequence = {
         "ws_start" => "main",
-        "main"     => { :abort => :abort, :next => :next }
+        "main"     => { abort: :abort, next: :next }
       }
 
       Wizard.CreateDialog

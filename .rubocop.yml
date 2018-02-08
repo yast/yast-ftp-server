@@ -1,0 +1,109 @@
+# use the shared Yast defaults
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
+
+# Offense count: 2
+Lint/UnderscorePrefixedVariableName:
+  Exclude:
+    - 'src/modules/FtpServer.rb'
+
+# Offense count: 67
+Metrics/AbcSize:
+  Max: 268
+
+# Offense count: 4
+Metrics/BlockNesting:
+  Max: 4
+
+# Offense count: 2
+# Configuration parameters: CountComments.
+Metrics/ClassLength:
+  Max: 879
+
+# Offense count: 11
+Metrics/CyclomaticComplexity:
+  Max: 115
+
+# Offense count: 90
+# Configuration parameters: AllowHeredoc, AllowURI, URISchemes.
+# URISchemes: http, https
+Metrics/LineLength:
+  Max: 153
+
+# Offense count: 79
+# Configuration parameters: CountComments.
+Metrics/MethodLength:
+  Max: 479
+
+# Offense count: 4
+# Configuration parameters: CountComments.
+Metrics/ModuleLength:
+  Max: 1051
+
+# Offense count: 13
+Metrics/PerceivedComplexity:
+  Max: 150
+
+# Offense count: 9
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'src/clients/ftp-server.rb'
+    - 'src/clients/ftp-server_auto.rb'
+    - 'src/include/ftp-server/complex.rb'
+    - 'src/include/ftp-server/dialogs.rb'
+    - 'src/include/ftp-server/helps.rb'
+    - 'src/include/ftp-server/wid_functions.rb'
+    - 'src/include/ftp-server/wizards.rb'
+    - 'src/include/ftp-server/write_load.rb'
+    - 'src/modules/FtpServer.rb'
+
+# Offense count: 3
+# Configuration parameters: ExpectMatchingDefinition, Regex, IgnoreExecutableScripts.
+Style/FileName:
+  Exclude:
+    - 'src/clients/ftp-server.rb'
+    - 'src/clients/ftp-server_auto.rb'
+    - 'src/modules/FtpServer.rb'
+
+# Offense count: 14
+# Configuration parameters: MinBodyLength.
+Style/GuardClause:
+  Exclude:
+    - 'src/include/ftp-server/dialogs.rb'
+    - 'src/include/ftp-server/write_load.rb'
+
+# Offense count: 7
+Style/IfInsideElse:
+  Exclude:
+    - 'src/clients/ftp-server.rb'
+    - 'src/include/ftp-server/write_load.rb'
+
+# Offense count: 168
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+# SupportedStyles: snake_case, camelCase
+Style/MethodName:
+  Exclude:
+    - 'src/clients/ftp-server.rb'
+    - 'src/include/ftp-server/complex.rb'
+    - 'src/include/ftp-server/dialogs.rb'
+    - 'src/include/ftp-server/helps.rb'
+    - 'src/include/ftp-server/wid_functions.rb'
+    - 'src/include/ftp-server/wizards.rb'
+    - 'src/include/ftp-server/write_load.rb'
+    - 'src/modules/FtpServer.rb'
+
+# Offense count: 19
+Style/MultilineTernaryOperator:
+  Exclude:
+    - 'src/include/ftp-server/write_load.rb'
+
+# Offense count: 20
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+# SupportedStyles: snake_case, camelCase
+Style/VariableName:
+  Exclude:
+    - 'src/clients/ftp-server.rb'
+    - 'src/include/ftp-server/helps.rb'
+    - 'src/modules/FtpServer.rb'
