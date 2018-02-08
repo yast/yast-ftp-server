@@ -601,7 +601,7 @@ module Yast
         # TRANSLATORS: CommandLine progress information
         CommandLine.Print(_("Start FTP daemon via socket"))
         CommandLine.Print("")
-        start_via_socket = true
+        self.start_via_socket = true
       end
       true
     end
