@@ -154,7 +154,6 @@ module Yast
 
     # Init function "Wellcome Message" for general settings
     # change ValidChars for textentry
-    # only vsftpd
     def InitBanner(_key)
       UI.ChangeWidget(Id("Banner"), :Value, FtpServer.ValueUIEdit("Banner"))
 
@@ -172,7 +171,6 @@ module Yast
 
     # Store function of "Wellcome Message"
     # save values to temporary structure
-    # only vsftpd
     def StoreBanner(_key, _event)
       FtpServer.WriteToEditMap(
         "Banner",
@@ -230,7 +228,6 @@ module Yast
 
     # Init function "Umask for Anonymous" for general settings
     # change ValidChars for textentry
-    # only vsftpd
     def InitUmaskAnon(_key)
       UI.ChangeWidget(Id("UmaskAnon"), :ValidChars, "01234567")
       UI.ChangeWidget(
@@ -244,7 +241,6 @@ module Yast
 
     # Store function of "Umask for Anonymous"
     # save values to temporary structure
-    # only vsftpd
     def StoreUmaskAnon(_key, _event)
       FtpServer.WriteToEditMap(
         "UmaskAnon",
@@ -256,7 +252,6 @@ module Yast
 
     # Init function "Umask for Authenticated Users" for general settings
     # change ValidChars for textentry
-    # only vsftpd
     def InitUmaskLocal(_key)
       UI.ChangeWidget(Id("UmaskLocal"), :ValidChars, "01234567")
       UI.ChangeWidget(
@@ -270,7 +265,6 @@ module Yast
 
     # Store function of "Umask for Authenticated Users"
     # save values to temporary structure
-    # only vsftpd
     def StoreUmaskLocal(_key, _event)
       FtpServer.WriteToEditMap(
         "UmaskLocal",

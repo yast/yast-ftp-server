@@ -164,7 +164,6 @@ module Yast
               "access anon_and_authen"
             ]
           },
-          # only vsftpd
           "welcome_message" => {
             "handler" => fun_ref(method(:FTPdCMDWelMessage), "boolean (map)"),
             # TRANSLATORS: CommandLine help
@@ -173,7 +172,6 @@ module Yast
             ),
             "example" => ["welcome_message=\"hello everybody\""]
           },
-          # only vsftpd
           "SSL"             => {
             "handler" => fun_ref(method(:FTPdCMDSSL), "boolean (map)"),
             # TRANSLATORS: CommandLine help
@@ -182,7 +180,6 @@ module Yast
             ),
             "example" => ["SSL enable", "SSL disable"]
           },
-          # only vsftpd
           "SSLv2"           => {
             "handler" => fun_ref(method(:FTPdCMDSSLv2), "boolean (map)"),
             # TRANSLATORS: CommandLine help
@@ -191,7 +188,6 @@ module Yast
             ),
             "example" => ["SSLv2 enable", "SSLv2 disable"]
           },
-          # only vsftpd
           "SSLv3"           => {
             "handler" => fun_ref(method(:FTPdCMDSSLv3), "boolean (map)"),
             # TRANSLATORS: CommandLine help
