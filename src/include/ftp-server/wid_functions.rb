@@ -123,7 +123,7 @@ module Yast
 
     # Function stop vsftpd
     def StopNowVsftpd
-      if FtpServer.InitStartViaSocket
+      if FtpServer.start_via_socket?
         # if socket is listening, stop it
         FtpServer.WriteStartViaSocket(false)
       end
@@ -148,8 +148,8 @@ module Yast
     #
     # init starting via socket and update status
     def InitStartStopRestart(_key = nil)
-      log.info "current status socket: #{FtpServer.InitStartViaSocket} service: #{Service.active?("vsftpd")}"
-      if FtpServer.InitStartViaSocket || Service.active?("vsftpd")
+      log.info "current status socket: #{FtpServer.start_via_socket?} service: #{Service.active?("vsftpd")}"
+      if FtpServer.start_via_socket? || Service.active?("vsftpd")
         UI.ReplaceWidget(
           Id("_cwm_service_status_rp"),
           Label(_("FTP is running"))

@@ -93,7 +93,7 @@ module Yast
            # This has to be done at first. (bnc#888212)
            Mode.SetMode("normal")
            FtpServer.InitDaemon
-           FtpServer.InitStartViaSocket
+           FtpServer.read_daemon
         end
         @ret = FtpServer.Write
         Mode.SetMode(old_mode)

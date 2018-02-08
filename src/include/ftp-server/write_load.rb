@@ -21,7 +21,7 @@ module Yast
       Yast.import "SystemdSocket"
     end
 
-    def InitStartViaSocket
+    def start_via_socket?
       socket = SystemdSocket.find("vsftpd")
       return false unless socket
 

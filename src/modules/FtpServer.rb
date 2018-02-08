@@ -386,7 +386,7 @@ module Yast
     end
 
     def read_daemon
-      if InitStartViaSocket()
+      if start_via_socket?()
         FtpServer.EDIT_SETTINGS["StartDaemon"] = "2"
       elsif Service.active?("vsftpd")
         FtpServer.EDIT_SETTINGS["StartDaemon"] = "1"
