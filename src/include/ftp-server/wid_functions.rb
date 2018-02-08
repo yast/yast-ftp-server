@@ -56,19 +56,13 @@ module Yast
 
     # CWMServiceStart function with no parameter returning boolean value
     # that says if the service is started.
-    def GetStartedViaXinetd
-      result = if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2"
-        true
-      else
-        false
-      end
-
-      result
+    def started_via_socket?
+      FtpServer.EDIT_SETTINGS["StartDaemon"] == "2"
     end
 
     # CWMServiceStart function with one boolean parameter
     # returning boolean value that says if the service will be started at boot.
-    def SetStartedViaXinetd(enable_service)
+    def start_via_socket=(enable_service)
       FtpServer.EDIT_SETTINGS["StartDaemon"] = enable_service ? "2" : "0"
 
       nil

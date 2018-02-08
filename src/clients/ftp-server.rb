@@ -398,7 +398,7 @@ module Yast
       CommandLine.Print("")
       # start-up settings
       CommandLine.PrintNoCR(_("Start-Up:"))
-      if GetStartedViaXinetd()
+      if started_via_socket?
         CommandLine.Print(_("FTP daemon is started via socket."))
       else
         if GetEnableService()
@@ -605,7 +605,7 @@ module Yast
         # TRANSLATORS: CommandLine progress information
         CommandLine.Print(_("Start FTP daemon via socket"))
         CommandLine.Print("")
-        SetStartedViaXinetd(true)
+        start_via_socket = true
       end
       true
     end
