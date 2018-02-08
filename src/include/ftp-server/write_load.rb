@@ -62,9 +62,6 @@ module Yast
     #  - false: read the UI settings from the system settings
     # @return [String] the UI value (for read) or nil (for write)
     def ValueUI(key, write)
-      ports = []
-      authentic = 0
-      yes_no = ""
       case key
         when "ChrootEnable"
           if write
@@ -189,7 +186,6 @@ module Yast
               Ops.get(@DEFAULT_CONFIG, "PasMaxPort")
           end
         when "MaxIdleTime"
-          min_sec = 0
           if write
             if Ops.get(@EDIT_SETTINGS, "MaxIdleTime") != "0"
               min_sec = Builtins.tointeger(
@@ -248,7 +244,6 @@ module Yast
               Ops.get(@DEFAULT_CONFIG, "MaxClientsNumber")
           end
         when "LocalMaxRate"
-          transfer = 0
           if write
             if Ops.get(@EDIT_SETTINGS, "LocalMaxRate") != "0"
               transfer = Ops.multiply(
@@ -275,7 +270,6 @@ module Yast
             end
           end
         when "AnonMaxRate"
-          transfer = 0
           if write
             if Ops.get(@EDIT_SETTINGS, "AnonMaxRate") != "0"
               transfer = Ops.multiply(

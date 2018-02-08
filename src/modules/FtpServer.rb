@@ -341,7 +341,6 @@ module Yast
     #
     # @return [Boolean] successfull
     def ReadSettings
-      result = false
       result = ReadVSFTPDSettings()
       result = InitEDIT_SETTINGS() if result
 
@@ -379,9 +378,9 @@ module Yast
       firewalld.read
       Progress.set(progress_orig)
       #read existing upload directory for vsftpd
-      result = ReadVSFTPDUpload()
+      result = ReadVSFTPDUpload() && result
 
-      result = ReadPermisionUplaod()
+      result = ReadPermisionUplaod() && result
       result
     end
 
@@ -512,7 +511,6 @@ module Yast
       result = true
       command = ""
       upload = ""
-      options = {}
       authentication = Builtins.tointeger(Ops.get(@EDIT_SETTINGS, "AnonAuthen"))
       if authentication != 1 && @create_upload_dir && @upload_good_permission
         write_enable = Ops.get(@EDIT_SETTINGS, "EnableUpload") == "YES" ? true : false
@@ -520,8 +518,8 @@ module Yast
         anon_create_dirs = Ops.get(@EDIT_SETTINGS, "AnonCreatDirs") == "YES" ? true : false
         if write_enable && (anon_upload || anon_create_dirs)
           if Builtins.substring(
-              @anon_homedir,
-              Ops.subtract(Builtins.size(@anon_homedir), 1)
+            @anon_homedir,
+            Ops.subtract(Builtins.size(@anon_homedir), 1)
             ) == "/"
             upload = "upload"
           else
@@ -593,9 +591,7 @@ module Yast
       #update permissions for home directory if upload is enabled...
       if @pure_ftp_allowed_permissios_upload != -1 && @change_permissions
         command = Ops.add("chmod 755 ", @anon_homedir)
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
+        SCR.Execute(path(".target.bash_output"), command)
       end
 
       result

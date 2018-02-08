@@ -46,21 +46,21 @@ def mock_config(config_path, map)
 end
 
 VS_SETTINGS = {
-  "write_enable" => "NO",
-  "dirmessage_enable" => "YES",
-  "nopriv_user" => "ftpsecure",
-  "local_enable" => "YES",
-  "anonymous_enable" => "YES",
+  "write_enable"             => "NO",
+  "dirmessage_enable"        => "YES",
+  "nopriv_user"              => "ftpsecure",
+  "local_enable"             => "YES",
+  "anonymous_enable"         => "YES",
   "anon_world_readable_only" => "YES",
-  "syslog_enable" => "YES",
-  "connect_from_port_20" => "YES",
-  "ascii_upload_enable" => "YES",
-  "pam_service_name" => "vsftpd",
-  "listen" => "NO",
-  "listen_ipv6" => "YES",
-  "ssl_enable" => "NO",
-  "pasv_min_port" => "30000",
-  "pasv_max_port" => "30100"
+  "syslog_enable"            => "YES",
+  "connect_from_port_20"     => "YES",
+  "ascii_upload_enable"      => "YES",
+  "pam_service_name"         => "vsftpd",
+  "listen"                   => "NO",
+  "listen_ipv6"              => "YES",
+  "ssl_enable"               => "NO",
+  "pasv_min_port"            => "30000",
+  "pasv_max_port"            => "30100"
 }
 
 describe "Yast::FtpServer" do

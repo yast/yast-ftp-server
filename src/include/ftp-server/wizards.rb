@@ -24,14 +24,14 @@ module Yast
     # @return sequence result
     def MainSequence
       aliases = {
-        "vsftpd"   => lambda { RunFTPDialogsVsftpd() }
+        "vsftpd" => lambda { RunFTPDialogsVsftpd() }
       }
 
       sequence = {
         "ws_start" => "vsftpd",
         "vsftpd"   => {
-          :abort    => :abort,
-          :next     => :next
+          :abort => :abort,
+          :next  => :next
         }
       }
       temp = Empty()

@@ -394,7 +394,6 @@ module Yast
     end
 
     def FTPdCMDShow(options)
-      options = deep_copy(options)
       CommandLine.Print("")
       CommandLine.Print(String.UnderlinedHeader(_("Display Settings:"), 0))
       CommandLine.Print("")

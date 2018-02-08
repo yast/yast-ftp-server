@@ -135,8 +135,6 @@ module Yast
 
     # Function saves configuration and restarts vsftpd
     def SaveAndRestartVsftpd
-      result = false
-
       StopNowVsftpd()
       FtpServer.WriteSettings
       result = StartNowVsftpd()
@@ -182,7 +180,6 @@ module Yast
 
     # Handle function only save info about changes
     def HandleUniversal(key, event)
-      event = deep_copy(event)
       # modified
       if Ops.get_string(event, "EventReason", "") == "ValueChanged"
         FtpServer.SetModified(true)
@@ -194,7 +191,6 @@ module Yast
     # save values to temporary structure
     # only vsftpd
     def StoreBanner(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "Banner",
         Builtins.tostring(UI.QueryWidget(Id("Banner"), :Value))
@@ -218,7 +214,6 @@ module Yast
     # Store function of "Chroot Everyone"
     # save values to temporary structure
     def StoreChrootEnable(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "ChrootEnable",
         Convert.to_boolean(UI.QueryWidget(Id("ChrootEnable"), :Value)) == true ? "YES" : "NO"
@@ -242,7 +237,6 @@ module Yast
     # Store function of "Verbose Logging"
     # save values to temporary structure
     def StoreVerboseLogging(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "VerboseLogging",
         Convert.to_boolean(UI.QueryWidget(Id("VerboseLogging"), :Value)) == true ? "YES" : "NO"
@@ -270,7 +264,6 @@ module Yast
     # save values to temporary structure
     # only vsftpd
     def StoreUmaskAnon(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "UmaskAnon",
         Builtins.tostring(UI.QueryWidget(Id("UmaskAnon"), :Value))
@@ -298,7 +291,6 @@ module Yast
     # save values to temporary structure
     # only vsftpd
     def StoreUmaskLocal(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "UmaskLocal",
         Builtins.tostring(UI.QueryWidget(Id("UmaskLocal"), :Value))
@@ -337,7 +329,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreFtpDirAnon(key, event)
-      event = deep_copy(event)
       if Ops.get(FtpServer.EDIT_SETTINGS, "VirtualUser") == "NO"
         FtpServer.WriteToEditMap(
           "FtpDirAnon",
@@ -351,7 +342,6 @@ module Yast
     # Handle function of "Browse"
     # handling value in textentry of "Umask for Anonynmous Users"
     def HandleBrowseAnon(key, event)
-      event = deep_copy(event)
       button = Ops.get(event, "ID")
       if button == "BrowseAnon"
         val = UI.AskForExistingDirectory("/", _("Select directory"))
@@ -377,7 +367,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreFtpDirLocal(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "FtpDirLocal",
         Builtins.tostring(UI.QueryWidget(Id("FtpDirLocal"), :Value))
@@ -389,7 +378,6 @@ module Yast
     # Handle function of "Browse"
     # handling value in textentry of "Umask for Authenticated Users"
     def HandleBrowseLocal(key, event)
-      event = deep_copy(event)
       button = Ops.get(event, "ID")
       if button == "BrowseLocal"
         val = UI.AskForExistingDirectory("/", _("Select directory"))
@@ -419,7 +407,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreMaxIdleTime(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "MaxIdleTime",
         Builtins.tostring(UI.QueryWidget(Id("MaxIdleTime"), :Value))
@@ -446,7 +433,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreMaxClientsPerIP(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "MaxClientsPerIP",
         Builtins.tostring(UI.QueryWidget(Id("MaxClientsPerIP"), :Value))
@@ -473,7 +459,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreMaxClientsNumber(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "MaxClientsNumber",
         Builtins.tostring(UI.QueryWidget(Id("MaxClientsNumber"), :Value))
@@ -500,7 +485,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreLocalMaxRate(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "LocalMaxRate",
         Builtins.tostring(UI.QueryWidget(Id("LocalMaxRate"), :Value))
@@ -526,7 +510,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreAnonMaxRate(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "AnonMaxRate",
         Builtins.tostring(UI.QueryWidget(Id("AnonMaxRate"), :Value))
@@ -559,7 +542,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreAnonAuthen(key, event)
-      event = deep_copy(event)
       radiobut = Convert.to_string(UI.QueryWidget(Id("AnonAuthen"), :Value))
       if radiobut == "anon_only"
         FtpServer.WriteToEditMap("AnonAuthen", "0")
@@ -597,14 +579,9 @@ module Yast
     # function also disable/enable "Anon&ymous Can Upload" and
     # "Anonymou&s Can Create Directories"
     def HandleEnableUpload(key, event)
-      event = deep_copy(event)
       button = Ops.get(event, "ID")
       #Popup::Message("Hello world");
       if Mode.normal
-        anon_upload = false
-        anon_create_dirs = false
-        yesno_comment = ""
-        yesno_question = ""
         check_upload = Convert.to_boolean(
           UI.QueryWidget(Id("EnableUpload"), :Value)
         )
@@ -734,7 +711,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreEnableUpload(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "EnableUpload",
         Convert.to_boolean(UI.QueryWidget(Id("EnableUpload"), :Value)) == true ? "YES" : "NO"
@@ -762,10 +738,6 @@ module Yast
     # check permissions for upload dir
     #
     def HandleAnonReadOnly(key, event)
-      event = deep_copy(event)
-      yesno_comment = ""
-      yesno_question = ""
-      result = false
       enable = Convert.to_boolean(UI.QueryWidget(Id("AnonReadOnly"), :Value))
 
       if enable
@@ -801,7 +773,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreAnonReadOnly(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "AnonReadOnly",
         Convert.to_boolean(UI.QueryWidget(Id("AnonReadOnly"), :Value)) == true ? "NO" : "YES"
@@ -827,10 +798,6 @@ module Yast
     # check permissions for upload dir
     #
     def HandleAnonCreatDirs(key, event)
-      event = deep_copy(event)
-      yesno_comment = ""
-      yesno_question = ""
-      result = false
       enable = Convert.to_boolean(UI.QueryWidget(Id("AnonReadOnly"), :Value))
 
       if enable
@@ -866,7 +833,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreAnonCreatDirs(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "AnonCreatDirs",
         Convert.to_boolean(UI.QueryWidget(Id("AnonCreatDirs"), :Value)) == true ? "YES" : "NO"
@@ -900,7 +866,6 @@ module Yast
     # Handle function of "Enable Passive Mode"
     # handling enable/disable widgets
     def HandlePassiveMode(key, event)
-      event = deep_copy(event)
       value = Convert.to_boolean(UI.QueryWidget(Id("PassiveMode"), :Value))
       if value
         UI.ChangeWidget(Id("PasMinPort"), :Enabled, true)
@@ -921,7 +886,6 @@ module Yast
     # save values to temporary structure
     #
     def StorePassiveMode(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "PassiveMode",
         Convert.to_boolean(UI.QueryWidget(Id("PassiveMode"), :Value)) == true ? "YES" : "NO"
@@ -947,7 +911,6 @@ module Yast
     # save values to temporary structure
     #
     def StorePasMinPort(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "PasMinPort",
         Builtins.tostring(UI.QueryWidget(Id("PasMinPort"), :Value))
@@ -977,7 +940,6 @@ module Yast
     # check values Max Port >= Min Port
     #
     def ValidPasMaxPort(key, event)
-      event = deep_copy(event)
       min_port = Builtins.tointeger(UI.QueryWidget(Id("PasMinPort"), :Value))
       max_port = Builtins.tointeger(UI.QueryWidget(Id("PasMaxPort"), :Value))
 
@@ -993,7 +955,6 @@ module Yast
     # save values to temporary structure
     #
     def StorePasMaxPort(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "PasMaxPort",
         Builtins.tostring(UI.QueryWidget(Id("PasMaxPort"), :Value))
@@ -1049,7 +1010,6 @@ module Yast
     # save values to temporary structure
     #
     def StoreSSLEnable(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "SSLEnable",
         Convert.to_boolean(UI.QueryWidget(Id("SSLEnable"), :Value)) == true ? "YES" : "NO"
@@ -1083,7 +1043,6 @@ module Yast
     #
     # also include handling value enable/disable passive mode
     def StoreSSLv2(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "SSLv2",
         Convert.to_boolean(UI.QueryWidget(Id("SSLv2"), :Value)) == true ? "YES" : "NO"
@@ -1113,7 +1072,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreSSLv3(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "SSLv3",
         Convert.to_boolean(UI.QueryWidget(Id("SSLv3"), :Value)) == true ? "YES" : "NO"
@@ -1135,7 +1093,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreTLS(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "TLS",
         Convert.to_boolean(UI.QueryWidget(Id("TLS"), :Value)) == true ? "YES" : "NO"
@@ -1157,7 +1114,6 @@ module Yast
     # check value if user enable SSL Certificate (textentry) doesn't be empty
     #
     def ValidCertFile(key, event)
-      event = deep_copy(event)
       rsa_cert = Builtins.tostring(UI.QueryWidget(Id("CertFile"), :Value))
       ssl_enable = Convert.to_boolean(UI.QueryWidget(Id("SSLEnable"), :Value))
 
@@ -1174,7 +1130,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreCertFile(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "CertFile",
         Builtins.tostring(UI.QueryWidget(Id("CertFile"), :Value))
@@ -1213,7 +1168,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreAntiWarez(key, event)
-      event = deep_copy(event)
       FtpServer.WriteToEditMap(
         "AntiWarez",
         Convert.to_boolean(UI.QueryWidget(Id("AntiWarez"), :Value)) == true ? "YES" : "NO"
@@ -1249,7 +1203,6 @@ module Yast
     # save value to temporary structure
     #
     def StoreSSL(key, event)
-      event = deep_copy(event)
       radiobut = Convert.to_string(UI.QueryWidget(Id("SSL"), :Value))
       if radiobut == "disable"
         FtpServer.WriteToEditMap("SSL", "0")

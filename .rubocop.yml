@@ -17,14 +17,6 @@ Lint/UnusedMethodArgument:
     - 'src/include/ftp-server/wid_functions.rb'
     - 'src/include/ftp-server/write_load.rb'
 
-# Offense count: 51
-Lint/UselessAssignment:
-  Exclude:
-    - 'src/clients/ftp-server.rb'
-    - 'src/include/ftp-server/wid_functions.rb'
-    - 'src/include/ftp-server/write_load.rb'
-    - 'src/modules/FtpServer.rb'
-
 # Offense count: 67
 Metrics/AbcSize:
   Max: 268
