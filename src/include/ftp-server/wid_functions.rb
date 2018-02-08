@@ -24,7 +24,6 @@ module Yast
       Yast.import "Label"
       Yast.import "FtpServer"
 
-
       #  variable signifies repeat asking about upload file
       #  only for vsftpd
       #
@@ -35,26 +34,22 @@ module Yast
     # CWMServiceStart function with no parameter returning boolean value
     # that says if the service is started.
     def GetEnableService
-      result = false
-      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "1"
-        result = true
+      result = if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "1"
+        true
       else
-        result = false
+        false
       end
       result
     end
 
-
     # CWMServiceStart function with one boolean parameter
     # returning boolean value that says if the service will be started at boot.
     def SetEnableService(enable_service)
-      if Builtins.size(FtpServer.EDIT_SETTINGS) == 0
+      if Builtins.size(FtpServer.EDIT_SETTINGS).zero?
         FtpServer.EDIT_SETTINGS = deep_copy(FtpServer.DEFAULT_CONFIG)
       end
 
-      if enable_service
-        Ops.set(FtpServer.EDIT_SETTINGS, "StartDaemon", "1")
-      end
+      Ops.set(FtpServer.EDIT_SETTINGS, "StartDaemon", "1") if enable_service
 
       nil
     end
@@ -62,13 +57,11 @@ module Yast
     # CWMServiceStart function with no parameter returning boolean value
     # that says if the service is started.
     def GetStartedViaXinetd
-      result = false
-      if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2"
-        result = true
+      result = if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2"
+        true
       else
-        result = false
+        false
       end
-
 
       result
     end
@@ -81,9 +74,8 @@ module Yast
       nil
     end
 
-
     def UpdateInfoAboutStartingFTP
-      #which radiobutton is selected for starting "when booting", "via socket" or "manually"
+      # which radiobutton is selected for starting "when booting", "via socket" or "manually"
       value = UI.QueryWidget(Id("_cwm_service_startup"), :Value)
 
       if Builtins.tostring(value) == "_cwm_startup_manual"
@@ -97,10 +89,8 @@ module Yast
       nil
     end
 
-
     # Function start vsftpd
     def StartNowVsftpd
-
       UpdateInfoAboutStartingFTP()
 
       if Ops.get(FtpServer.EDIT_SETTINGS, "StartDaemon") == "2"
@@ -119,7 +109,6 @@ module Yast
       InitStartStopRestart()
       true
     end
-
 
     # Function stop vsftpd
     def StopNowVsftpd
@@ -259,7 +248,6 @@ module Yast
       nil
     end
 
-
     # Store function of "Umask for Anonymous"
     # save values to temporary structure
     # only vsftpd
@@ -271,7 +259,6 @@ module Yast
 
       nil
     end
-
 
     # Init function "Umask for Authenticated Users" for general settings
     # change ValidChars for textentry
@@ -316,7 +303,6 @@ module Yast
 
       nil
     end
-
 
     # Valid function of "Ftp Directory for Anon&ymous Users"
     # check value of textentry
@@ -386,7 +372,6 @@ module Yast
       nil
     end
 
-
     #-----------================= PERFORMANCE SCREEN =============----------
     #
 
@@ -415,7 +400,6 @@ module Yast
       nil
     end
 
-
     # Init function of "Max Clients for One IP"
     # intfield
     #
@@ -441,7 +425,6 @@ module Yast
       nil
     end
 
-
     # Init function of "Max Clients"
     # intfield
     #
@@ -466,7 +449,6 @@ module Yast
 
       nil
     end
-
 
     # Init function of "Local Max Rate [KB/s]"
     # intfield
@@ -518,7 +500,6 @@ module Yast
       nil
     end
 
-
     #-----------================= Authentication SCREEN =============----------
     #
 
@@ -527,7 +508,7 @@ module Yast
     #
     def InitAnonAuthen(_key)
       authentication = Builtins.tointeger(FtpServer.ValueUIEdit("AnonAuthen"))
-      if authentication == 0
+      if authentication.zero?
         UI.ChangeWidget(Id("AnonAuthen"), :Value, "anon_only")
       elsif authentication == 1
         UI.ChangeWidget(Id("AnonAuthen"), :Value, "local_only")
@@ -554,7 +535,6 @@ module Yast
       nil
     end
 
-
     # Init function of "Enable Upload"
     # checkbox
     #
@@ -573,14 +553,13 @@ module Yast
       nil
     end
 
-
     # Handle function of "Enable Upload"
     # handling value and ask for creation upload directory
     # function also disable/enable "Anon&ymous Can Upload" and
     # "Anonymou&s Can Create Directories"
     def HandleEnableUpload(_key, event)
       button = Ops.get(event, "ID")
-      #Popup::Message("Hello world");
+      # Popup::Message("Hello world");
       if Mode.normal
         check_upload = Convert.to_boolean(
           UI.QueryWidget(Id("EnableUpload"), :Value)
@@ -613,8 +592,8 @@ module Yast
               _("and enable write access?\n")
             )
             yesno_comment = _(
-              "If you want anonymous users to be able to upload,\n" +
-                " you need to create a directory with write access.\n" +
+              "If you want anonymous users to be able to upload,\n" \
+                " you need to create a directory with write access.\n" \
                 "\n"
             )
             yesno_comment = Ops.add(
@@ -660,8 +639,8 @@ module Yast
               _("Upload with write access?")
             )
             yesno_comment = _(
-              "If you want to allow anonymous users to create directories,\n" +
-                " you have to create a directory with write access.\n" +
+              "If you want to allow anonymous users to create directories,\n" \
+                " you have to create a directory with write access.\n" \
                 "\n"
             )
             yesno_comment = Ops.add(
@@ -683,8 +662,8 @@ module Yast
               _("Upload (allow writing)?")
             )
             yesno_comment = _(
-              "If you want anonymous users to be able to create directories,\n" +
-                " you need a directory with write access.\n" +
+              "If you want anonymous users to be able to create directories,\n" \
+                " you need a directory with write access.\n" \
                 "\n"
             )
             yesno_comment = Ops.add(
@@ -718,8 +697,6 @@ module Yast
 
       nil
     end
-
-
 
     # Init function of "Anonymous Can Upload"
     # checkbox
@@ -841,10 +818,8 @@ module Yast
       nil
     end
 
-
     #-----------================= EXPERT SETTINGS SCREEN =============----------
     #
-
 
     # Init function of "Enable Passive Mode"
     # checkbox
@@ -861,7 +836,6 @@ module Yast
 
       nil
     end
-
 
     # Handle function of "Enable Passive Mode"
     # handling enable/disable widgets
@@ -1005,7 +979,6 @@ module Yast
       nil
     end
 
-
     # Store function of "Enable SSL"
     # save values to temporary structure
     #
@@ -1117,7 +1090,7 @@ module Yast
       rsa_cert = Builtins.tostring(UI.QueryWidget(Id("CertFile"), :Value))
       ssl_enable = Convert.to_boolean(UI.QueryWidget(Id("SSLEnable"), :Value))
 
-      if (rsa_cert == "" || rsa_cert == nil) && ssl_enable
+      if (rsa_cert == "" || rsa_cert.nil?) && ssl_enable
         Popup.Error(_("RSA certificate is missing."))
         UI.SetFocus(Id("CertFile"))
         return false
@@ -1181,7 +1154,7 @@ module Yast
     #
     def InitSSL(_key)
       security = Builtins.tointeger(FtpServer.ValueUIEdit("SSL"))
-      if security == 0
+      if security.zero?
         UI.ChangeWidget(Id("SSL"), :Value, "disable")
       elsif security == 1
         UI.ChangeWidget(Id("SSL"), :Value, "accept")

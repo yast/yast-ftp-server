@@ -24,7 +24,7 @@ module Yast
     # @return sequence result
     def MainSequence
       aliases = {
-        "vsftpd" => lambda { RunFTPDialogsVsftpd() }
+        "vsftpd" => -> { RunFTPDialogsVsftpd() }
       }
 
       sequence = {
@@ -40,14 +40,13 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Whole configuration of ftp-server
     # @return sequence result
     def FtpdSequence
       aliases = {
-        "read"  => [lambda { ReadDialog() }, true],
-        "main"  => lambda { MainSequence() },
-        "write" => [lambda { WriteDialog() }, true]
+        "read"  => [-> { ReadDialog() }, true],
+        "main"  => -> { MainSequence() },
+        "write" => [-> { WriteDialog() }, true]
       }
 
       sequence = {
@@ -69,7 +68,7 @@ module Yast
     # For use with autoinstallation.
     # @return sequence result
     def FtpServerAutoSequence
-      aliases = { "main" => lambda { MainSequence() } }
+      aliases = { "main" => -> { MainSequence() } }
 
       sequence = {
         "ws_start" => "main",

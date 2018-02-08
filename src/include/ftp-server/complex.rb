@@ -44,7 +44,7 @@ module Yast
       return :abort if !Confirm.MustBeRoot
       ret = FtpServer.Read
 
-      return ret ? :next : :abort
+      ret ? :next : :abort
     end
 
     # Write settings dialog

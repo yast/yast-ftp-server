@@ -61,7 +61,7 @@ VS_SETTINGS = {
   "ssl_enable"               => "NO",
   "pasv_min_port"            => "30000",
   "pasv_max_port"            => "30100"
-}
+}.freeze
 
 describe "Yast::FtpServer" do
   describe ".Modified" do

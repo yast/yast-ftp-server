@@ -36,7 +36,7 @@ module Yast
       @vsftpd_installed = false
 
       # how to start ftp server. Possibilities are :no, :service and :socket
-      @start = :no;
+      @start = :no
 
       # variable signifies if it is create upload dir
       # only for vsftpd and anonymous connections with allowed upload
@@ -62,7 +62,6 @@ module Yast
       # variable signifies home dir for anonymous user
       #
       # global string variable
-
 
       @anon_homedir = ""
 
@@ -120,9 +119,9 @@ module Yast
       @DEFAULT_CONFIG = {
         "ChrootEnable"     => "NO",
         "VerboseLogging"   => "NO",  # Default value for pure-ftpd.
-        "log_ftp_protocol" => "YES", # Default value for vsftp (bnc#888287). 
-        "FtpDirLocal"      => "", #if empty doesn't write this options via SCR
-        "FtpDirAnon"       => "", #if empty doesn't write this options via SCR
+        "log_ftp_protocol" => "YES", # Default value for vsftp (bnc#888287).
+        "FtpDirLocal"      => "", # if empty doesn't write this options via SCR
+        "FtpDirAnon"       => "", # if empty doesn't write this options via SCR
         "Umask"            => "",
         "UmaskAnon"        => "",
         "UmaskLocal"       => "",
@@ -138,14 +137,14 @@ module Yast
         "AnonCreatDirs"    => "NO",
         "Banner"           => _("Welcome message"),
         "SSLEnable"        => "NO",
-        "SSLv2"            => "NO", #enable/disable SSL version 2 (vsftpd only)
-        "SSLv3"            => "NO", #enable/disable SSL version 3 (vsftpd only)
+        "SSLv2"            => "NO", # enable/disable SSL version 2 (vsftpd only)
+        "SSLv3"            => "NO", # enable/disable SSL version 3 (vsftpd only)
         "TLS"              => "YES",
         "AntiWarez"        => "YES",
-        "SSL"              => "0", #0 - disable SSL, 1-accept SSL
-        "StartDaemon"      => "0", #0 = start manually, 1 = start when booting, 2 = start via socket
+        "SSL"              => "0", # 0 - disable SSL, 1-accept SSL
+        "StartDaemon"      => "0", # 0 = start manually, 1 = start when booting, 2 = start via socket
         "PassiveMode"      => "YES",
-        "CertFile"         => "", #cert file for SSL connections
+        "CertFile"         => "", # cert file for SSL connections
         "VirtualUser"      => "NO",
         "FTPUser"          => "ftp",
         "GuestUser"        => "",
@@ -174,7 +173,7 @@ module Yast
     def ReadVSFTPDSettings
       Builtins.foreach(SCR.Dir(path(".vsftpd"))) do |key|
         val = Convert.to_string(SCR.Read(Builtins.add(path(".vsftpd"), key)))
-        Ops.set(@VS_SETTINGS, key, val) if val != nil
+        Ops.set(@VS_SETTINGS, key, val) if !val.nil?
       end
       Builtins.y2milestone("-------------VS_SETTINGS-------------------")
       Builtins.y2milestone(
@@ -185,7 +184,6 @@ module Yast
 
       true
     end
-
 
     # Read vsftpd configuration
     # existing upload file and permissions
@@ -206,10 +204,10 @@ module Yast
           command,
           options
         )
-        if Ops.get(options, "exit") == 0
-          result = true
+        result = if Ops.get(options, "exit").zero?
+          true
         else
-          result = false
+          false
         end
         if result
           @create_upload_dir = true
@@ -220,18 +218,17 @@ module Yast
           )
           w = Builtins.filterchars(permissions, "w")
           r = Builtins.filterchars(permissions, "r")
-          if Ops.less_than(Builtins.size(w), 3) ||
+          @upload_good_permission = if Ops.less_than(Builtins.size(w), 3) ||
               Ops.less_than(Builtins.size(r), 3)
-            @upload_good_permission = false 
+            false
           else
-            @upload_good_permission = true 
+            true
           end
         end
       end
 
       result
     end
-
 
     # Read pure-fptd configuration
     # checking permissions for upload
@@ -270,11 +267,10 @@ module Yast
             ),
             "/"
           )
-        ) 
+        )
       else
         @pure_ftp_allowed_permissios_upload = -1
       end
-
 
       if @anon_homedir != "" && @pure_ftp_allowed_permissios_upload != -1
         command = Ops.add(
@@ -290,10 +286,10 @@ module Yast
           "[ftp-server] (ReadPermisionUplaod) command for checking permissions for upload dir:  %1",
           command
         )
-        if Ops.get(options, "exit") == 0
-          result = true
+        result = if Ops.get(options, "exit").zero?
+          true
         else
-          result = false
+          false
         end
         if result
           permissions = Builtins.substring(
@@ -303,13 +299,13 @@ module Yast
           )
           w = Builtins.filterchars(permissions, "w")
           r = Builtins.filterchars(permissions, "r")
-          if Ops.less_than(Builtins.size(w), 3) ||
+          @pure_ftp_allowed_permissios_upload = if Ops.less_than(Builtins.size(w), 3) ||
               Ops.less_than(Builtins.size(r), 3)
-            @pure_ftp_allowed_permissios_upload = 0 
+            0
           else
-            @pure_ftp_allowed_permissios_upload = 1 
+            1
           end
-        end 
+        end
       end
       result
     end
@@ -321,7 +317,7 @@ module Yast
     def InitEDIT_SETTINGS
       Builtins.foreach(@UI_keys) do |key|
         val = ValueUI(key, false)
-        Ops.set(@EDIT_SETTINGS, key, val) if val != nil
+        Ops.set(@EDIT_SETTINGS, key, val) if !val.nil?
       end
 
       Builtins.y2milestone("-------------EDIT_SETTINGS-------------------")
@@ -334,9 +330,6 @@ module Yast
       true
     end
 
-
-
-
     # Read current configuration
     #
     # @return [Boolean] successfull
@@ -344,7 +337,7 @@ module Yast
       result = ReadVSFTPDSettings()
       result = InitEDIT_SETTINGS() if result
 
-      #read info about anonymous user "ftp"
+      # read info about anonymous user "ftp"
       Users.SetGUI(false)
       if Users.Read == "" && Ops.get(@EDIT_SETTINGS, "VirtualUser") == "NO"
         if Ops.get(@EDIT_SETTINGS, "GuestUser") != "" &&
@@ -352,7 +345,7 @@ module Yast
           Users.SelectUserByName(Ops.get(@EDIT_SETTINGS, "GuestUser"))
           @userinfo = Users.GetCurrentUser
           guest_home_dir = Ops.get_string(@userinfo, "homeDirectory")
-          if guest_home_dir != "" && guest_home_dir != nil &&
+          if guest_home_dir != "" && !guest_home_dir.nil? &&
               Ops.get(@EDIT_SETTINGS, "FtpDirLocal") == ""
             Ops.set(@EDIT_SETTINGS, "FtpDirLocal", guest_home_dir)
           end
@@ -361,23 +354,23 @@ module Yast
         @userinfo = Users.GetCurrentUser
         @anon_homedir = Ops.get_string(@userinfo, "homeDirectory")
         @anon_uid = Ops.get_integer(@userinfo, "uidNumber")
-        #y2milestone("-------------User info-------------------");
-        #y2milestone("Users :CurrentUser %1", userinfo);
-        #y2milestone("---------------------------------------------");
-        if @anon_homedir != "" && @anon_homedir != nil
+        # y2milestone("-------------User info-------------------");
+        # y2milestone("Users :CurrentUser %1", userinfo);
+        # y2milestone("---------------------------------------------");
+        if @anon_homedir != "" && !@anon_homedir.nil?
           if Ops.get(@EDIT_SETTINGS, "FtpDirAnon") == ""
             Ops.set(@EDIT_SETTINGS, "FtpDirAnon", @anon_homedir)
-          elsif Ops.get(@EDIT_SETTINGS, "FtpDirAnon") != nil
+          elsif !Ops.get(@EDIT_SETTINGS, "FtpDirAnon").nil?
             @anon_homedir = Ops.get(@EDIT_SETTINGS, "FtpDirAnon")
           end
         end
       end
       read_daemon
-      #read firewall settings
+      # read firewall settings
       progress_orig = Progress.set(false)
       firewalld.read
       Progress.set(progress_orig)
-      #read existing upload directory for vsftpd
+      # read existing upload directory for vsftpd
       result = ReadVSFTPDUpload() && result
 
       result = ReadPermisionUplaod() && result
@@ -385,12 +378,12 @@ module Yast
     end
 
     def read_daemon
-      if start_via_socket?()
-        FtpServer.EDIT_SETTINGS["StartDaemon"] = "2"
+      FtpServer.EDIT_SETTINGS["StartDaemon"] = if start_via_socket?
+        "2"
       elsif Service.active?("vsftpd")
-        FtpServer.EDIT_SETTINGS["StartDaemon"] = "1"
+        "1"
       else
-        FtpServer.EDIT_SETTINGS["StartDaemon"] = "0"
+        "0"
       end
     end
 
@@ -427,7 +420,6 @@ module Yast
       true
     end
 
-
     # Remap UI pure-ftpd or vsftpd configuration
     # to write structure for SCR
     #
@@ -460,9 +452,9 @@ module Yast
       end
 
       tcp_ports = [
-          PortAliases.IsKnownPortName("ftp") ? "ftp" : "21",
-          active_port != "" ? active_port : port_range
-        ]
+        PortAliases.IsKnownPortName("ftp") ? "ftp" : "21",
+        active_port != "" ? active_port : port_range
+      ]
 
       service = "vsftpd"
 
@@ -484,9 +476,6 @@ module Yast
       Ops.set(@EDIT_SETTINGS, key, value)
       true
     end
-
-
-
 
     # Write current configuration
     #
@@ -517,13 +506,13 @@ module Yast
         anon_upload = Ops.get(@EDIT_SETTINGS, "AnonReadOnly") == "NO" ? true : false
         anon_create_dirs = Ops.get(@EDIT_SETTINGS, "AnonCreatDirs") == "YES" ? true : false
         if write_enable && (anon_upload || anon_create_dirs)
-          if Builtins.substring(
+          upload = if Builtins.substring(
             @anon_homedir,
             Ops.subtract(Builtins.size(@anon_homedir), 1)
-            ) == "/"
-            upload = "upload"
+          ) == "/"
+            "upload"
           else
-            upload = "/upload"
+            "/upload"
           end
         end
         command = "dir=`ls "
@@ -575,20 +564,18 @@ module Yast
         options = Convert.to_map(
           SCR.Execute(path(".target.bash_output"), command)
         )
-        if Ops.get(options, "exit") == 0
-          result = true
+        result = if Ops.get(options, "exit").zero?
+          true
         else
-          result = false
-        end 
+          false
+        end
       else
         result = true
       end
-      #restart/reaload daemons...
-      if Service.active?("vsftpd")
-        Service.restart("vsftpd")
-      end
+      # restart/reaload daemons...
+      Service.restart("vsftpd") if Service.active?("vsftpd")
 
-      #update permissions for home directory if upload is enabled...
+      # update permissions for home directory if upload is enabled...
       if @pure_ftp_allowed_permissios_upload != -1 && @change_permissions
         command = Ops.add("chmod 755 ", @anon_homedir)
         SCR.Execute(path(".target.bash_output"), command)
@@ -655,9 +642,7 @@ module Yast
       steps = 2
 
       # Part for commandline - it is necessary choose daemon if both are installed
-      if Mode.commandline
-        @vsftpd_installed = Package.Installed("vsftpd")
-      end
+      @vsftpd_installed = Package.Installed("vsftpd") if Mode.commandline
 
       # We do not set help text here, because it was set outside
       Progress.New(
@@ -676,7 +661,7 @@ module Yast
           Message.Finished
         ],
         ""
-      ) #end of Progress::New( caption, " "
+      ) # end of Progress::New( caption, " "
 
       # read settings
       return false if PollAbort()
@@ -719,7 +704,7 @@ module Yast
           Message.Finished
         ],
         ""
-      ) #end of Progress::New(caption, " "
+      ) # end of Progress::New(caption, " "
 
       # write settings
       return false if PollAbort()
@@ -727,7 +712,6 @@ module Yast
       # write options to the config file
       Report.Error(_("Cannot write settings!")) if !WriteSettings()
       Builtins.sleep(@sl)
-
 
       return false if PollAbort()
       Progress.NextStage
@@ -767,10 +751,8 @@ module Yast
       # file. So we have to add it here too. (bnc#1047232)
       Builtins.foreach(@UI_keys + ["StartDaemon"]) do |key|
         val = Ops.get_string(settings, key)
-        Ops.set(@EDIT_SETTINGS, key, val) if val != nil
-        if val == nil
-          Ops.set(@EDIT_SETTINGS, key, Ops.get(@DEFAULT_CONFIG, key))
-        end
+        Ops.set(@EDIT_SETTINGS, key, val) if !val.nil?
+        Ops.set(@EDIT_SETTINGS, key, Ops.get(@DEFAULT_CONFIG, key)) if val.nil?
       end
 
       result
@@ -781,9 +763,7 @@ module Yast
     #
     # @return [Boolean] True on success
     def InitDaemon
-      if Package.Installed("vsftpd")
-        @vsftpd_installed = true
-      end
+      @vsftpd_installed = true if Package.Installed("vsftpd")
 
       true
     end
@@ -799,24 +779,23 @@ module Yast
     # @return [String] Returnes string with RichText-formated list
     def OptionsSummary
       _S = ""
-      option = ""
-      #start FTP daemon
+      # start FTP daemon
       value = Ops.get(@EDIT_SETTINGS, "StartDaemon")
-      if value == "0"
-        option = "manually"
+      option = if value == "0"
+        "manually"
       elsif value == "1"
-        option = "via service"
+        "via service"
       else
-        option = "via socket"
+        "via socket"
       end
       _S = Builtins.sformat("%1<li>Start Deamon: <i>(%2)</i>", _S, option)
       value = Ops.get(@EDIT_SETTINGS, "AnonAuthen")
-      if value == "0"
-        option = "Anonymous Only"
+      option = if value == "0"
+        "Anonymous Only"
       elsif value == "1"
-        option = "Authenticated Only"
+        "Authenticated Only"
       else
-        option = "Both"
+        "Both"
       end
       _S = Builtins.sformat("%1<li>Access: <i>(%2)</i>", _S, option)
       # anonymous dir
@@ -845,7 +824,7 @@ module Yast
     # @return summary of the current configuration
     def Summary
       _S = ""
-      if Builtins.size(@EDIT_SETTINGS) == 0
+      if Builtins.size(@EDIT_SETTINGS).zero?
         # Translators: Summary head, if nothing configured
         _S = Summary.AddHeader(_S, _("FTP daemon"))
         _S = Summary.AddLine(_S, Summary.NotConfigured)
@@ -862,13 +841,13 @@ module Yast
       _S
     end
 
-    #zzz
+    # zzz
     # Return packages needed to be installed and removed during
     # Autoinstallation to insure module has all needed software
     # installed.
     # @return [Hash] with 2 lists.
     def AutoPackages
-      return { "install" => ["vsftpd"], "remove" => [] }
+      { "install" => ["vsftpd"], "remove" => [] }
     end
 
     # This helper allows YARD to extract DSL-defined attributes.
