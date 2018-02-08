@@ -30,8 +30,8 @@ module Yast
       sequence = {
         "ws_start" => "vsftpd",
         "vsftpd"   => {
-          :abort => :abort,
-          :next  => :next
+          abort: :abort,
+          next:  :next
         }
       }
       temp = Empty()
@@ -51,9 +51,9 @@ module Yast
 
       sequence = {
         "ws_start" => "read",
-        "read"     => { :abort => :abort, :next => "main" },
-        "main"     => { :abort => :abort, :next => "write" },
-        "write"    => { :abort => :abort, :next => :next }
+        "read"     => { abort: :abort, next: "main" },
+        "main"     => { abort: :abort, next: "write" },
+        "write"    => { abort: :abort, next: :next }
       }
 
       Wizard.CreateDialog
@@ -72,7 +72,7 @@ module Yast
 
       sequence = {
         "ws_start" => "main",
-        "main"     => { :abort => :abort, :next => :next }
+        "main"     => { abort: :abort, next: :next }
       }
 
       Wizard.CreateDialog

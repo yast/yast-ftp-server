@@ -857,14 +857,14 @@ module Yast
     #   @!attribute $1
     #   @return [$2]
     def self.publish_variable(name, type)
-      publish :variable => name, :type => type
+      publish variable: name, type: type
     end
 
-    publish :function => :SetModified, :type => "void (boolean)"
-    publish :function => :Modified, :type => "boolean ()"
-    publish :function => :WriteToEditMap, :type => "boolean (string, string)"
-    publish :function => :WriteSettings, :type => "boolean ()"
-    publish :function => :WriteUpload, :type => "boolean ()"
+    publish function: :SetModified, type: "void (boolean)"
+    publish function: :Modified, type: "boolean ()"
+    publish function: :WriteToEditMap, type: "boolean (string, string)"
+    publish function: :WriteSettings, type: "boolean ()"
+    publish function: :WriteUpload, type: "boolean ()"
     publish_variable :modified, "boolean"
     publish_variable :proposal_valid, "boolean"
     publish_variable :vsftpd_installed, "boolean"
@@ -883,39 +883,39 @@ module Yast
     # A list of setting keys yast cares about,
     # in the {#EDIT_SETTINGS} vocabulary.
     # It should be made a constant.
-    publish :variable => :UI_keys, :type => "list <string>"
+    publish variable: :UI_keys, type: "list <string>"
 
     # @attribute DEFAULT_CONFIG
     # @return [Hash<String,String>]
     # Defaults for {#EDIT_SETTINGS} in case the value is not found
     # in the system settings.
-    publish :variable => :DEFAULT_CONFIG, :type => "map <string, string>"
+    publish variable: :DEFAULT_CONFIG, type: "map <string, string>"
 
     # @attribute VS_SETTINGS
     # @return [Hash<String,String>]
     # Uses snake_case, {FtpServerWriteLoadInclude#ValueUI ValueUI} maps it
     # to {#EDIT_SETTINGS} and {#DEFAULT_CONFIG}.
-    publish :variable => :VS_SETTINGS, :type => "map <string, string>"
+    publish variable: :VS_SETTINGS, type: "map <string, string>"
 
     # @attribute EDIT_SETTINGS
     # @return [Hash<String,String>]
-    publish :variable => :EDIT_SETTINGS, :type => "map <string, string>"
+    publish variable: :EDIT_SETTINGS, type: "map <string, string>"
 
-    publish :function => :ValueUI, :type => "string (string, boolean)"
-    publish :function => :ValueUIEdit, :type => "string (string)"
+    publish function: :ValueUI, type: "string (string, boolean)"
+    publish function: :ValueUIEdit, type: "string (string)"
     publish_variable :ftps, "boolean"
     publish_variable :write_only, "boolean"
-    publish :function => :GetModified, :type => "boolean ()"
-    publish :function => :Abort, :type => "boolean ()"
-    publish :function => :PollAbort, :type => "boolean ()"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :Write, :type => "boolean ()"
-    publish :function => :Import, :type => "boolean (map)"
-    publish :function => :InitDaemon, :type => "boolean ()"
-    publish :function => :Export, :type => "map ()"
-    publish :function => :OptionsSummary, :type => "string ()"
-    publish :function => :Summary, :type => "string ()"
-    publish :function => :AutoPackages, :type => "map ()"
+    publish function: :GetModified, type: "boolean ()"
+    publish function: :Abort, type: "boolean ()"
+    publish function: :PollAbort, type: "boolean ()"
+    publish function: :Read, type: "boolean ()"
+    publish function: :Write, type: "boolean ()"
+    publish function: :Import, type: "boolean (map)"
+    publish function: :InitDaemon, type: "boolean ()"
+    publish function: :Export, type: "map ()"
+    publish function: :OptionsSummary, type: "string ()"
+    publish function: :Summary, type: "string ()"
+    publish function: :AutoPackages, type: "map ()"
   end
 
   FtpServer = FtpServerClass.new

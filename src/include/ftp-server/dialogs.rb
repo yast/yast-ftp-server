@@ -83,7 +83,7 @@ module Yast
       #
       # abort functions for confirm abort
       #
-      @functions = { :abort => fun_ref(method(:AbortDialog), "boolean ()") }
+      @functions = { abort: fun_ref(method(:AbortDialog), "boolean ()") }
     end
 
     # Returns whether user confirmed aborting the configuration.
