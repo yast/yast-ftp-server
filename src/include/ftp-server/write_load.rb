@@ -33,7 +33,7 @@ module Yast
       socket = SystemdSocket.find("vsftpd")
       return false unless socket
 
-      if Ops.get(@EDIT_SETTINGS, "StartDaemon") == "2"
+      if start
         socket.enable
         socket.start
       else
@@ -532,35 +532,8 @@ module Yast
             return ""
           end
         when "StartXinetd"
-          result = false
-          if write
-            if Ops.get(@EDIT_SETTINGS, "StartDaemon") == "2"
-              if Ops.get(@EDIT_SETTINGS, "StartXinetd") == "YES"
-                Service.Disable("vsftpd") if Service.Enabled("vsftpd")
-                Ops.set(@VS_SETTINGS, "listen", "NO")
-                Ops.set(@VS_SETTINGS, "listen_ipv6", "NO")
-              end
-            else
-              if Ops.get(@EDIT_SETTINGS, "StartDaemon") == "1"
-                Service.Enable("vsftpd")
-                Ops.set(@VS_SETTINGS, "listen", "YES")
-                Ops.set(@VS_SETTINGS, "listen_ipv6", nil)
-              else
-                Service.Disable("vsftpd")
-                Ops.set(@VS_SETTINGS, "listen", "YES")
-                Ops.set(@VS_SETTINGS, "listen_ipv6", nil)
-              end
-            end
-          else
-            Ops.set(@EDIT_SETTINGS, "StartDaemon", "0")
-            result = InitStartViaSocket()
-            if !result
-              if Service.Enabled("vsftpd")
-                Ops.set(@EDIT_SETTINGS, "StartDaemon", "1")
-              end
-            end
-            return result ? "YES" : "NO"
-          end
+          # deprecated
+          return "NO"
         else
           Builtins.y2milestone(
             "[ftp-server] ValueUI(string key): unknown parameter %1",

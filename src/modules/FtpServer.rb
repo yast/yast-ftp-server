@@ -373,6 +373,7 @@ module Yast
           end
         end
       end
+      read_daemon
       #read firewall settings
       progress_orig = Progress.set(false)
       firewalld.read
@@ -384,6 +385,34 @@ module Yast
       result
     end
 
+    def read_daemon
+      if InitStartViaSocket()
+        FtpServer.EDIT_SETTINGS["StartDaemon"] = "2"
+      elsif Service.active?("vsftpd")
+        FtpServer.EDIT_SETTINGS["StartDaemon"] = "1"
+      else
+        FtpServer.EDIT_SETTINGS["StartDaemon"] = "0"
+      end
+    end
+
+    def write_daemon
+      case FtpServer.EDIT_SETTINGS["StartDaemon"]
+      when "2"
+        FtpServer.WriteStartViaSocket(true)
+        Service.disable("vsftpd")
+        Service.stop("vsftpd") # stop to force load of new service with new config
+      when "1"
+        FtpServer.WriteStartViaSocket(false)
+        Service.enable("vsftpd")
+        Service.start("vsftpd")
+      when "0"
+        FtpServer.WriteStartViaSocket(false)
+        Service.disable("vsftpd")
+        Service.stop("vsftpd")
+      else
+        raise "Invalid value for start deamon '#{FtpServer.EDIT_SETTINGS["StartDaemon"].inspect}'"
+      end
+    end
 
     # Write vsftpd configuration to config file
     #
@@ -714,8 +743,8 @@ module Yast
       end
       Builtins.sleep(@sl)
 
-
       return false if PollAbort()
+      write_daemon
       # Progress finished
       Progress.NextStage
       Builtins.sleep(@sl)

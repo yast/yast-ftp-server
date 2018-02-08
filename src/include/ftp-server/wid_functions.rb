@@ -8,6 +8,8 @@
 # $Id: wid_functions.ycp 27914 2006-02-13 14:32:08Z juhliarik $
 module Yast
   module FtpServerWidFunctionsInclude
+    include Yast::Logger
+
     def initialize_ftp_server_wid_functions(include_target)
       Yast.import "UI"
 
@@ -146,6 +148,7 @@ module Yast
     #
     # init starting via socket and update status
     def InitStartStopRestart(_key = nil)
+      log.info "current status socket: #{FtpServer.InitStartViaSocket} service: #{Service.active?("vsftpd")}"
       if FtpServer.InitStartViaSocket || Service.active?("vsftpd")
         UI.ReplaceWidget(
           Id("_cwm_service_status_rp"),
