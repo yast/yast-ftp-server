@@ -11,7 +11,7 @@
 # Input and output routines.
 module Yast
   module FtpServerWriteLoadInclude
-    def initialize_ftp_server_write_load(include_target)
+    def initialize_ftp_server_write_load(_include_target)
       textdomain "ftp-server"
 
       Yast.import "Popup"

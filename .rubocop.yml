@@ -7,16 +7,6 @@ Lint/UnderscorePrefixedVariableName:
   Exclude:
     - 'src/modules/FtpServer.rb'
 
-# Offense count: 71
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'src/clients/ftp-server.rb'
-    - 'src/include/ftp-server/helps.rb'
-    - 'src/include/ftp-server/wid_functions.rb'
-    - 'src/include/ftp-server/write_load.rb'
-
 # Offense count: 67
 Metrics/AbcSize:
   Max: 268

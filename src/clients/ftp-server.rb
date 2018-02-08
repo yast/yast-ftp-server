@@ -393,7 +393,7 @@ module Yast
       # EOF
     end
 
-    def FTPdCMDShow(options)
+    def FTPdCMDShow(_options)
       CommandLine.Print("")
       CommandLine.Print(String.UnderlinedHeader(_("Display Settings:"), 0))
       CommandLine.Print("")
@@ -958,7 +958,7 @@ module Yast
 
 
 
-    def CommonHandlerCheckBox(options, header, vsftpd_deamon, name_option_EDIT_SETTINGS, general_name)
+    def CommonHandlerCheckBox(options, header, _vsftpd_deamon, name_option_EDIT_SETTINGS, general_name)
       options = deep_copy(options)
       CommandLine.Print("")
       CommandLine.Print(String.UnderlinedHeader(header, 0))

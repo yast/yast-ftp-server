@@ -8,7 +8,7 @@
 # $Id: helps.ycp 27914 2006-02-13 14:32:08Z juhliarik $
 module Yast
   module FtpServerHelpsInclude
-    def initialize_ftp_server_helps(include_target)
+    def initialize_ftp_server_helps(_include_target)
       textdomain "ftp-server"
 
       # All helps are here
