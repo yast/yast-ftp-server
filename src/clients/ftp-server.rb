@@ -736,22 +736,19 @@ module Yast
             )
             CommandLine.PrintNoCR(_(" - "))
             CommandLine.Print(Ops.get(FtpServer.EDIT_SETTINGS, "PasMaxPort"))
-            CommandLine.Print("")
           else
             # TRANSLATORS: CommandLine error message
             CommandLine.Error(_("Enter minimal port < maximal port."))
-            CommandLine.Print("")
           end
         else
           # TRANSLATORS: CommandLine error message
           CommandLine.Error(_("Enter correct numbers."))
-          CommandLine.Print("")
         end
       else
         # TRANSLATORS: CommandLine error message
         CommandLine.Error(_("Only two parameters are allowed."))
-        CommandLine.Print("")
       end
+      CommandLine.Print("")
 
       nil
     end

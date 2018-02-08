@@ -84,11 +84,6 @@ Style/HashSyntax:
     - 'src/include/ftp-server/wizards.rb'
     - 'src/modules/FtpServer.rb'
 
-# Offense count: 2
-Style/IdenticalConditionalBranches:
-  Exclude:
-    - 'src/clients/ftp-server.rb'
-
 # Offense count: 7
 Style/IfInsideElse:
   Exclude:
