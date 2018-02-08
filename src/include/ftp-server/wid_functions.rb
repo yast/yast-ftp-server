@@ -118,8 +118,8 @@ module Yast
         SCR.Write(Builtins.add(path(".vsftpd"), "listen"), "YES")
         SCR.Write(Builtins.add(path(".vsftpd"), "listen_ipv6"), nil)
         SCR.Write(path(".vsftpd"), nil)
-        Service.enable("vsftp")
-        Service.start("vsftp")
+        Service.enable("vsftpd")
+        Service.start("vsftpd")
       end
       true
     end
@@ -138,8 +138,8 @@ module Yast
           result = true
         end
       else
-        Service.enable("vsftp")
-        Service.start("vsftp")
+        Service.enable("vsftpd")
+        Service.start("vsftpd")
       end
 
       true
@@ -160,7 +160,7 @@ module Yast
     #
     # init starting via socket and update status
     def InitStartStopRestart(key)
-      if FtpServer.InitStartViaSocket || Service.active?("vsftp")
+      if FtpServer.InitStartViaSocket || Service.active?("vsftpd")
         UI.ReplaceWidget(
           Id("_cwm_service_status_rp"),
           Label(_("FTP is running"))

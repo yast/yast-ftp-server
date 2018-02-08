@@ -626,7 +626,7 @@ module Yast
     # Read all FtpServer settings
     # @return true on success
     def Read
-      Package.InstallAll("vsftp") # ensure it is there
+      Package.InstallAll(["vsftpd"]) # ensure it is there
       # FtpServer read dialog caption
       caption = _("Initializing FTP Configuration")
       steps = 2
