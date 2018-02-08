@@ -33,7 +33,6 @@ module Yast
       @wid_handling_vsftpd = {
         "StartMode"        => CWMServiceStart.CreateAutoStartWidget(StartMode()),
         "StartStop"        => CWMServiceStart.CreateStartStopWidget(StartStop()),
-        "RBVsPureFTPd"     => RBVsftpdPureftpd(),
         "StartStopRestart" => StartStopRestart(),
         "Banner"           => Banner(),
         "ChrootEnable"     => ChrootEnable(),

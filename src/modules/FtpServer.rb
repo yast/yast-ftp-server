@@ -2,6 +2,8 @@
 
 require "yast"
 
+require "y2firewall/firewalld"
+
 module Yast
   # Configure vsftpd: https://security.appspot.com/vsftpd.html
   class FtpServerClass < Module

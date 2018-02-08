@@ -222,7 +222,7 @@ module Yast
             "help" => _(
               "Start FTP daemon via systemd socket."
             )
-          }
+          },
           "manual"          => {
             # TRANSLATORS: CommandLine help
             "help" => _(
@@ -247,13 +247,6 @@ module Yast
             # TRANSLATORS: CommandLine help
             "help" => _(
               "Directory for anonymous users"
-            )
-          },
-          "set_authen_dir"  => {
-            "type" => "string",
-            # TRANSLATORS: CommandLine help
-            "help" => _(
-              "Directory for authenticated users"
             )
           },
           "set_min_port"    => {
@@ -354,7 +347,6 @@ module Yast
           "chroot"          => ["enable", "disable"],
           "umask"           => ["set_umask"],
           "anon_dir"        => ["set_anon_dir"],
-          "authen_dir"      => ["set_authen_dir"],
           "port_range"      => ["set_min_port", "set_max_port"],
           "idle_time"       => ["set_idle_time"],
           "max_clients_ip"  => ["set_max_clients"],
@@ -711,35 +703,6 @@ module Yast
             CommandLine.Error(_("Option is empty."))
             CommandLine.Print(
               _("Example of correct input set_anon_dir=/srv/ftp")
-            )
-            CommandLine.Print("")
-          end
-        end
-      else
-        # TRANSLATORS: CommandLine error message
-        CommandLine.Error(_("Only one parameter is allowed."))
-        CommandLine.Print("")
-      end
-
-      nil
-    end
-
-    def FTPdCMDAuthenDir(options)
-      options = deep_copy(options)
-      CommandLine.Print(String.UnderlinedHeader(_("Authenticated users:"), 0))
-      CommandLine.Print("")
-      if Builtins.size(options) == 1
-        if Ops.get(options, "set_authen_dir") != nil
-          value = Ops.get_string(options, "set_authen_dir")
-          if value != nil
-            CommandLine.PrintNoCR(_("Authenticated directory:"))
-            CommandLine.Print(value)
-            CommandLine.Print("")
-            Ops.set(FtpServer.EDIT_SETTINGS, "FtpDirLocal", value)
-          else
-            CommandLine.Error(_("Option is empty."))
-            CommandLine.Print(
-              _("Example of correct input set_authen_dir=/srv/ftp")
             )
             CommandLine.Print("")
           end
