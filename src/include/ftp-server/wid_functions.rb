@@ -106,14 +106,7 @@ module Yast
         SCR.Write(Builtins.add(path(".vsftpd"), "listen_ipv6"), nil)
         SCR.Write(path(".vsftpd"), nil)
 
-        if FtpServer.WriteStartViaSocket(true)
-          UI.ReplaceWidget(
-            Id("_cwm_service_status_rp"),
-            Label(_("FTP is running"))
-          )
-          UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
-          UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
-        end
+        FtpServer.WriteStartViaSocket(true)
       else
         SCR.Write(Builtins.add(path(".vsftpd"), "listen"), "YES")
         SCR.Write(Builtins.add(path(".vsftpd"), "listen_ipv6"), nil)
@@ -121,6 +114,7 @@ module Yast
         Service.enable("vsftpd")
         Service.start("vsftpd")
       end
+      InitStartStopRestart()
       true
     end
 
@@ -128,20 +122,12 @@ module Yast
     # Function stop vsftpd
     def StopNowVsftpd
       if FtpServer.InitStartViaSocket
-        if FtpServer.WriteStartViaSocket(false)
-          UI.ReplaceWidget(
-            Id("_cwm_service_status_rp"),
-            Label(_("FTP is not running"))
-          )
-          UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, true)
-          UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, false)
-          result = true
-        end
-      else
-        Service.enable("vsftpd")
-        Service.start("vsftpd")
+        # if socket is listening, stop it
+        FtpServer.WriteStartViaSocket(false)
       end
+      Service.stop("vsftpd")
 
+      InitStartStopRestart()
       true
     end
 
@@ -159,7 +145,7 @@ module Yast
     # Init function for start-up
     #
     # init starting via socket and update status
-    def InitStartStopRestart(key)
+    def InitStartStopRestart(_key = nil)
       if FtpServer.InitStartViaSocket || Service.active?("vsftpd")
         UI.ReplaceWidget(
           Id("_cwm_service_status_rp"),
@@ -167,6 +153,13 @@ module Yast
         )
         UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
         UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
+      else
+        UI.ReplaceWidget(
+          Id("_cwm_service_status_rp"),
+          Label(_("FTP is not running"))
+        )
+        UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, true)
+        UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, false)
       end
 
       nil

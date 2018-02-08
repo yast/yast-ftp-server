@@ -557,10 +557,8 @@ module Yast
         result = true
       end
       #restart/reaload daemons...
-      if Service.Status("vsftpd") == 0
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), "rcvsftpd restart")
-        )
+      if Service.active?("vsftpd")
+        Service.restart("vsftpd")
       end
 
       #update permissions for home directory if upload is enabled...
