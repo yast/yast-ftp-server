@@ -121,23 +121,23 @@ module Yast
       )
       Ops.set(
         result,
-        "get_service_start_via_xinetd",
+        "get_service_start_via_socket",
         fun_ref(method(:"started_via_socket?"), "boolean ()")
       )
       Ops.set(
         result,
-        "set_service_start_via_xinetd",
+        "set_service_start_via_socket",
         fun_ref(method(:"start_via_socket="), "void (boolean)")
       )
       # TRANSLATORS: Radio selection
       Ops.set(result, "start_auto_button", _("&When booting"))
       Ops.set(result, "start_manual_button", _("&Manually"))
-      Ops.set(result, "start_xinetd_button", _("Via &xinetd"))
+      Ops.set(result, "start_socket_button", _("Via &socket"))
       Ops.set(
         result,
         "help",
         Builtins.sformat(
-          CWMServiceStart.AutoStartHelpXinetdTemplate,
+          CWMServiceStart.AutoStartHelpSocketTemplate,
           _("When Booting"),
           _("Manually"),
           _("Via Socket")

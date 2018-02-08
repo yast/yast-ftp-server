@@ -420,7 +420,7 @@ module Yast
       true
     end
 
-    # Remap UI pure-ftpd or vsftpd configuration
+    # Remap UI vsftpd configuration
     # to write structure for SCR
     #
     # @return [Boolean] successfull
@@ -868,9 +868,7 @@ module Yast
     publish_variable :modified, "boolean"
     publish_variable :proposal_valid, "boolean"
     publish_variable :vsftpd_installed, "boolean"
-    publish_variable :pureftpd_installed, "boolean"
     publish_variable :vsftpd_xined_id, "integer"
-    publish_variable :pureftpd_xined_id, "integer"
     publish_variable :create_upload_dir, "boolean"
     publish_variable :upload_good_permission, "boolean"
     publish_variable :pure_ftp_allowed_permissios_upload, "integer"
