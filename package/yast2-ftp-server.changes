@@ -4,7 +4,7 @@ Thu Feb  8 15:07:37 UTC 2018 - jreidinger@suse.com
 - convert starting on demand from Xinetd to systemd sockets due
   to drop of Xinetd (fate#323373)
 - Drop pure-ftp as it does not provide systemd socket and we want
-  to support only one backend to reduce maintenance loadout
+  to support only one backend to reduce the maintenance cost
 - 4.0.1
 
 -------------------------------------------------------------------
