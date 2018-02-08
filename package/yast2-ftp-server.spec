@@ -25,7 +25,6 @@ Source0:        %{name}-%{version}.tar.bz2
 
 # SuSEFirewall2 replace by firewalld (fate#323460)
 Requires:       yast2 >= 4.0.39
-Requires:       yast2-inetd
 BuildRequires:  update-desktop-files
 # SuSEFirewall2 replace by firewalld (fate#323460)
 BuildRequires:  yast2 >= 4.0.39
