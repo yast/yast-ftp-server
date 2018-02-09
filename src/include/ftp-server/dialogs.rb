@@ -129,18 +129,14 @@ module Yast
         "set_service_start_via_socket",
         fun_ref(method(:"start_via_socket="), "void (boolean)")
       )
-      # TRANSLATORS: Radio selection
-      Ops.set(result, "start_auto_button", _("&When booting"))
-      Ops.set(result, "start_manual_button", _("&Manually"))
-      Ops.set(result, "start_socket_button", _("Via &socket"))
       Ops.set(
         result,
         "help",
         Builtins.sformat(
           CWMServiceStart.AutoStartHelpSocketTemplate,
-          _("When Booting"),
+          _("During Boot"),
           _("Manually"),
-          _("Via Socket")
+          _("Via socket")
         )
       )
       deep_copy(result)
