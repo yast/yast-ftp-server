@@ -132,13 +132,9 @@ module Yast
       Ops.set(
         result,
         "help",
-        Builtins.sformat(
-          CWMServiceStart.AutoStartHelpSocketTemplate,
-          _("During Boot"),
-          _("Manually"),
-          _("Via socket")
-        )
+        CWMServiceStart.AutoStartSocketHelp
       )
+
       deep_copy(result)
     end
 
