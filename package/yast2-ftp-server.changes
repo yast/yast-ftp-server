@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb  8 20:58:22 UTC 2018 - knut.anderssen@suse.com
+
+- Replace CWMServiceStart xinetd methods or parameters by socket
+  ones (fate#323373)
+- 4.0.2
+
+-------------------------------------------------------------------
 Thu Feb  8 15:07:37 UTC 2018 - jreidinger@suse.com
 
 - convert starting on demand from Xinetd to systemd sockets due
