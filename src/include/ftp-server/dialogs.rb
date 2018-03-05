@@ -1365,7 +1365,7 @@ module Yast
             )
           ), # end of `CheckBoxFrame(`id("SSLEnable"), "Sec&urity Settings", true
           VSpacing(1),
-          Frame(_("SUSEfirewall Settings"), HBox(HSpacing(1), "Firewall")),
+          Left("Firewall"),
           VStretch()
         )
       )
