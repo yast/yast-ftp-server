@@ -461,7 +461,7 @@ module Yast
       begin
         return Y2Firewall::Firewalld::Service.modify_ports(name: service, tcp_ports: tcp_ports)
       rescue Y2Firewall::Firewalld::Service::NotFound
-        y2error("Firewalld 'cluster' service is not available.")
+        y2error("Firewalld 'vsftpd' service is not available.")
         return false
       end
     end
