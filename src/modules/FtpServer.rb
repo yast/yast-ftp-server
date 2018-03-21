@@ -443,10 +443,7 @@ module Yast
       return true if !firewalld.running?
 
       if Ops.get(@EDIT_SETTINGS, "PassiveMode") == "YES"
-        port_range = Ops.add(
-          Ops.add(Ops.get(@EDIT_SETTINGS, "PasMinPort"), ":"),
-          Ops.get(@EDIT_SETTINGS, "PasMaxPort")
-        )
+        port_range = "#{@EDIT_SETTINGS["PasMinPort"]}-#{@EDIT_SETTINGS["PasMaxPort"]}"
       else
         active_port = PortAliases.IsKnownPortName("ftp-data") ? "ftp-data" : "20"
       end
