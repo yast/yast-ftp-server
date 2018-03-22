@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 21 13:09:03 UTC 2018 - mfilka@suse.com
+
+- bnc#1084434
+  - use dash in port range definition
+- 4.0.4
+
+-------------------------------------------------------------------
 Mon Mar  5 14:43:38 UTC 2018 - knut.anderssen@suse.com
 
 - Remove an unnecessary Frame which was still referencing
