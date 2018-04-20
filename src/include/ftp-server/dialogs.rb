@@ -24,13 +24,14 @@ module Yast
 
       Yast.include include_target, "ftp-server/helps.rb"
       Yast.include include_target, "ftp-server/wid_functions.rb"
+    end
 
-      # map for description of widget later in CWNTree
-      # widget_descr (vsftpd)
-      #
-      # @return [Hash{String,map<String => Object>}]
-
-      @wid_handling_vsftpd = {
+    # map for description of widget later in CWNTree
+    # widget_descr (vsftpd)
+    #
+    # @return [Hash{String,map<String => Object>}]
+    def wid_handling_vsftpd
+      @wid_handling_vsftpd ||= {
         "StartMode"        => CWMServiceStart.CreateAutoStartWidget(StartMode()),
         "StartStop"        => CWMServiceStart.CreateStartStopWidget(StartStop()),
         "StartStopRestart" => StartStopRestart(),
@@ -65,24 +66,27 @@ module Yast
           FirewallSettingsVs()
         )
       }
+    end
 
-      # map for screens of widget later in CWNTree
-      # screens (vsftpd)
-      #
-      # @return [Hash{String,map<String => Object>}]
-
-      @tabs_vsftpd = {
+    # map for screens of widget later in CWNTree
+    # screens (vsftpd)
+    #
+    # @return [Hash{String,map<String => Object>}]
+    def tabs_vsftpd
+      @tabs_vsftpd ||= {
         "start_up"        => start_up,
         "gen_settings"    => gen_settings,
         "perfor_settings" => perfor_settings,
         "anon_settings"   => vsftpd_anon_settings,
         "addit_settings"  => addit_settings
       }
+    end
 
-      # function for running CWNTree
-      #
-      # abort functions for confirm abort
-      #
+    # function for running CWNTree
+    #
+    # abort functions for confirm abort
+    #
+    def functions
       @functions = { abort: fun_ref(method(:AbortDialog), "boolean ()") }
     end
 
@@ -1318,12 +1322,12 @@ module Yast
 
       deep_copy(result)
     end
+
     # Init function where are added UI hadle functions
     # Expert Settings widget (vsftpd)
     # define for tabs_vsftpd necessary later in screens (CWNTree)
     #
     # @return [Hash{String => Object}] map for Expert Settings widget
-
     def addit_settings
       result = {}
 
@@ -1409,12 +1413,12 @@ module Yast
       DialogTree.ShowAndRun(
         "ids_order"      => sim_dialogs,
         "initial_screen" => "start_up",
-        "screens"        => @tabs_vsftpd,
-        "widget_descr"   => @wid_handling_vsftpd,
+        "screens"        => tabs_vsftpd,
+        "widget_descr"   => wid_handling_vsftpd,
         "back_button"    => "",
         "abort_button"   => Label.CancelButton,
         "next_button"    => Label.FinishButton,
-        "functions"      => @functions
+        "functions"      => functions
       )
     end
   end

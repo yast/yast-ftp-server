@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Apr 20 13:34:41 UTC 2018 - knut.anderssen@suse.com
+
+- bsc#1090387
+  - Do not cache widgets description until the ftp dialog is really
+    run to avoid showing an out of date firewall description (the
+    vsftpd package provides the firewalld service definition)
+- 4.0.5
+
+-------------------------------------------------------------------
 Wed Mar 21 13:09:03 UTC 2018 - mfilka@suse.com
 
 - bnc#1084434
