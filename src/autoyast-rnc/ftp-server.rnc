@@ -28,8 +28,6 @@ ftp-server =
      element SSL { text }? &
      element StartXinetd { text }? &
      element StartDaemon  { text }? &
-     element SSLv2  { text }? &
-     element SSLv3  { text }? &
      element PassiveMode { text }? &
      element CertFile { text }? &
      element VirtualUser { text }? &
