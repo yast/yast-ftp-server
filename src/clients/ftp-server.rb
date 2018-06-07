@@ -193,24 +193,6 @@ module Yast
             "example" => ["SSL enable", "SSL disable"]
           },
           # only vsftpd
-          "SSLv2"           => {
-            "handler" => fun_ref(method(:FTPdCMDSSLv2), "boolean (map)"),
-            # TRANSLATORS: CommandLine help
-            "help"    => _(
-              "If enabled, this option will permit SSL v2 protocol connections (vsftpd only)."
-            ),
-            "example" => ["SSLv2 enable", "SSLv2 disable"]
-          },
-          # only vsftpd
-          "SSLv3"           => {
-            "handler" => fun_ref(method(:FTPdCMDSSLv3), "boolean (map)"),
-            # TRANSLATORS: CommandLine help
-            "help"    => _(
-              "If enabled, this option will permit SSL v3 protocol connections (vsftpd only)."
-            ),
-            "example" => ["SSLv3 enable", "SSLv3 disable"]
-          },
-          # only vsftpd
           "TLS"             => {
             "handler" => fun_ref(method(:FTPdCMDTLS), "boolean (map)"),
             # TRANSLATORS: CommandLine help
@@ -401,10 +383,6 @@ module Yast
           "welcome_message" => ["set_message"],
           #only vsftpd
           "SSL"             => ["enable", "disable"],
-          #only vsftpd
-          "SSLv2"           => ["enable", "disable"],
-          #only vsftpd
-          "SSLv3"           => ["enable", "disable"],
           #only vsftpd
           "TLS"             => ["enable", "disable"],
           #only pure-ftp-server
@@ -622,18 +600,6 @@ module Yast
           CommandLine.Print(_("SSL is disabled"))
         else
           CommandLine.Print(_("SSL is enabled"))
-        end
-
-        if Ops.get(FtpServer.EDIT_SETTINGS, "SSLv2") != "YES"
-          CommandLine.Print(_("SSL version 2 is disabled"))
-        else
-          CommandLine.Print(_("SSL version 2 is enabled"))
-        end
-
-        if Ops.get(FtpServer.EDIT_SETTINGS, "SSLv3") != "YES"
-          CommandLine.Print(_("SSL version 3 is disabled"))
-        else
-          CommandLine.Print(_("SSL version 3 is enabled"))
         end
 
         if Ops.get(FtpServer.EDIT_SETTINGS, "TLS") != "YES"
@@ -1169,28 +1135,6 @@ module Yast
     def FTPdCMDTLS(options)
       options = deep_copy(options)
       CommonHandlerCheckBox(options, "TLS connections:", true, "TLS", "TLS")
-    end
-
-    def FTPdCMDSSLv2(options)
-      options = deep_copy(options)
-      CommonHandlerCheckBox(
-        options,
-        "SSL version 2 connections:",
-        true,
-        "SSLv2",
-        "SSL version 2"
-      )
-    end
-
-    def FTPdCMDSSLv3(options)
-      options = deep_copy(options)
-      CommonHandlerCheckBox(
-        options,
-        "SSL version 3 connections:",
-        true,
-        "SSLv3",
-        "SSL version 3"
-      )
     end
 
     def FTPdCMDAntiwarez(options)
