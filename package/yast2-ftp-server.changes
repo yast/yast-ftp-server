@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  7 09:05:31 UTC 2018 - jreidinger@suse.com
+
+- Drop SSLv2 and SSLv3 as it is dropped for security reason for
+  vsftpd (bsc#921303)
+
+-------------------------------------------------------------------
 Mon Apr 16 07:13:41 UTC 2012 - jsrain@suse.cz
 
 - fixed reading of PureFTPD passive port range (bnc#756612)
