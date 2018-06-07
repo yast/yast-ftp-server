@@ -1464,14 +1464,10 @@ void InitSSLEnable (string key) {
 symbol HandleSSLEnable (string key, map event) {
   boolean value = (boolean) UI::QueryWidget(`id("SSLEnable"), `Value);
   if (value) {
-     UI::ChangeWidget(`id("SSLv2"), `Enabled, true);
-     UI::ChangeWidget(`id("SSLv3"), `Enabled, true);
      UI::ChangeWidget(`id("TLS"), `Enabled, true);
      UI::ChangeWidget(`id("CertFile"), `Enabled, true);
      UI::ChangeWidget(`id("BrowseCertFile"), `Enabled, true);
   } else {
-     UI::ChangeWidget(`id("SSLv2"), `Enabled, false);
-     UI::ChangeWidget(`id("SSLv3"), `Enabled, false);
      UI::ChangeWidget(`id("TLS"), `Enabled, false);
      UI::ChangeWidget(`id("CertFile"), `Enabled, false);
      UI::ChangeWidget(`id("BrowseCertFile"), `Enabled, false);
@@ -1491,61 +1487,6 @@ void StoreSSLEnable (string key, map event) {
 
 
 
-
-/**
- * Init function of "Enable SSL v2"
- * intfield
- *
- * also include handling enable/disable SSL
- * handling checkboxframe
- */
-
-void InitSSLv2 (string key) {
-  UI::ChangeWidget(`id("SSLv2"), `Value, (FtpServer::ValueUIEdit("SSLv2") == "YES"));
-  UI::ChangeWidget(`id("SSLEnable"), `Value, (FtpServer::ValueUIEdit("SSLEnable") == "YES"));
-}
-
-/**
- * Store function of "Enable SSL v2"
- * save values to temporary structure
- *
- * also include handling value enable/disable passive mode
- */
-void StoreSSLv2 (string key, map event) {
-  FtpServer::WriteToEditMap("SSLv2", 
-    (((boolean) UI::QueryWidget(`id("SSLv2"), `Value) == true) ? "YES":"NO"));
-  FtpServer::WriteToEditMap("SSLEnable", 
-    (((boolean) UI::QueryWidget(`id("SSLEnable"), `Value) == true) ? "YES":"NO"));
-  
-}
-
-
-
-
-/**
- * Init function of "Enable SSL v3"
- * intfield
- *
- */
-
-void InitSSLv3 (string key) {
-  UI::ChangeWidget(`id("SSLv3"), `Value, (FtpServer::ValueUIEdit("SSLv3") == "YES"));
-}
-
-/**
- * Store function of "Enable SSL v3"
- * save value to temporary structure
- *
- */
-void StoreSSLv3 (string key, map event) {
-  FtpServer::WriteToEditMap("SSLv3", 
-    (((boolean) UI::QueryWidget(`id("SSLv3"), `Value) == true) ? "YES":"NO"));
-}
-/**
- * Init function of "Enable TLS"
- * intfield
- *
- */
 
 void InitTLS (string key) {
   UI::ChangeWidget(`id("TLS"), `Value, (FtpServer::ValueUIEdit("TLS") == "YES"));
@@ -1699,7 +1640,7 @@ void StoreSSL (string key, map event) {
  */
 void InitVSFTPAddSettings (string key) {
 
-  foreach(string key, ["SSLEnable", "TLS", "SSLv2", "SSLv3", "PassiveMode"],{
+  foreach(string key, ["SSLEnable", "TLS",  "PassiveMode"],{
     UI::ChangeWidget(`id(key), `Value, (FtpServer::ValueUIEdit(key) == "YES"));
   });
   foreach(string key, ["PasMinPort", "PasMaxPort" ],{
@@ -1761,7 +1702,7 @@ symbol HandleVSFTPExpertSettings(string key, map event) {
 
 void StoreVSFTPDSettings (string key, map event) {
   
-  foreach(string key, ["SSLEnable", "TLS", "SSLv2", "SSLv3", "PassiveMode"],{
+  foreach(string key, ["SSLEnable", "TLS", "PassiveMode"],{
     FtpServer::WriteToEditMap(key, (((boolean) UI::QueryWidget(`id(key), `Value) == true) ? "YES":"NO"));
   });
   

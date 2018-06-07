@@ -815,51 +815,6 @@ map<string,any>  SSLEnable () {
   return result;
 }
 
-
-
-
-/**
- * Enable SSL v2
- * Expert Settings widget
- *
- * @return map<string,any> map for Expert screen
- */
-
-
-map<string,any>  SSLv2 () {
-  map<string,any> result = $[];
-
-  result["label"] = _("&Enable SSL v2");
-  result["widget"] = `checkbox;
-  result["init"] = InitSSLv2;
-  result["store"] = StoreSSLv2;
-  result["help"] = DialogHelpText("SSLv2");
-
-  return result;
-}
-
-
-/**
- * Enable SSL v3
- * Expert Settings widget
- *
- * @return map<string,any> map for Expert screen
- */
-
-
-map<string,any>  SSLv3 () {
-  map<string,any> result = $[];
-
-  result["label"] = _("Enable SSL &v3");
-  result["widget"] = `checkbox;
-  result["init"] = InitSSLv3;
-  result["store"] = StoreSSLv3;
-  result["help"] = DialogHelpText("SSLv3");
-
-  return result;
-}
-
-
 /**
  * Enable TLS
  * Expert Settings widget
@@ -1286,8 +1241,6 @@ map<string,any> addit_settings () {
       `HBox(`HSpacing(1),`VBox (
         `Left("SSLEnable"),
         `HBox(`HSpacing(2),`VBox (
-	  `Left("SSLv2"),
-	  `Left("SSLv3"),
 	  `Left("TLS"),
 	  `Left(`HBox(
 	    "CertFile",
@@ -1310,7 +1263,7 @@ map<string,any> addit_settings () {
   // TRANSLATORS: tree menu item
   result["tree_item_label"] = _("Expert Settings");
   result["widget_names"] = [ "DisBackButton",  "Firewall", "PasMinPort",  "PasMaxPort",
-    			     "SSLv2", "SSLv3", "TLS", "CertFile", "BrowseCertFile", 
+    			     "TLS", "CertFile", "BrowseCertFile", 
                              "PassiveMode", "SSLEnable" ];
 
   return result;
@@ -1404,8 +1357,6 @@ map<string,any> addit_settings_pure () {
     "PasMinPort" : PasMinPort (),
     "PasMaxPort" : PasMaxPort (),
     "SSLEnable" : SSLEnable (),
-    "SSLv2" : SSLv2 (),
-    "SSLv3" : SSLv3 (),
     "TLS" : TLS (),
     "CertFile" : CertFile (),
     "BrowseCertFile" : BrowseCertFile (),

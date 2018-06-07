@@ -213,16 +213,6 @@ boolean FTPdCMDShow (map options) {
      else
         CommandLine::Print(_("SSL is enabled"));
 
-     if (FtpServer::EDIT_SETTINGS["SSLv2"]:nil != "YES")
-        CommandLine::Print(_("SSL version 2 is disabled"));
-     else
-        CommandLine::Print(_("SSL version 2 is enabled"));
-
-     if (FtpServer::EDIT_SETTINGS["SSLv3"]:nil != "YES")
-        CommandLine::Print(_("SSL version 3 is disabled"));
-     else
-        CommandLine::Print(_("SSL version 3 is enabled"));
-
      if (FtpServer::EDIT_SETTINGS["TLS"]:nil != "YES")
         CommandLine::Print(_("TLS is disabled"));
      else
@@ -671,18 +661,6 @@ boolean FTPdCMDTLS (map options) {
 
 }
 
-boolean FTPdCMDSSLv2 (map options) {
- 
-  return CommonHandlerCheckBox (options, "SSL version 2 connections:", true, "SSLv2", "SSL version 2");
-
-}
-
-boolean FTPdCMDSSLv3 (map options) {
- 
-  return CommonHandlerCheckBox (options, "SSL version 3 connections:", true, "SSLv3", "SSL version 3");
-
-}
-
 boolean FTPdCMDAntiwarez (map options) {
   return CommonHandlerCheckBox (options, "Antiwarez:", false, "AntiWarez", "AntiWarez");
   
@@ -900,28 +878,6 @@ map cmdline_description = $[
 	"example" : [
 		   "SSL enable",
 		   "SSL disable",
-	            ],
-        ],
-
-        // only vsftpd
-	"SSLv2" : $[
-	"handler" : FTPdCMDSSLv2,
-	// TRANSLATORS: CommandLine help
-	"help" 	  : _("If enabled, this option will permit SSL v2 protocol connections (vsftpd only)"),
-	"example" : [
-		   "SSLv2 enable",
-		   "SSLv2 disable",
-	            ],
-        ],
-
-        // only vsftpd
-	"SSLv3" : $[
-	"handler" : FTPdCMDSSLv3,
-	// TRANSLATORS: CommandLine help
-	"help" 	  : _("If enabled, this option will permit SSL v3 protocol connections (vsftpd only)"),
-	"example" : [
-		   "SSLv3 enable",
-		   "SSLv3 disable",
 	            ],
         ],
 
@@ -1163,16 +1119,6 @@ map cmdline_description = $[
 	],
 	//only vsftpd
         "SSL" : [
-		"enable", "disable",
-	],
-
-        //only vsftpd
-        "SSLv2" :[
-		"enable", "disable",
-	],
-
-	//only vsftpd
-        "SSLv3" :[
 		"enable", "disable",
 	],
 
