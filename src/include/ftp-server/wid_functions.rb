@@ -1496,14 +1496,10 @@ module Yast
       event = deep_copy(event)
       value = Convert.to_boolean(UI.QueryWidget(Id("SSLEnable"), :Value))
       if value
-        UI.ChangeWidget(Id("SSLv2"), :Enabled, true)
-        UI.ChangeWidget(Id("SSLv3"), :Enabled, true)
         UI.ChangeWidget(Id("TLS"), :Enabled, true)
         UI.ChangeWidget(Id("CertFile"), :Enabled, true)
         UI.ChangeWidget(Id("BrowseCertFile"), :Enabled, true)
       else
-        UI.ChangeWidget(Id("SSLv2"), :Enabled, false)
-        UI.ChangeWidget(Id("SSLv3"), :Enabled, false)
         UI.ChangeWidget(Id("TLS"), :Enabled, false)
         UI.ChangeWidget(Id("CertFile"), :Enabled, false)
         UI.ChangeWidget(Id("BrowseCertFile"), :Enabled, false)
@@ -1525,70 +1521,6 @@ module Yast
       FtpServer.WriteToEditMap(
         "SSLEnable",
         Convert.to_boolean(UI.QueryWidget(Id("SSLEnable"), :Value)) == true ? "YES" : "NO"
-      )
-
-      nil
-    end
-
-    # Init function of "Enable SSL v2"
-    # intfield
-    #
-    # also include handling enable/disable SSL
-    # handling checkboxframe
-    def InitSSLv2(key)
-      UI.ChangeWidget(
-        Id("SSLv2"),
-        :Value,
-        FtpServer.ValueUIEdit("SSLv2") == "YES"
-      )
-      UI.ChangeWidget(
-        Id("SSLEnable"),
-        :Value,
-        FtpServer.ValueUIEdit("SSLEnable") == "YES"
-      )
-
-      nil
-    end
-
-    # Store function of "Enable SSL v2"
-    # save values to temporary structure
-    #
-    # also include handling value enable/disable passive mode
-    def StoreSSLv2(key, event)
-      event = deep_copy(event)
-      FtpServer.WriteToEditMap(
-        "SSLv2",
-        Convert.to_boolean(UI.QueryWidget(Id("SSLv2"), :Value)) == true ? "YES" : "NO"
-      )
-      FtpServer.WriteToEditMap(
-        "SSLEnable",
-        Convert.to_boolean(UI.QueryWidget(Id("SSLEnable"), :Value)) == true ? "YES" : "NO"
-      )
-
-      nil
-    end
-
-    # Init function of "Enable SSL v3"
-    # intfield
-    #
-    def InitSSLv3(key)
-      UI.ChangeWidget(
-        Id("SSLv3"),
-        :Value,
-        FtpServer.ValueUIEdit("SSLv3") == "YES"
-      )
-
-      nil
-    end
-
-    # Store function of "Enable SSL v3"
-    # save value to temporary structure
-    #
-    def StoreSSLv3(key, event)
-      event = deep_copy(event)
-      FtpServer.WriteToEditMap(
-        "SSLv3",
-        Convert.to_boolean(UI.QueryWidget(Id("SSLv3"), :Value)) == true ? "YES" : "NO"
       )
 
       nil

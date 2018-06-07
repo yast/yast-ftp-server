@@ -61,8 +61,6 @@ module Yast
         "PasMinPort"       => PasMinPort(),
         "PasMaxPort"       => PasMaxPort(),
         "SSLEnable"        => SSLEnable(),
-        "SSLv2"            => SSLv2(),
-        "SSLv3"            => SSLv3(),
         "TLS"              => TLS(),
         "CertFile"         => CertFile(),
         "BrowseCertFile"   => BrowseCertFile(),
@@ -1086,63 +1084,6 @@ module Yast
       deep_copy(result)
     end
 
-
-    # Enable SSL v2
-    # Expert Settings widget
-    #
-    # @return [Hash{String => Object}] map for Expert screen
-    def SSLv2
-      result = {}
-
-      Ops.set(result, "label", _("&Enable SSL v2"))
-      Ops.set(result, "widget", :checkbox)
-      Ops.set(result, "opt", [:notify])
-      Ops.set(result, "init", fun_ref(method(:InitSSLv2), "void (string)"))
-      Ops.set(
-        result,
-        "handle",
-        fun_ref(method(:HandleUniversal), "symbol (string, map)")
-      )
-      Ops.set(
-        result,
-        "store",
-        fun_ref(method(:StoreSSLv2), "void (string, map)")
-      )
-      Ops.set(result, "help", DialogHelpText("SSLv2"))
-
-      deep_copy(result)
-    end
-
-
-    # Enable SSL v3
-    # Expert Settings widget
-    #
-    # @return [Hash{String => Object}] map for Expert screen
-
-
-    def SSLv3
-      result = {}
-
-      Ops.set(result, "label", _("Enable SSL &v3"))
-      Ops.set(result, "widget", :checkbox)
-      Ops.set(result, "opt", [:notify])
-      Ops.set(result, "init", fun_ref(method(:InitSSLv3), "void (string)"))
-      Ops.set(
-        result,
-        "handle",
-        fun_ref(method(:HandleUniversal), "symbol (string, map)")
-      )
-      Ops.set(
-        result,
-        "store",
-        fun_ref(method(:StoreSSLv3), "void (string, map)")
-      )
-      Ops.set(result, "help", DialogHelpText("SSLv3"))
-
-      deep_copy(result)
-    end
-
-
     # Enable TLS
     # Expert Settings widget
     #
@@ -1658,8 +1599,6 @@ module Yast
                 HBox(
                   HSpacing(2),
                   VBox(
-                    Left("SSLv2"), # end of `Left(`HBox(
-                    Left("SSLv3"),
                     Left("TLS"),
                     Left(HBox("CertFile", VBox(Label(""), "BrowseCertFile")))
                   )
@@ -1683,8 +1622,6 @@ module Yast
           "Firewall",
           "PasMinPort",
           "PasMaxPort",
-          "SSLv2",
-          "SSLv3",
           "TLS",
           "CertFile",
           "BrowseCertFile",

@@ -1219,46 +1219,6 @@ module Yast
               return ""
             end
           end
-        when "SSLv2"
-          if @vsftpd_edit
-            if write
-              Ops.set(
-                @VS_SETTINGS,
-                "ssl_sslv2",
-                Ops.get(@EDIT_SETTINGS, "SSLv2")
-              )
-            else
-              return Builtins.haskey(@VS_SETTINGS, "ssl_sslv2") ?
-                Builtins.toupper(Ops.get(@VS_SETTINGS, "ssl_sslv2")) :
-                Ops.get(@DEFAULT_CONFIG, "SSLv2")
-            end
-          else
-            if !write
-              return Ops.get(@DEFAULT_CONFIG, "SSLv2")
-            else
-              return ""
-            end
-          end
-        when "SSLv3"
-          if @vsftpd_edit
-            if write
-              Ops.set(
-                @VS_SETTINGS,
-                "ssl_sslv3",
-                Ops.get(@EDIT_SETTINGS, "SSLv3")
-              )
-            else
-              return Builtins.haskey(@VS_SETTINGS, "ssl_sslv3") ?
-                Builtins.toupper(Ops.get(@VS_SETTINGS, "ssl_sslv3")) :
-                Ops.get(@DEFAULT_CONFIG, "SSLv3")
-            end
-          else
-            if !write
-              return Ops.get(@DEFAULT_CONFIG, "SSLv3")
-            else
-              return ""
-            end
-          end
         when "FTPUser"
           if @vsftpd_edit
             if write
