@@ -224,16 +224,6 @@ Maximum value for a port range for passive connection replies.
 If enabled SSL connections are allowed.
 </p>"), 
 
-/* expert settings  Enable SSL v2 help 1/1 */
-"SSLv2": _("<p><b>Enable SSL v2</b><br>
-If enabled SSL version 2 connections are allowed.
-</p>"), 
-
-/* expert settings  Enable SSL v3 help 1/1 */
-"SSLv3": _("<p><b>Enable SSL v3</b><br>
-If enabled SSL version 3 connections are allowed.
-</p>"), 
-
 /* expert settings Enable TLS  help 1/1 */
 "TLS": _("<p><b>Enable TLS</b><br>
 If enabled TLS connections are allowed.
