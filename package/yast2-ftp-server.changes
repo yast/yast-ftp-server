@@ -3,6 +3,7 @@ Thu Jun  7 09:22:47 UTC 2018 - jreidinger@suse.com
 
 - Drop SSLv2 and SSLv3 as it is dropped for security reason for
   vsftpd (bsc#921303)
+- 4.1.0
 
 -------------------------------------------------------------------
 Fri Apr 20 13:34:41 UTC 2018 - knut.anderssen@suse.com

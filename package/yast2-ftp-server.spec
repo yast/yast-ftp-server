@@ -17,7 +17,7 @@
 
 
 Name:           yast2-ftp-server
-Version:        4.0.5
+Version:        4.1.0
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
