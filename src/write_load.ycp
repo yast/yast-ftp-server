@@ -973,40 +973,6 @@ global string ValueUI (string key, boolean write) {
 	break;
 
    //only vsftpd
-   case("SSLv2"):
-	if (FtpServer::vsftpd_edit) {
-	   if (write) { 
-              FtpServer::VS_SETTINGS["ssl_sslv2"] = EDIT_SETTINGS["SSLv2"]:nil;
-           } else {
-	      return ((haskey(FtpServer::VS_SETTINGS, "ssl_sslv2") ? 
-		     toupper(FtpServer::VS_SETTINGS["ssl_sslv2"]:nil) : FtpServer::DEFAULT_CONFIG["SSLv2"]:nil));
-	   } 
-	} else {
-           if (!write)
- 	      return FtpServer::DEFAULT_CONFIG["SSLv2"]:nil;
-           else
-              return "";
-        }
-	break;
-
-   //only vsftpd
-   case("SSLv3"):
-	if (FtpServer::vsftpd_edit) {
-	   if (write) { 
-              FtpServer::VS_SETTINGS["ssl_sslv3"] = EDIT_SETTINGS["SSLv3"]:nil;
-           } else {
-	      return ((haskey(FtpServer::VS_SETTINGS, "ssl_sslv3") ? 
-		     toupper(FtpServer::VS_SETTINGS["ssl_sslv3"]:nil) : FtpServer::DEFAULT_CONFIG["SSLv3"]:nil));
-	   } 
-	} else {
-           if (!write)
- 	      return FtpServer::DEFAULT_CONFIG["SSLv3"]:nil;
-           else
-              return "";
-        }
-	break;
-
-   //only vsftpd
    case("FTPUser"):
 	if (FtpServer::vsftpd_edit) {
 	   if (write) { 

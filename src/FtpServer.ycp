@@ -217,7 +217,7 @@ global list <string> UI_keys = ["ChrootEnable","VerboseLogging","FtpDirLocal","F
 "UmaskAnon", "UmaskLocal", "PasMinPort", "PasMaxPort", "MaxIdleTime", "MaxClientsPerIP",
 "MaxClientsNumber", "LocalMaxRate", "AnonMaxRate", "AnonAuthen", "AnonReadOnly",
 "AnonCreatDirs", "Banner", "SSLEnable", "TLS", "AntiWarez", "SSL", "StartXinetd", 
-"PassiveMode", "CertFile", "SSLv2", "SSLv3", "VirtualUser", "FTPUser", "GuestUser", "EnableUpload"];
+"PassiveMode", "CertFile", "VirtualUser", "FTPUser", "GuestUser", "EnableUpload"];
 
 /**
  * map of deafult values for options in UI
@@ -245,8 +245,6 @@ global map <string, string > DEFAULT_CONFIG = $[
      "AnonCreatDirs"		 : "NO",
      "Banner"			 : _("Welcome message"),
      "SSLEnable"		 : "NO",
-     "SSLv2"			 : "NO", //enable/disable SSL version 2 (vsftpd only)
-     "SSLv3"			 : "NO", //enable/disable SSL version 3 (vsftpd only)
      "TLS"			 : "YES",
      "AntiWarez"		 : "YES",
      "SSL"			 : "0", //0 - disable SSL, 1-accept SSL, 2 - refuse connection withou SSL (pure-ftpd only)
