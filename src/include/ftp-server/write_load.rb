@@ -457,30 +457,6 @@ module Yast
             Builtins.toupper(Ops.get(@VS_SETTINGS, "ssl_tlsv1")) :
             Ops.get(@DEFAULT_CONFIG, "TLS")
         end
-      when "SSLv2"
-        if write
-          Ops.set(
-            @VS_SETTINGS,
-            "ssl_sslv2",
-            Ops.get(@EDIT_SETTINGS, "SSLv2")
-          )
-        else
-          return Builtins.haskey(@VS_SETTINGS, "ssl_sslv2") ?
-            Builtins.toupper(Ops.get(@VS_SETTINGS, "ssl_sslv2")) :
-            Ops.get(@DEFAULT_CONFIG, "SSLv2")
-        end
-      when "SSLv3"
-        if write
-          Ops.set(
-            @VS_SETTINGS,
-            "ssl_sslv3",
-            Ops.get(@EDIT_SETTINGS, "SSLv3")
-          )
-        else
-          return Builtins.haskey(@VS_SETTINGS, "ssl_sslv3") ?
-            Builtins.toupper(Ops.get(@VS_SETTINGS, "ssl_sslv3")) :
-            Ops.get(@DEFAULT_CONFIG, "SSLv3")
-        end
       when "FTPUser"
         if write
           return ""

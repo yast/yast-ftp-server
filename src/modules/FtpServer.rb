@@ -108,8 +108,6 @@ module Yast
         "StartXinetd",
         "PassiveMode",
         "CertFile",
-        "SSLv2",
-        "SSLv3",
         "VirtualUser",
         "FTPUser",
         "GuestUser",
@@ -137,8 +135,6 @@ module Yast
         "AnonCreatDirs"    => "NO",
         "Banner"           => _("Welcome message"),
         "SSLEnable"        => "NO",
-        "SSLv2"            => "NO", # enable/disable SSL version 2 (vsftpd only)
-        "SSLv3"            => "NO", # enable/disable SSL version 3 (vsftpd only)
         "TLS"              => "YES",
         "AntiWarez"        => "YES",
         "SSL"              => "0", # 0 - disable SSL, 1-accept SSL

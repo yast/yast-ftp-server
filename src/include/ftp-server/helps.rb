@@ -184,18 +184,6 @@ module Yast
             "If enabled, SSL connections are allowed.\n" \
             "</p>\n"
         ),
-        # expert settings  Enable SSL v2 help 1/1
-        "SSLv2"            => _(
-          "<p><b>Enable SSL v2</b><br>\n" \
-            "If enabled, SSL version 2 connections are allowed.\n" \
-            "</p>\n"
-        ),
-        # expert settings  Enable SSL v3 help 1/1
-        "SSLv3"            => _(
-          "<p><b>Enable SSL v3</b><br>\n" \
-            "If enabled, SSL version 3 connections are allowed.\n" \
-            "</p>\n"
-        ),
         # expert settings Enable TLS  help 1/1
         "TLS"              => _(
           "<p><b>Enable TLS</b><br>\n" \
