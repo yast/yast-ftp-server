@@ -783,7 +783,7 @@ module Yast
       button = Ops.get(event, "ID")
       if button == "BrowseAnon"
         val = UI.AskForExistingDirectory("/", _("Select directory"))
-        UI.ChangeWidget(Id("FtpDirAnon"), :Value, val)
+        UI.ChangeWidget(Id("FtpDirAnon"), :Value, val) if val
       end
       nil
     end
@@ -821,7 +821,7 @@ module Yast
       button = Ops.get(event, "ID")
       if button == "BrowseLocal"
         val = UI.AskForExistingDirectory("/", _("Select directory"))
-        UI.ChangeWidget(Id("FtpDirLocal"), :Value, val)
+        UI.ChangeWidget(Id("FtpDirLocal"), :Value, val) if val
       end
       nil
     end
@@ -1594,7 +1594,7 @@ module Yast
       button = Ops.get(event, "ID")
       if button == "BrowseCertFile"
         val = UI.AskForExistingFile("/", "*.*", _("Select File"))
-        UI.ChangeWidget(Id("CertFile"), :Value, val)
+        UI.ChangeWidget(Id("CertFile"), :Value, val) if val
       end
 
       nil
