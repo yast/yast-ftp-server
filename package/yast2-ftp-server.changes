@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 11 13:36:16 UTC 2018 - jreidinger@suse.com
+
+- Do not modify value when Browse dialog is canceled (bsc#1041829)
+- 4.0.6
+
+-------------------------------------------------------------------
 Thu Jun  7 09:22:47 UTC 2018 - jreidinger@suse.com
 
 - Drop SSLv2 and SSLv3 as it is dropped for security reason for
