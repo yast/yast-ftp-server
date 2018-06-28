@@ -15,6 +15,7 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=ftp-server
 X-SuSE-YaST-AutoInstSchema=ftp-server.rnc
+X-SuSE-YaST-Keywords=FTP,server,boot,file,transfer,protocol,network
 
 Icon=yast-ftp-server
 Exec=xdg-su -c "/sbin/yast2 ftp-server"
