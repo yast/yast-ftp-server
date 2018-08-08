@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require "yast"
-
+require "yast2/system_service"
 require "y2firewall/firewalld"
 
 module Yast
@@ -157,6 +157,10 @@ module Yast
       # Write only, used during autoinstallation.
       # Don't run services and SuSEconfig, it's all done at one place.
       @write_only = false
+    end
+
+    def service
+      @service ||= Yast2::SystemService.find("vsftpd")
     end
 
     def firewalld
@@ -674,7 +678,8 @@ module Yast
     end
 
     # Write all FtpServer settings
-    # @return true on success
+    #
+    # @return [Boolean] true on success; false otherwise
     def Write
       # FtpServer read dialog caption
       caption = _("Saving FTP Configuration")
@@ -717,13 +722,31 @@ module Yast
       Builtins.sleep(@sl)
 
       return false if PollAbort()
-      write_daemon
+
+      result = save_status
+
       # Progress finished
       Progress.NextStage
       Builtins.sleep(@sl)
 
       return false if PollAbort()
-      true
+
+      result
+    end
+
+    # Saves service status (start mode and starts/stops the service)
+    #
+    # @note For AutoYaST and for command line actions, it uses the old way
+    #   for backward compatibility, see {#write_daemon}. When the service
+    #   is configured by using the UI, it directly saves the service, see
+    #   {Yast2::SystemService#save}.
+    def save_status
+      if Mode.auto || Mode.commandline
+        write_daemon
+        true
+      else
+        service.save
+      end
     end
 
     # Get all FtpServer settings from the first parameter

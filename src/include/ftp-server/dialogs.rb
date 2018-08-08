@@ -6,6 +6,9 @@
 # Authors:	Jozef Uhliarik <juhliarik@suse.cz>
 #
 # $Id: dialogs.ycp 27914 2006-02-13 14:32:08Z juhliarik $
+
+require "cwm/service_widget"
+
 module Yast
   module FtpServerDialogsInclude
     def initialize_ftp_server_dialogs(include_target)
@@ -26,15 +29,20 @@ module Yast
       Yast.include include_target, "ftp-server/wid_functions.rb"
     end
 
+    # Widget to define state and start mode of the service
+    #
+    # @return [::CWM::ServiceWidget]
+    def service_widget
+      @service_widget ||= ::CWM::ServiceWidget.new(FtpServer.service)
+    end
+
     # map for description of widget later in CWNTree
     # widget_descr (vsftpd)
     #
     # @return [Hash{String,map<String => Object>}]
     def wid_handling_vsftpd
       @wid_handling_vsftpd ||= {
-        "StartMode"        => CWMServiceStart.CreateAutoStartWidget(StartMode()),
-        "StartStop"        => CWMServiceStart.CreateStartStopWidget(StartStop()),
-        "StartStopRestart" => StartStopRestart(),
+        "service_widget"   => service_widget.cwm_definition,
         "Banner"           => Banner(),
         "ChrootEnable"     => ChrootEnable(),
         "VerboseLogging"   => VerboseLogging(),
@@ -60,9 +68,7 @@ module Yast
         "TLS"              => TLS(),
         "CertFile"         => CertFile(),
         "BrowseCertFile"   => BrowseCertFile(),
-        "Firewall"         => CWMFirewallInterfaces.CreateOpenFirewallWidget(
-          FirewallSettingsVs()
-        )
+        "Firewall"         => CWMFirewallInterfaces.CreateOpenFirewallWidget(FirewallSettingsVs())
       }
     end
 
@@ -1014,38 +1020,16 @@ module Yast
     end
 
     #-----------================= SCREENS OF FTP_SERVER =============----------
-    #
 
-    # Init function where are added UI hadle functions
-    # Start widget
-    # define for tabs_vsftpd necessary later in screens (CWNTree)
+    # Widgets for "Start-Up" tree item
     #
     # @return [Hash{String => Object}] map for start_up widget
     def start_up
-      result = {}
-
-      Ops.set(
-        result,
-        "contents",
-        VBox(
-          "StartMode",
-          VSpacing(1),
-          # disabling start/stop buttons when it doesn't make sense
-          Mode.normal ? "StartStop" : Empty(),
-          VStretch()
-        )
-      )
-      # TRANSLATORS: part of dialog caption
-      Ops.set(result, "caption", _("FTP Start-up"))
-      # TRANSLATORS: tree menu item
-      Ops.set(result, "tree_item_label", _("Start-Up"))
-      Ops.set(
-        result,
-        "widget_names",
-        ["StartMode", "StartStop", "StartStopRestart"]
-      )
-
-      deep_copy(result)
+      {
+        "tree_item_label" => _("Start-Up"),
+        "contents"        => VBox("service_widget", VStretch()),
+        "widget_names"    => ["service_widget"]
+      }
     end
 
     # Init function where are added UI hadle functions
