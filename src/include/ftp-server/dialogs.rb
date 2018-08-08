@@ -16,8 +16,6 @@ module Yast
 
       textdomain "ftp-server"
 
-      Yast.import "CWM"
-      Yast.import "CWMServiceStart"
       Yast.import "DialogTree"
       Yast.import "Label"
       Yast.import "Wizard"
@@ -108,111 +106,6 @@ module Yast
       else
         return true
       end
-    end
-
-    # Init function where are added UI hadle functions
-    # Start widget (vsftpd)
-    #
-    # @return [Hash{String => Object}] map for start-up widget
-
-    def StartMode
-      result = {}
-      Ops.set(
-        result,
-        "get_service_auto_start",
-        fun_ref(method(:GetEnableService), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "set_service_auto_start",
-        fun_ref(method(:SetEnableService), "void (boolean)")
-      )
-      Ops.set(
-        result,
-        "get_service_start_via_socket",
-        fun_ref(method(:"started_via_socket?"), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "set_service_start_via_socket",
-        fun_ref(method(:"start_via_socket="), "void (boolean)")
-      )
-      Ops.set(
-        result,
-        "help",
-        CWMServiceStart.AutoStartSocketHelp
-      )
-
-      deep_copy(result)
-    end
-
-    # Init function where are added UI hadle functions
-    # Start widget
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def StartStop
-      result = {}
-      Ops.set(result, "service_id", "vsftpd")
-      Ops.set(result, "service_running_label", _("FTP is running"))
-      Ops.set(result, "service_not_running_label", _("FTP is not running"))
-      Ops.set(result, "start_now_button", _("&Start FTP Now"))
-      Ops.set(result, "stop_now_button", _("S&top FTP Now"))
-      Ops.set(
-        result,
-        "save_now_action",
-        fun_ref(method(:SaveAndRestartVsftpd), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "save_now_button",
-        _("Sa&ve Settings and Restart FTP Now")
-      )
-      Ops.set(
-        result,
-        "start_now_action",
-        fun_ref(method(:StartNowVsftpd), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "stop_now_action",
-        fun_ref(method(:StopNowVsftpd), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "help",
-        Builtins.sformat(
-          CWMServiceStart.StartStopHelpTemplate(true),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Start FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Stop FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Save Settings and Restart FTP Daemon Now")
-        )
-      )
-
-      deep_copy(result)
-    end
-
-    # Init function where are added UI hadle functions
-    # special hack widget where is handlig Start/Stop button
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def StartStopRestart
-      result = {}
-
-      Ops.set(result, "widget", :custom)
-      Ops.set(result, "custom_widget", Empty())
-      Ops.set(
-        result,
-        "init",
-        fun_ref(method(:InitStartStopRestart), "void (string)")
-      )
-      Ops.set(result, "help", " ")
-
-      deep_copy(result)
     end
 
     #-----------================= GENERAL SCREEN =============----------
