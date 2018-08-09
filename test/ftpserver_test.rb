@@ -94,4 +94,95 @@ describe "Yast::FtpServer" do
       end
     end
   end
+
+  describe ".Write" do
+    subject(:ftp_server) { Yast::FtpServerClass.new }
+
+    before do
+      allow(Yast::Progress).to receive(:New)
+      allow(Yast::Progress).to receive(:NextStage)
+
+      allow(Yast::Builtins).to receive(:sleep)
+
+      allow(Yast2::SystemService).to receive(:new).and_return(service)
+
+      allow(Yast::Mode).to receive(:auto) { auto }
+      allow(Yast::Mode).to receive(:commandline) { commandline }
+
+      allow(ftp_server).to receive(:PollAbort).and_return(false)
+      allow(ftp_server).to receive(:WriteSettings).and_return(true)
+      allow(ftp_server).to receive(:write_daemon)
+
+      ftp_server.main
+    end
+
+    let(:service) { instance_double(Yast2::SystemService, save: true) }
+
+    let(:auto) { false }
+    let(:commandline) { false }
+
+    shared_examples "old behavior" do
+      it "does not save the system service" do
+        expect(service).to_not receive(:save)
+
+        ftp_server.Write
+      end
+
+      it "calls to :write_daemon" do
+        expect(ftp_server).to receive(:write_daemon)
+
+        ftp_server.Write
+      end
+
+      it "returns true" do
+        expect(ftp_server.Write).to eq(true)
+      end
+    end
+
+    context "when running in command line" do
+      let(:commandline) { true }
+
+      include_examples "old behavior"
+    end
+
+    context "when running in AutoYaST mode" do
+      let(:auto) { true }
+
+      include_examples "old behavior"
+    end
+
+    context "when running in normal mode" do
+      it "does not call to :write_daemon" do
+        expect(ftp_server).to_not receive(:write_daemon)
+
+        ftp_server.Write
+      end
+
+      it "saves the system service" do
+        expect(service).to receive(:save)
+
+        ftp_server.Write
+      end
+
+      context "and the service is correctly saved" do
+        before do
+          allow(service).to receive(:save).and_return(true)
+        end
+
+        it "returns true" do
+          expect(ftp_server.Write).to eq(true)
+        end
+      end
+
+      context "and the service is not correctly saved" do
+        before do
+          allow(service).to receive(:save).and_return(false)
+        end
+
+        it "returns false" do
+          expect(ftp_server.Write).to eq(false)
+        end
+      end
+    end
+  end
 end
