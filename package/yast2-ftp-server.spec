@@ -23,11 +23,11 @@ Release:        0
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
-# Replace xinetd by systemd socket activation (fate#323373)
-Requires:       yast2 >= 4.0.50
+# CWM::ServiceWidget
+Requires:       yast2 >= 4.1.0
 BuildRequires:  update-desktop-files
-# Replace xinetd by systemd socket activation (fate#323373)
-BuildRequires:  yast2 >= 4.0.50
+# CWM::ServiceWidget
+BuildRequires:  yast2 >= 4.1.0
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
