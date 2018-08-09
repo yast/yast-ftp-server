@@ -104,7 +104,7 @@ describe "Yast::FtpServer" do
 
       allow(Yast::Builtins).to receive(:sleep)
 
-      allow(Yast2::SystemService).to receive(:new).and_return(service)
+      allow(Yast2::SystemService).to receive(:find).with("vsftpd").and_return(service)
 
       allow(Yast::Mode).to receive(:auto) { auto }
       allow(Yast::Mode).to receive(:commandline) { commandline }

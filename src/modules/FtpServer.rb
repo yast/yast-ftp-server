@@ -739,7 +739,7 @@ module Yast
     # @note For AutoYaST and for command line actions, it uses the old way
     #   for backward compatibility, see {#write_daemon}. When the service
     #   is configured by using the UI, it directly saves the service, see
-    #   {Yast2::SystemService#save}.
+    #   Yast2::SystemService#save.
     def save_status
       if Mode.auto || Mode.commandline
         write_daemon
