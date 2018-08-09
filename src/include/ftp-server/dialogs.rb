@@ -6,6 +6,9 @@
 # Authors:	Jozef Uhliarik <juhliarik@suse.cz>
 #
 # $Id: dialogs.ycp 27914 2006-02-13 14:32:08Z juhliarik $
+
+require "cwm/service_widget"
+
 module Yast
   module FtpServerDialogsInclude
     def initialize_ftp_server_dialogs(include_target)
@@ -13,8 +16,6 @@ module Yast
 
       textdomain "ftp-server"
 
-      Yast.import "CWM"
-      Yast.import "CWMServiceStart"
       Yast.import "DialogTree"
       Yast.import "Label"
       Yast.import "Wizard"
@@ -26,15 +27,20 @@ module Yast
       Yast.include include_target, "ftp-server/wid_functions.rb"
     end
 
+    # Widget to define state and start mode of the service
+    #
+    # @return [::CWM::ServiceWidget]
+    def service_widget
+      @service_widget ||= ::CWM::ServiceWidget.new(FtpServer.service)
+    end
+
     # map for description of widget later in CWNTree
     # widget_descr (vsftpd)
     #
     # @return [Hash{String,map<String => Object>}]
     def wid_handling_vsftpd
       @wid_handling_vsftpd ||= {
-        "StartMode"        => CWMServiceStart.CreateAutoStartWidget(StartMode()),
-        "StartStop"        => CWMServiceStart.CreateStartStopWidget(StartStop()),
-        "StartStopRestart" => StartStopRestart(),
+        "service_widget"   => service_widget.cwm_definition,
         "Banner"           => Banner(),
         "ChrootEnable"     => ChrootEnable(),
         "VerboseLogging"   => VerboseLogging(),
@@ -60,9 +66,7 @@ module Yast
         "TLS"              => TLS(),
         "CertFile"         => CertFile(),
         "BrowseCertFile"   => BrowseCertFile(),
-        "Firewall"         => CWMFirewallInterfaces.CreateOpenFirewallWidget(
-          FirewallSettingsVs()
-        )
+        "Firewall"         => CWMFirewallInterfaces.CreateOpenFirewallWidget(FirewallSettingsVs())
       }
     end
 
@@ -102,111 +106,6 @@ module Yast
       else
         return true
       end
-    end
-
-    # Init function where are added UI hadle functions
-    # Start widget (vsftpd)
-    #
-    # @return [Hash{String => Object}] map for start-up widget
-
-    def StartMode
-      result = {}
-      Ops.set(
-        result,
-        "get_service_auto_start",
-        fun_ref(method(:GetEnableService), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "set_service_auto_start",
-        fun_ref(method(:SetEnableService), "void (boolean)")
-      )
-      Ops.set(
-        result,
-        "get_service_start_via_socket",
-        fun_ref(method(:"started_via_socket?"), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "set_service_start_via_socket",
-        fun_ref(method(:"start_via_socket="), "void (boolean)")
-      )
-      Ops.set(
-        result,
-        "help",
-        CWMServiceStart.AutoStartSocketHelp
-      )
-
-      deep_copy(result)
-    end
-
-    # Init function where are added UI hadle functions
-    # Start widget
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def StartStop
-      result = {}
-      Ops.set(result, "service_id", "vsftpd")
-      Ops.set(result, "service_running_label", _("FTP is running"))
-      Ops.set(result, "service_not_running_label", _("FTP is not running"))
-      Ops.set(result, "start_now_button", _("&Start FTP Now"))
-      Ops.set(result, "stop_now_button", _("S&top FTP Now"))
-      Ops.set(
-        result,
-        "save_now_action",
-        fun_ref(method(:SaveAndRestartVsftpd), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "save_now_button",
-        _("Sa&ve Settings and Restart FTP Now")
-      )
-      Ops.set(
-        result,
-        "start_now_action",
-        fun_ref(method(:StartNowVsftpd), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "stop_now_action",
-        fun_ref(method(:StopNowVsftpd), "boolean ()")
-      )
-      Ops.set(
-        result,
-        "help",
-        Builtins.sformat(
-          CWMServiceStart.StartStopHelpTemplate(true),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Start FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Stop FTP Daemon Now"),
-          # part of help text - push button label, NO SHORTCUT!!!
-          _("Save Settings and Restart FTP Daemon Now")
-        )
-      )
-
-      deep_copy(result)
-    end
-
-    # Init function where are added UI hadle functions
-    # special hack widget where is handlig Start/Stop button
-    #
-    # @return [Hash{String => Object}] map for start-stop widget
-
-    def StartStopRestart
-      result = {}
-
-      Ops.set(result, "widget", :custom)
-      Ops.set(result, "custom_widget", Empty())
-      Ops.set(
-        result,
-        "init",
-        fun_ref(method(:InitStartStopRestart), "void (string)")
-      )
-      Ops.set(result, "help", " ")
-
-      deep_copy(result)
     end
 
     #-----------================= GENERAL SCREEN =============----------
@@ -1014,38 +913,16 @@ module Yast
     end
 
     #-----------================= SCREENS OF FTP_SERVER =============----------
-    #
 
-    # Init function where are added UI hadle functions
-    # Start widget
-    # define for tabs_vsftpd necessary later in screens (CWNTree)
+    # Widgets for "Start-Up" tree item
     #
     # @return [Hash{String => Object}] map for start_up widget
     def start_up
-      result = {}
-
-      Ops.set(
-        result,
-        "contents",
-        VBox(
-          "StartMode",
-          VSpacing(1),
-          # disabling start/stop buttons when it doesn't make sense
-          Mode.normal ? "StartStop" : Empty(),
-          VStretch()
-        )
-      )
-      # TRANSLATORS: part of dialog caption
-      Ops.set(result, "caption", _("FTP Start-up"))
-      # TRANSLATORS: tree menu item
-      Ops.set(result, "tree_item_label", _("Start-Up"))
-      Ops.set(
-        result,
-        "widget_names",
-        ["StartMode", "StartStop", "StartStopRestart"]
-      )
-
-      deep_copy(result)
+      {
+        "tree_item_label" => _("Start-Up"),
+        "contents"        => VBox("service_widget", VStretch()),
+        "widget_names"    => ["service_widget"]
+      }
     end
 
     # Init function where are added UI hadle functions

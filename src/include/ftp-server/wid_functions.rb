@@ -60,6 +60,8 @@ module Yast
       FtpServer.EDIT_SETTINGS["StartDaemon"] == "2"
     end
 
+    # @deprecated
+    #
     # CWMServiceStart function with one boolean parameter
     # returning boolean value that says if the service will be started at boot.
     def start_via_socket=(enable_service)
@@ -83,6 +85,8 @@ module Yast
       nil
     end
 
+    # @deprecated
+    #
     # Function start vsftpd
     def StartNowVsftpd
       UpdateInfoAboutStartingFTP()
@@ -104,6 +108,8 @@ module Yast
       true
     end
 
+    # @deprecated
+    #
     # Function stop vsftpd
     def StopNowVsftpd
       if FtpServer.start_via_socket?
@@ -116,6 +122,8 @@ module Yast
       true
     end
 
+    # @deprecated
+    #
     # Function saves configuration and restarts vsftpd
     def SaveAndRestartVsftpd
       StopNowVsftpd()
@@ -123,30 +131,6 @@ module Yast
       result = StartNowVsftpd()
       FtpServer.WriteUpload
       result
-    end
-
-    # Init function for start-up
-    #
-    # init starting via socket and update status
-    def InitStartStopRestart(_key = nil)
-      log.info "current status socket: #{FtpServer.start_via_socket?} service: #{Service.active?("vsftpd")}"
-      if FtpServer.start_via_socket? || Service.active?("vsftpd")
-        UI.ReplaceWidget(
-          Id("_cwm_service_status_rp"),
-          Label(_("FTP is running"))
-        )
-        UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
-        UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, true)
-      else
-        UI.ReplaceWidget(
-          Id("_cwm_service_status_rp"),
-          Label(_("FTP is not running"))
-        )
-        UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, true)
-        UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, false)
-      end
-
-      nil
     end
 
     #-----------================= GENERAL SCREEN =============----------
