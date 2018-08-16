@@ -9,6 +9,9 @@
 #
 # Representation of the configuration of FtpServer.
 # Input and output routines.
+require "yast2/systemd/service"
+require "yast2/systemd/socket"
+
 module Yast
   module FtpServerWriteLoadInclude
     def initialize_ftp_server_write_load(_include_target)
@@ -17,19 +20,17 @@ module Yast
       Yast.import "Popup"
       Yast.import "Progress"
       Yast.import "Service"
-      Yast.import "SystemdService"
-      Yast.import "SystemdSocket"
     end
 
     def start_via_socket?
-      socket = SystemdSocket.find("vsftpd")
+      socket = Yast2::Systemd::Socket.find("vsftpd")
       return false unless socket
 
       socket.enabled?
     end
 
     def WriteStartViaSocket(start)
-      socket = SystemdSocket.find("vsftpd")
+      socket = Yast2::Systemd::Socket.find("vsftpd")
       return false unless socket
 
       if start
@@ -41,7 +42,7 @@ module Yast
       end
       # stop service so socket can start new one with newly written configuration
       # or stop it completelly
-      SystemdService.find!("vsftpd").stop
+      Yast2::Systemd::Service.find!("vsftpd").stop
 
       true
     end
