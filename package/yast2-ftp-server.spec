@@ -17,17 +17,17 @@
 
 
 Name:           yast2-ftp-server
-Version:        4.1.3
+Version:        4.1.4
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
 # Yast2::Systemd::Service
-Requires:       yast2 >= 4.1.1
+Requires:       yast2 >= 4.1.3
 BuildRequires:  update-desktop-files
 # Yast2::Systemd::Service
-BuildRequires:  yast2 >= 4.1.1
+BuildRequires:  yast2 >= 4.1.3
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
