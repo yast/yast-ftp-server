@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 20 15:20:10 CEST 2018 - schubi@suse.de
+
+- Switched license in spec file from SPDX2 to SPDX3 format.
+
+-------------------------------------------------------------------
 Wed Aug  8 13:35:09 UTC 2018 - jlopez@suse.com
 
 - Use new Yast2::ServiceWidget to manage the service status
