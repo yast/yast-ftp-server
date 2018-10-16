@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Oct 16 16:41:44 CEST 2018 - schubi@suse.de
+
+- Added license file to spec.
+
+-------------------------------------------------------------------
 Wed Aug 22 16:01:22 UTC 2018 - dgonzalez@suse.com
 
 - Update calls to YaST2 systemd classes (related to fate#319428)
