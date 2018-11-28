@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" version="1.1" viewBox="0 0 128 128.00001" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="a">
+<stop stop-color="#deddda" offset="0"/>
+<stop stop-color="#f6f5f4" offset="1"/>
+</linearGradient>
+<linearGradient id="g" x1="4.0976" x2="4.0026" y1="25.888" y2="1.8906" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="f" x1="2" x2="30" y1="14" y2="14" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#c0bfbc" offset="0"/>
+<stop stop-color="#deddda" offset=".035714"/>
+<stop stop-color="#c0bfbc" offset=".071429"/>
+<stop stop-color="#c0bfbc" offset=".92857"/>
+<stop stop-color="#deddda" offset=".96429"/>
+<stop stop-color="#c0bfbc" offset="1"/>
+</linearGradient>
+<linearGradient id="e" x1="3" x2="29" y1="14" y2="14" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="d" x1="11" x2="20" y1="6" y2="6" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#c0bfbc" offset="0"/>
+<stop stop-color="#deddda" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="11" x2="20" y1="13" y2="13" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#c0bfbc" offset="0"/>
+<stop stop-color="#deddda" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="11" x2="20" y1="20" y2="20" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#c0bfbc" offset="0"/>
+<stop stop-color="#deddda" offset="1"/>
+</linearGradient>
+</defs>
+<rect x="8" y="4" width="112" height="104" ry="8" fill="url(#f)"/>
+<rect x="8" y="4" width="112" height="96" ry="8" fill="url(#e)"/>
+<rect x="12" y="8" width="104" height="88" ry="8" fill="#c0bfbc"/>
+<rect x="16" y="20" width="96" height="64" ry="0" fill="#c0bfbc"/>
+<path d="m20 12c-2.216 0-4.086 1.7857-4 4v20h96v-20c0-2.216-1.784-4-4-4zm-4 28v24h96v-24zm0 28v20c0 2.216 1.784 4 4 4h88c2.216 0 4-1.784 4-4v-20z" fill="url(#g)"/>
+<rect x="44" y="16" width="36" height="12" ry="4" fill="#9a9996"/>
+<rect x="44" y="20" width="36" height="8" ry="4" fill="url(#d)"/>
+<rect x="44" y="44" width="36" height="12" ry="4" fill="#9a9996"/>
+<rect x="44" y="48" width="36" height="8" ry="4" fill="url(#c)"/>
+<rect x="44" y="72" width="36" height="12" ry="4" fill="#9a9996"/>
+<rect x="44" y="76" width="36" height="8" ry="4" fill="url(#b)"/>
+<rect x="60" y="104" width="8" height="12" fill="#f6d32d"/>
+<rect x="20" y="116" width="88" height="8" fill="#f6d32d"/>
+<rect x="20" y="120" width="88" height="4" fill="#e5a50a"/>
+</svg>

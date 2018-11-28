@@ -17,7 +17,7 @@
 
 
 Name:           yast2-ftp-server
-Version:        4.1.4
+Version:        4.1.5
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -67,5 +67,6 @@ rake install DESTDIR="%{buildroot}"
 %{yast_scrconfdir}/*.scr
 %doc %{yast_docdir}
 %license COPYING
+%{yast_icondir}
 
 %changelog
