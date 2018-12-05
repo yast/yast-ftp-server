@@ -3,6 +3,8 @@
 require "yast"
 require "yast2/system_service"
 require "y2firewall/firewalld"
+require "shellwords"
+require "fileutils"
 
 module Yast
   # Configure vsftpd: https://security.appspot.com/vsftpd.html
@@ -193,7 +195,7 @@ module Yast
       result = false
       command = ""
       if @anon_homedir != ""
-        command = Ops.add(Ops.add("ls -l ", @anon_homedir), " | grep upload")
+        command = "/usr/bin/ls -l #{@anon_homedir.shellescape} | /usr/bin/grep upload")
       end
       if command != ""
         options = Convert.to_map(
@@ -273,10 +275,7 @@ module Yast
       end
 
       if @anon_homedir != "" && @pure_ftp_allowed_permissios_upload != -1
-        command = Ops.add(
-          Ops.add(Ops.add("ls -l ", directory), " | grep "),
-          upload_dir
-        )
+        command = "/usr/bin/ls -l #{directory.shellescape} | /usr/bin/grep #{upload_dir.shellescape}"
       end
       if command != ""
         options = Convert.to_map(
@@ -494,7 +493,6 @@ module Yast
     # It is necessary if user want to allow uploading for anonymous
     # @return [Boolean] result of function (true/false)
     def WriteUpload
-      result = true
       command = ""
       upload = ""
       authentication = Builtins.tointeger(Ops.get(@EDIT_SETTINGS, "AnonAuthen"))
@@ -512,73 +510,31 @@ module Yast
             "/upload"
           end
         end
-        command = "dir=`ls "
-        command = Ops.add(command, @anon_homedir)
-        command = Ops.add(
-          command,
-          " | grep upload`; if [ -z $dir ]; then mkdir "
-        )
-        command = Ops.add(
-          Ops.add(Ops.add(command, @anon_homedir), upload),
-          "; chown "
-        )
 
         if Ops.get(@EDIT_SETTINGS, "GuestUser") != ""
-          command = Ops.add(
-            Ops.add(Ops.add(command, Ops.get(@EDIT_SETTINGS, "GuestUser")), ":"),
-            Ops.get(@EDIT_SETTINGS, "GuestUser")
-          )
+          user = @EDIT_SETTINGS["GuestUser"]
         elsif Ops.get(@EDIT_SETTINGS, "FTPUser") != ""
-          command = Ops.add(
-            Ops.add(Ops.add(command, Ops.get(@EDIT_SETTINGS, "FTPUser")), ":"),
-            Ops.get(@EDIT_SETTINGS, "FTPUser")
-          )
+          user = @EDIT_SETTINGS["FTPUser"]
         end
 
-        command = Ops.add(
-          Ops.add(Ops.add(Ops.add(command, " "), @anon_homedir), upload),
-          "; chmod 766 "
-        )
-        command = Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                Ops.add(Ops.add(command, @anon_homedir), upload),
-                "; else chmod 766 "
-              ),
-              @anon_homedir
-            ),
-            upload
-          ),
-          "; fi"
-        )
-        # "dir=`ls /srv/ftp/ | grep upload`; if [ -z $dir ]; then echo $dir; mkdir /srv/ftp/upload;
-        #  chown ftp:ftp /srv/ftp/upload/; chmod 755 /srv/ftp/upload; else chmod 766 /srv/ftp/upload/; fi"
-        Builtins.y2milestone(
-          "[ftp-server] (WriteUpload) bash command for creating upload dir : %1",
-          command
-        )
-        options = Convert.to_map(
-          SCR.Execute(path(".target.bash_output"), command)
-        )
-        result = if Ops.get(options, "exit").zero?
-          true
-        else
-          false
+        dir = @anon_homedir + upload
+
+        if !File.exist?(dir)
+          FileUtils.mkdir(dir)
+          FileUtils.chown(user, user, dir) if user
         end
-      else
-        result = true
+
+        FileUtils.chmod(0766, dir)
       end
       # restart/reaload daemons...
       Service.restart("vsftpd") if Service.active?("vsftpd")
 
       # update permissions for home directory if upload is enabled...
       if @pure_ftp_allowed_permissios_upload != -1 && @change_permissions
-        command = Ops.add("chmod 755 ", @anon_homedir)
-        SCR.Execute(path(".target.bash_output"), command)
+        FileUtils.chmod(0755, @anon_homedir)
       end
 
-      result
+      true
     end
 
     # read value from  PURE_EDIT_SETTINGS
