@@ -195,7 +195,7 @@ module Yast
       result = false
       command = ""
       if @anon_homedir != ""
-        command = "/usr/bin/ls -l #{@anon_homedir.shellescape} | /usr/bin/grep upload")
+        command = "/usr/bin/ls -l #{@anon_homedir.shellescape} | /usr/bin/grep upload"
       end
       if command != ""
         options = Convert.to_map(
@@ -493,7 +493,6 @@ module Yast
     # It is necessary if user want to allow uploading for anonymous
     # @return [Boolean] result of function (true/false)
     def WriteUpload
-      command = ""
       upload = ""
       authentication = Builtins.tointeger(Ops.get(@EDIT_SETTINGS, "AnonAuthen"))
       if authentication != 1 && @create_upload_dir && @upload_good_permission
@@ -524,14 +523,14 @@ module Yast
           FileUtils.chown(user, user, dir) if user
         end
 
-        FileUtils.chmod(0766, dir)
+        FileUtils.chmod(0o766, dir)
       end
       # restart/reaload daemons...
       Service.restart("vsftpd") if Service.active?("vsftpd")
 
       # update permissions for home directory if upload is enabled...
       if @pure_ftp_allowed_permissios_upload != -1 && @change_permissions
-        FileUtils.chmod(0755, @anon_homedir)
+        FileUtils.chmod(0o755, @anon_homedir)
       end
 
       true
