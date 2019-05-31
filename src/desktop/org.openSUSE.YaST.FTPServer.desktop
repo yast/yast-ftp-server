@@ -20,6 +20,7 @@ X-SuSE-YaST-Keywords=FTP,server,boot,file,transfer,protocol,network
 Icon=yast-ftp-server
 Exec=xdg-su -c "/sbin/yast2 ftp-server"
 
-Name=FTP Server
-GenericName=Module for configuration FTP daemon (vsftpd)
+Name=YaST FTP Server
+GenericName=FTP Server
+Comment=Module for configuration FTP daemon (vsftpd)
 StartupNotify=true
