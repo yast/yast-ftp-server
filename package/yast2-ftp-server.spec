@@ -12,59 +12,57 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 
 Name:           yast2-ftp-server
-Version:        4.1.6
+Version:        4.2.0
 Release:        0
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-Source0:        %{name}-%{version}.tar.bz2
-
-# Yast2::Systemd::Service
-Requires:       yast2 >= 4.1.3
-BuildRequires:  update-desktop-files
-# Yast2::Systemd::Service
-BuildRequires:  yast2 >= 4.1.3
-BuildRequires:  yast2-devtools >= 3.1.10
-BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
-BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
-
-BuildArch:      noarch
-
-Requires:       yast2-ruby-bindings >= 1.0.0
-
 Summary:        YaST2 - FTP configuration
 License:        GPL-2.0-only
 Group:          System/YaST
+Url:            https://github.com/yast/yast-ftp-server
+
+Source0:        %{name}-%{version}.tar.bz2
+
+BuildRequires:  update-desktop-files
+# Yast2::Systemd::Service
+BuildRequires:  yast2 >= 4.1.3
+BuildRequires:  yast2-devtools >= 4.2.2
+BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
+BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
+
+# Yast2::Systemd::Service
+Requires:       yast2 >= 4.1.3
+Requires:       yast2-ruby-bindings >= 1.0.0
+
+BuildArch:      noarch
 
 %description
 This package contains the YaST2 component for FTP configuration. It can
 configure vsftpd.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -q
 
 %check
-rake test:unit
+%yast_check
 
 %build
 
 %install
-rake install DESTDIR="%{buildroot}"
+%yast_install
+%yast_metainfo
 
 %files
-%defattr(-,root,root)
-%dir %{yast_yncludedir}/ftp-server
-%{yast_yncludedir}/ftp-server/*
-%{yast_clientdir}/ftp-server.rb
-%{yast_clientdir}/ftp-server_*.rb
-%{yast_moduledir}/FtpServer.*
-%{yast_desktopdir}/ftp-server.desktop
-%{yast_schemadir}/autoyast/rnc/ftp-server.rnc
-%{yast_scrconfdir}/*.scr
+%{yast_yncludedir}
+%{yast_clientdir}
+%{yast_moduledir}
+%{yast_desktopdir}
+%{yast_metainfodir}
+%{yast_schemadir}
+%{yast_scrconfdir}
 %doc %{yast_docdir}
 %license COPYING
 %{yast_icondir}

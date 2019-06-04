@@ -57,7 +57,7 @@ module Yast
       }
 
       Wizard.CreateDialog
-      Wizard.SetDesktopTitleAndIcon("ftp-server")
+      Wizard.SetDesktopTitleAndIcon("org.opensuse.yast.FTPServer")
       ret = Sequencer.Run(aliases, sequence)
 
       UI.CloseDialog
@@ -76,7 +76,7 @@ module Yast
       }
 
       Wizard.CreateDialog
-      Wizard.SetDesktopTitleAndIcon("ftp-server")
+      Wizard.SetDesktopTitleAndIcon("org.opensuse.yast.FTPServer")
 
       ret = Sequencer.Run(aliases, sequence)
 
