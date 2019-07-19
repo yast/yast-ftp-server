@@ -28,6 +28,7 @@ describe Y2Ftp::Clients::FtpServer do
   describe "#FTPdCMDShow" do
     before do
       allow(Yast::FtpServer).to receive(:EDIT_SETTINGS).and_return("AnonAuthen" => anon_authen)
+      allow(Yast::FtpServer).to receive(:main)
 
       allow(Yast::CommandLine).to receive(:Print)
     end
