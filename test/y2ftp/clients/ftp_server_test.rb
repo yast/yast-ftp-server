@@ -22,13 +22,14 @@
 require_relative "../../spec_helper.rb"
 require "y2ftp/clients/ftp_server"
 
+stub_module("Users")
+
 describe Y2Ftp::Clients::FtpServer do
   subject { described_class.new }
 
   describe "#FTPdCMDShow" do
     before do
       allow(Yast::FtpServer).to receive(:EDIT_SETTINGS).and_return("AnonAuthen" => anon_authen)
-      allow(Yast::FtpServer).to receive(:main)
 
       allow(Yast::CommandLine).to receive(:Print)
     end
