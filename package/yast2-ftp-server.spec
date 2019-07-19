@@ -58,6 +58,7 @@ rake install DESTDIR="%{buildroot}"
 %files
 %defattr(-,root,root)
 %dir %{yast_yncludedir}/ftp-server
+%{yast_libdir}
 %{yast_yncludedir}/ftp-server/*
 %{yast_clientdir}/ftp-server.rb
 %{yast_clientdir}/ftp-server_*.rb
