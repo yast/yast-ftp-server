@@ -21,12 +21,6 @@
 
 require_relative "../spec_helper.rb"
 
-# stub module to prevent its Import
-# Useful for modules from different yast packages, to avoid build dependencies
-def stub_module(name)
-  Yast.const_set name.to_sym, Class.new { def self.fake_method; end }
-end
-
 stub_module("Users")
 
 Yast.import "FtpServer"
