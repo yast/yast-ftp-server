@@ -498,9 +498,9 @@ module Y2Ftp
         CommandLine.PrintNoCR(_("Access Allowed for: "))
         if Yast::Ops.get(Yast::FtpServer.EDIT_SETTINGS, "AnonAuthen") == "0"
           CommandLine.Print(_("Anonymous Users"))
-        elsif Yast::Ops.get(Yast::FtpServer.EDIT_SETTINGS, "AnonAuthen") == "0"
+        elsif Yast::Ops.get(Yast::FtpServer.EDIT_SETTINGS, "AnonAuthen") == "1"
           CommandLine.Print(_("Authenticated Users"))
-        elsif Yast::Ops.get(Yast::FtpServer.EDIT_SETTINGS, "AnonAuthen") == "0"
+        elsif Yast::Ops.get(Yast::FtpServer.EDIT_SETTINGS, "AnonAuthen") == "2"
           CommandLine.Print(_("Anonymous and Authenticated Users"))
         else
           CommandLine.Print(_("Option has wrong value."))
