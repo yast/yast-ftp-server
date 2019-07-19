@@ -1,117 +1,23 @@
-# encoding: utf-8
-
-# File:	clients/ftp-server_auto.ycp
-# Package:	Configuration of ftp-server
-# Summary:	Client for autoinstallation
-# Authors:	Jozef Uhliarik <juhliarik@suse.cz>
+# Copyright (c) [2019] SUSE LLC
 #
-# $Id: ftp-server_auto.ycp 27914 2006-02-13 14:32:08Z locilka $
+# All Rights Reserved.
 #
-# This is a client for autoinstallation. It takes its arguments,
-# goes through the configuration and return the setting.
-# Does not do any changes to the configuration.
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
 
-# @param function to execute
-# @param map/list of ftp-server settings
-# @return [Hash] edited settings, Summary or boolean on success depending on called function
-# @example map mm = $[ "FAIL_DELAY" : "77" ];
-# @example map ret = WFM::CallFunction ("ftp-server_auto", [ "Summary", mm ]);
-module Yast
-  class FtpServerAutoClient < Client
-    def main
-      Yast.import "UI"
+require "yast"
+require "y2ftp/clients/ftp_server_auto"
 
-      textdomain "ftp-server"
-
-      Builtins.y2milestone("----------------------------------------")
-      Builtins.y2milestone("FtpServer auto started")
-
-      Yast.import "FtpServer"
-      Yast.include self, "ftp-server/wizards.rb"
-
-      @ret = nil
-      @func = ""
-      @param = {}
-
-      # Check arguments
-      if Ops.greater_than(Builtins.size(WFM.Args), 0) &&
-          Ops.is_string?(WFM.Args(0))
-        @func = Convert.to_string(WFM.Args(0))
-        if Ops.greater_than(Builtins.size(WFM.Args), 1) &&
-            Ops.is_map?(WFM.Args(1))
-          @param = Convert.to_map(WFM.Args(1))
-        end
-      end
-      Builtins.y2debug("func=%1", @func)
-      Builtins.y2debug("param=%1", @param)
-
-      # Create a summary
-      if @func == "Summary"
-        @ret = FtpServer.Summary
-      # ret = select(FtpServer::Summary(), 0, "");
-      # Reset configuration
-      elsif @func == "Reset"
-        FtpServer.Import({})
-        @ret = {}
-      # Change configuration (run AutoSequence)
-      elsif @func == "Change"
-        @ret = FtpServerAutoSequence()
-      # Import configuration
-      elsif @func == "Import"
-        @ret = FtpServer.Import(@param)
-      # Return actual state
-      elsif @func == "Export"
-        @ret = FtpServer.Export
-      # Return needed packages
-      elsif @func == "Packages"
-        @ret = FtpServer.AutoPackages
-      # Return if configuration  was changed
-      # return boolean
-      elsif @func == "GetModified"
-        @ret = FtpServer.modified
-      # Set modified flag
-      # return boolean
-      elsif @func == "SetModified"
-        FtpServer.modified = true
-        @ret = true
-      # Read current state
-      elsif @func == "Read"
-        Yast.import "Progress"
-        @progress_orig = Progress.set(false)
-        FtpServer.InitDaemon
-        @ret = FtpServer.Read
-        Progress.set(@progress_orig)
-      # Write given settings
-      elsif @func == "Write"
-        Yast.import "Progress"
-        @progress_orig = Progress.set(false)
-        FtpServer.write_only = true
-        old_mode = Mode.mode
-        if old_mode == "autoinst_config"
-          # We are in the autoyast configuration module.
-          # So there is currently no access to the target system.
-          # This has to be done at first. (bnc#888212)
-          Mode.SetMode("normal")
-          FtpServer.InitDaemon
-          FtpServer.read_daemon
-        end
-        @ret = FtpServer.Write
-        Mode.SetMode(old_mode)
-        Progress.set(@progress_orig)
-      else
-        Builtins.y2error("Unknown function: %1", @func)
-        @ret = false
-      end
-
-      Builtins.y2debug("ret=%1", @ret)
-      Builtins.y2milestone("FtpServer auto finished")
-      Builtins.y2milestone("----------------------------------------")
-
-      deep_copy(@ret)
-
-      # EOF
-    end
-  end
-end
-
-Yast::FtpServerAutoClient.new.main
+Y2Ftp::Clients::FtpServerAuto.new.run
