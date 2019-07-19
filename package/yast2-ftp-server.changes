@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 19 10:42:01 UTC 2019 - José Iván López González <jlopez@suse.com>
+
+- Fix show command to inform the correct allowed user (bsc#1142146)
+- 4.1.7
+
+-------------------------------------------------------------------
 Wed Dec  5 11:43:58 UTC 2018 - jreidinger@suse.com
 
 - always use absolute path to binaries (bsc#1118291)
