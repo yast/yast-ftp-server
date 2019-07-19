@@ -17,7 +17,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-require "y2ftp/clients/ftp_server_auto"
+SRC_PATH = File.expand_path("../src", __dir__)
+ENV["Y2DIR"] = SRC_PATH
 
-Y2Ftp::Clients::FtpServerAuto.new.run
+require "yast"
+
+if ENV["COVERAGE"]
+  require "simplecov"
+  SimpleCov.start do
+    # Don't measure coverage of the tests themselves.
+    add_filter "/test/"
+  end
+
+  # track all ruby files under src
+  SimpleCov.track_files("#{SRC_PATH}/**/*.rb")
+
+  # use coveralls for on-line code coverage reporting at Travis CI
+  if ENV["TRAVIS"]
+    require "coveralls"
+    SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+      SimpleCov::Formatter::HTMLFormatter,
+      Coveralls::SimpleCov::Formatter
+    ]
+  end
+end
