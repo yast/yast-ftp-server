@@ -77,7 +77,7 @@ Style/GuardClause:
 # Offense count: 7
 Style/IfInsideElse:
   Exclude:
-    - 'src/clients/ftp-server.rb'
+    - 'src/lib/y2ftp/clients/ftp_server.rb'
     - 'src/include/ftp-server/write_load.rb'
 
 # Offense count: 168
@@ -85,7 +85,7 @@ Style/IfInsideElse:
 # SupportedStyles: snake_case, camelCase
 Style/MethodName:
   Exclude:
-    - 'src/clients/ftp-server.rb'
+    - 'src/lib/y2ftp/clients/ftp_server.rb'
     - 'src/include/ftp-server/complex.rb'
     - 'src/include/ftp-server/dialogs.rb'
     - 'src/include/ftp-server/helps.rb'
@@ -104,6 +104,6 @@ Style/MultilineTernaryOperator:
 # SupportedStyles: snake_case, camelCase
 Style/VariableName:
   Exclude:
-    - 'src/clients/ftp-server.rb'
+    - 'src/lib/y2ftp/clients/ftp_server.rb'
     - 'src/include/ftp-server/helps.rb'
     - 'src/modules/FtpServer.rb'

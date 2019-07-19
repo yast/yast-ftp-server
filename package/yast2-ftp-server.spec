@@ -17,7 +17,7 @@
 
 
 Name:           yast2-ftp-server
-Version:        4.2.0
+Version:        4.2.1
 Release:        0
 Summary:        YaST2 - FTP configuration
 License:        GPL-2.0-only
@@ -57,6 +57,7 @@ configure vsftpd.
 
 %files
 %{yast_yncludedir}
+%{yast_libdir}
 %{yast_clientdir}
 %{yast_moduledir}
 %{yast_desktopdir}
