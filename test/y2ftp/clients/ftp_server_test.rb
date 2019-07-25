@@ -22,8 +22,6 @@
 require_relative "../../spec_helper.rb"
 require "y2ftp/clients/ftp_server"
 
-stub_module("Users")
-
 describe Y2Ftp::Clients::FtpServer do
   subject { described_class.new }
 

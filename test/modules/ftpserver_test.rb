@@ -21,8 +21,6 @@
 
 require_relative "../spec_helper.rb"
 
-stub_module("Users")
-
 Yast.import "FtpServer"
 
 VS_CONFIG_PATH = Yast::Path.new(".vsftpd")
