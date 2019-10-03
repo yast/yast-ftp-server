@@ -19,7 +19,7 @@
 
 require "yast"
 
-Yast.import "Yast::FtpServer"
+Yast.import "FtpServer"
 
 module Y2Ftp
   module Clients
