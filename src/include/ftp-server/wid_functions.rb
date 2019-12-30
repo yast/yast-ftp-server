@@ -20,7 +20,6 @@ module Yast
       Yast.import "Service"
       Yast.import "Users"
       Yast.import "Mode"
-      Yast.import "FileUtils"
       Yast.import "Label"
       Yast.import "FtpServer"
 

@@ -518,19 +518,19 @@ module Yast
 
         dir = @anon_homedir + upload
 
-        if !File.exist?(dir)
-          FileUtils.mkdir(dir)
-          FileUtils.chown(user, user, dir) if user
+        if !::File.exist?(dir)
+          ::FileUtils.mkdir(dir)
+          ::FileUtils.chown(user, user, dir) if user
         end
 
-        FileUtils.chmod(0o766, dir)
+        ::FileUtils.chmod(0o766, dir)
       end
       # restart/reaload daemons...
       Service.restart("vsftpd") if Service.active?("vsftpd")
 
       # update permissions for home directory if upload is enabled...
       if @pure_ftp_allowed_permissios_upload != -1 && @change_permissions
-        FileUtils.chmod(0o755, @anon_homedir)
+        ::FileUtils.chmod(0o755, @anon_homedir)
       end
 
       true
