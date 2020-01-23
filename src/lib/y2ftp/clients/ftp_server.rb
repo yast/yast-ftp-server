@@ -58,7 +58,8 @@ module Y2Ftp
               "handler" => fun_ref(method(:FTPdCMDShow), "boolean (map)"),
               # TRANSLATORS: CommandLine help
               "help"    => _("Display settings"),
-              "example" => ["show"]
+              "example" => ["show"],
+              "readonly" => true
             },
             "startup"         => {
               "handler" => fun_ref(method(:FTPdCMDStartup), "boolean (map)"),
@@ -543,7 +544,7 @@ module Y2Ftp
         end
 
         CommandLine.Print("")
-        false
+        true
       end
 
       def FTPdCMDStartup(options)
