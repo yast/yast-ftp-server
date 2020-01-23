@@ -55,10 +55,10 @@ module Y2Ftp
           "finish"     => fun_ref(Yast::FtpServer.method(:Write), "boolean ()"),
           "actions"    => {
             "show"            => {
-              "handler" => fun_ref(method(:FTPdCMDShow), "boolean (map)"),
+              "handler"  => fun_ref(method(:FTPdCMDShow), "boolean (map)"),
               # TRANSLATORS: CommandLine help
-              "help"    => _("Display settings"),
-              "example" => ["show"],
+              "help"     => _("Display settings"),
+              "example"  => ["show"],
               "readonly" => true
             },
             "startup"         => {
