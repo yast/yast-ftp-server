@@ -20,6 +20,10 @@
 SRC_PATH = File.expand_path("../src", __dir__)
 ENV["Y2DIR"] = SRC_PATH
 
+# localization agnostic tests
+ENV["LC_ALL"] = "en_US.utf-8"
+ENV["LANG"] = "en_US.utf-8"
+
 require "yast"
 
 # stub module to prevent its Import
