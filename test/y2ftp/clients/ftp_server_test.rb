@@ -26,6 +26,8 @@ describe Y2Ftp::Clients::FtpServer do
   subject { described_class.new }
 
   describe "#FTPdCMDShow" do
+    let(:anon_authen) { "0" }
+
     before do
       allow(Yast::FtpServer).to receive(:EDIT_SETTINGS).and_return("AnonAuthen" => anon_authen)
 
@@ -70,6 +72,10 @@ describe Y2Ftp::Clients::FtpServer do
 
         subject.FTPdCMDShow({})
       end
+    end
+
+    it "returns true" do
+      expect(subject.FTPdCMDShow({})).to eq true
     end
   end
 end
