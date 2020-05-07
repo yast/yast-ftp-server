@@ -2,37 +2,41 @@ default namespace = "http://www.suse.com/1.0/yast2ns"
 namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
 namespace config = "http://www.suse.com/1.0/configns"
 
+include "common.rnc"
+
 ftp-server =
  element ftp-server {
-     element ChrootEnable { text }? &
-     element VerboseLogging { text }? &
-     element FtpDirLocal { text }? &
-     element FtpDirAnon { text }? &
-     element Umask { text }? &
-     element UmaskAnon { text }? &
-     element UmaskLocal { text }? &
-     element PasMinPort { text }? &
-     element PasMaxPort { text }? &
-     element MaxIdleTime { text }? &
-     element MaxClientsPerIP { text }? &
-     element MaxClientsNumber { text }? &
-     element LocalMaxRate { text }? &
-     element AnonMaxRate { text }? &
-     element AnonAuthen { text }? &
-     element AnonReadOnly { text }? &
-     element AnonCreatDirs { text }? &
-     element Banner { text }? &
-     element SSLEnable { text }? &
-     element TLS { text }? &
-     element AntiWarez { text }? &
-     element SSL { text }? &
-     element StartXinetd { text }? &
-     element StartDaemon  { text }? &
-     element PassiveMode { text }? &
-     element CertFile { text }? &
-     element VirtualUser { text }? &
-     element FTPUser { text }? &
-     element GuestUser { text }? &
-     element EnableUpload { text }?
-
+   MAP,
+   (
+     element ChrootEnable { STRING }? &
+     element VerboseLogging { STRING }? &
+     element FtpDirLocal { STRING }? &
+     element FtpDirAnon { STRING }? &
+     element Umask { STRING }? &
+     element UmaskAnon { STRING }? &
+     element UmaskLocal { STRING }? &
+     element PasMinPort { STRING }? &
+     element PasMaxPort { STRING }? &
+     element MaxIdleTime { STRING }? &
+     element MaxClientsPerIP { STRING }? &
+     element MaxClientsNumber { STRING }? &
+     element LocalMaxRate { STRING }? &
+     element AnonMaxRate { STRING }? &
+     element AnonAuthen { STRING }? &
+     element AnonReadOnly { STRING }? &
+     element AnonCreatDirs { STRING }? &
+     element Banner { STRING }? &
+     element SSLEnable { STRING }? &
+     element TLS { STRING }? &
+     element AntiWarez { STRING }? &
+     element SSL { STRING }? &
+     element StartXinetd { STRING }? &
+     element StartDaemon  { STRING }? &
+     element PassiveMode { STRING }? &
+     element CertFile { STRING }? &
+     element VirtualUser { STRING }? &
+     element FTPUser { STRING }? &
+     element GuestUser { STRING }? &
+     element EnableUpload { STRING }?
+  )
 }
