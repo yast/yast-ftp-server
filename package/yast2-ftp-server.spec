@@ -17,7 +17,7 @@
 
 
 Name:           yast2-ftp-server
-Version:        4.1.8
+Version:        4.1.9
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -25,6 +25,10 @@ Source0:        %{name}-%{version}.tar.bz2
 
 # Yast2::Systemd::Service
 Requires:       yast2 >= 4.1.3
+Requires:       yast2-ruby-bindings >= 1.0.0
+# Do not log passwords
+Requires:       yast2-users >= 4.1.14
+
 BuildRequires:  update-desktop-files
 # Yast2::Systemd::Service
 BuildRequires:  yast2 >= 4.1.3
@@ -33,8 +37,6 @@ BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 
 BuildArch:      noarch
-
-Requires:       yast2-ruby-bindings >= 1.0.0
 
 Summary:        YaST2 - FTP configuration
 License:        GPL-2.0-only
