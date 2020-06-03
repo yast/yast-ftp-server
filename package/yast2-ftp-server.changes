@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  2 14:20:43 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Add missing dependency of yast2-users (bsc#1132116).
+- 4.2.5
+
+-------------------------------------------------------------------
 Thu Jan 23 09:02:55 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix return code of CLI "show" command (bsc#1143193)
