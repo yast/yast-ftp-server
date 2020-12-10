@@ -100,6 +100,8 @@ describe "Yast::FtpServer" do
       allow(ftp_server).to receive(:PollAbort).and_return(false)
       allow(ftp_server).to receive(:WriteSettings).and_return(true)
       allow(ftp_server).to receive(:write_daemon)
+      allow(Yast::Service).to receive(:active?).with("vsftpd").and_return(false)
+      allow(Yast::Service).to receive(:restart).with("vsftpd")
 
       ftp_server.main
     end
