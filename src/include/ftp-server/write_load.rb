@@ -50,9 +50,7 @@ module Yast
     # Convert between the UI (yast), and system (vsftpd, pure_ftpd) settings.
     #
     # The system settings are multiplexed by
-    # {FtpServerClass#vsftpd_edit   vsftpd_edit}:
-    # {FtpServerClass#VS_SETTINGS   VS_SETTINGS}   (for vsftpd_edit == true) or
-    # {FtpServerClass#PURE_SETTINGS PURE_SETTINGS} (for vsftpd_edit == false).
+    # {Yast::FtpServerClass#VS_SETTINGS   VS_SETTINGS}
     #
     # @param [String] key
     #  in the {FtpServerClass#EDIT_SETTINGS EDIT_SETTINGS} vocabulary
