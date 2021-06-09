@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  9 07:11:51 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the label of the certificate input field (bsc#1183786).
+- 4.0.8
+
+-------------------------------------------------------------------
 Thu Jun 28 14:53:32 CEST 2018 - schubi@suse.de
 
 - Added additional searchkeys to desktop file (fate#321043).
