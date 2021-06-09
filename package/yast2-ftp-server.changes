@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  9 07:11:51 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the label of the certificate input field (bsc#1183786).
+- 4.3.3
+
+-------------------------------------------------------------------
 Tue Aug 11 10:52:33 CEST 2020 - schubi@suse.de
 
 - AutoYaST: Added supplements: autoyast(ftp-server) into the spec file
