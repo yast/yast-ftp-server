@@ -808,7 +808,7 @@ module Yast
       Ops.set(
         result,
         "label",
-        _("D&SA Certificate to Use for SSL-encrypted Connections")
+        _("R&SA Certificate to Use for SSL-encrypted Connections")
       )
       Ops.set(result, "widget", :textentry)
       Ops.set(result, "init", fun_ref(method(:InitCertFile), "void (string)"))

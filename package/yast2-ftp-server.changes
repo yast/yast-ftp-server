@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  9 07:11:51 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the label of the certificate input field (bsc#1183786).
+- 4.2.6
+
+-------------------------------------------------------------------
 Tue Jun  2 14:20:43 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Add missing dependency of yast2-users (bsc#1132116).
