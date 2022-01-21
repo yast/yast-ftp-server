@@ -1,5 +1,8 @@
 # YaST - The FTP Server Configuration Module #
 
-[![Travis Build](https://travis-ci.org/yast/yast-ftp-server.svg?branch=master)](https://travis-ci.org/yast/yast-ftp-server)
-[![Jenkins Build](http://img.shields.io/jenkins/s/https/ci.opensuse.org/yast-ftp-server-master.svg)](https://ci.opensuse.org/view/Yast/job/yast-ftp-server-master/)
-[![Coverage Status](https://img.shields.io/coveralls/yast/yast-ftp-server/master.svg)](https://coveralls.io/github/yast/yast-ftp-server?branch=master)
+[![Workflow Status](https://github.com/yast/yast-ftp-server/workflows/CI/badge.svg?branch=master)](
+https://github.com/yast/yast-ftp-server/actions?query=branch%3Amaster)
+[![Jenkins Status](https://ci.opensuse.org/buildStatus/icon?job=yast-yast-ftp-server-master)](
+https://ci.opensuse.org/view/Yast/job/yast-yast-ftp-server-master/)
+[![Coverage Status](https://coveralls.io/repos/github/yast/yast-ftp-server/badge.svg?branch=master)](
+https://coveralls.io/github/yast/yast-ftp-server?branch=master)

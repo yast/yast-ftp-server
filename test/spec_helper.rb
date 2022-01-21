@@ -25,14 +25,7 @@ ENV["LC_ALL"] = "en_US.utf-8"
 ENV["LANG"] = "en_US.utf-8"
 
 require "yast"
-
-# stub module to prevent its Import
-# Useful for modules from different yast packages, to avoid build dependencies
-def stub_module(name)
-  Yast.const_set name.to_sym, Class.new { def self.fake_method; end }
-end
-
-stub_module("Users")
+require "yast/rspec"
 
 RSpec.configure do |config|
   config.mock_with :rspec do |c|
@@ -69,3 +62,6 @@ if ENV["COVERAGE"]
     ]
   end
 end
+
+# stub classes from other modules to avoid build dependencies
+Yast::RSpec::Helpers.define_yast_module("Users")
