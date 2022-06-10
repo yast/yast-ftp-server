@@ -17,7 +17,7 @@
 
 
 Name:           yast2-ftp-server
-Version:        4.0.8
+Version:        4.0.9
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -35,6 +35,8 @@ BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 BuildArch:      noarch
 
 Requires:       yast2-ruby-bindings >= 1.0.0
+# bsc#1200399
+Requires:       yast2-users
 
 Summary:        YaST2 - FTP configuration
 License:        GPL-2.0
