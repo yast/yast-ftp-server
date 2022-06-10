@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 10 12:04:04 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the missing dependency on yast2-users to the spec file
+  (bsc#1200399).
+- 4.0.9
+
+-------------------------------------------------------------------
 Wed Jun  9 07:11:51 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the label of the certificate input field (bsc#1183786).
